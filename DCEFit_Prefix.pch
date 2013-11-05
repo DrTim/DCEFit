@@ -1,0 +1,12 @@
+//
+// Prefix header for all source files of the 'DCEFit' target in the 'DCEFit' project.
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <AppKit/AppKit.h>
+
+#import <Log4m/Logger.h>
+#import <Log4m/LoggingMacros.h>
+
+#endif
