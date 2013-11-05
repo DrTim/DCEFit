@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[DCEFitFilter filterImage:]:DCEFitFilter.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[DialogController setupControlsFromParams]:DialogController.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
