@@ -195,17 +195,25 @@ void RegistrationObserver::Execute(itk::Object* caller, const itk::EventObject& 
         }
         else if (LBFGSOpt != 0)
         {
-            vnl_nonlinear_minimizer::ReturnCodes code;
-            code = LBFGSOpt->GetOptimizer()->get_failure_code();
-            char codeStr[10];
-            snprintf(codeStr, 10, "%d\n", code);
-            std::string stopConditionDesc =  "Stop flag: ";
-            stopConditionDesc += codeStr;
-            stopConditionDesc += LBFGSOpt->GetStopConditionDescription();
+            // This optimizer always returns -1 (Failure) unless it hits the maximum number of
+            // iterations so we deal with that here.
+            std::string stopConditionDesc;
+            vnl_nonlinear_minimizer::ReturnCodes code = LBFGSOpt->GetOptimizer()->get_failure_code();
+            if (code == vnl_nonlinear_minimizer::ERROR_FAILURE)
+            {
+                //char codeStr[10];
+                //snprintf(codeStr, 10, "%d\n", code);
+                //stopConditionDesc =  "Stop flag: ";
+                //stopConditionDesc += codeStr;
+                stopConditionDesc = "Probably converged.";
+            }
+            else
+            {
+                stopConditionDesc = LBFGSOpt->GetStopConditionDescription();
+            }
             NSString* stopCondDesc = [NSString stringWithUTF8String:stopConditionDesc.c_str()];
             [progressWindowController performSelectorOnMainThread:@selector(setStopCondition:)
                                                        withObject:stopCondDesc waitUntilDone:YES];
-
         }
         else if (RSGDOpt != 0)
         {

@@ -54,11 +54,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--LoadPlugin /Users/tim/devel/DCEFit/build/Release/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--LoadPlugin /Users/tim/devel/DCEFit/build/Debug/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
