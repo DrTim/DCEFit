@@ -81,6 +81,7 @@ enum TableTags
 - (void)dealloc
 {
     [logger_ release];
+
     [super dealloc];
 }
 
@@ -103,6 +104,15 @@ enum TableTags
 //            }
 //        }
 //    }
+
+    // Get the version from the bundle that contains this class
+    NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
+    NSDictionary* infoDict = [bundle infoDictionary];
+    NSString* bundleVersion = [infoDict objectForKey:@"CFBundleVersion"];
+    NSString* bundleName = @"DCEFit";
+
+    // Put the version onto the main window.
+    [self.window setTitle:[bundleName stringByAppendingFormat:@" %@", bundleVersion]];
 
     // Catch the viewer closing event. We cannot continue without the viewer.
     [[NSNotificationCenter defaultCenter] addObserver:self

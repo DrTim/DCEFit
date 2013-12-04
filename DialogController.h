@@ -23,6 +23,7 @@
      NSTableViewDelegate, NSTableViewDataSource, NSComboBoxDataSource>
 {
     Logger* logger_;
+
     NSWindow* openSheet_; // scratch variable for sheet management
 
     unsigned numSlices;
