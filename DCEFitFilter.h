@@ -17,7 +17,7 @@
  */
 @interface DCEFitFilter : PluginFilter
 {
-    IBOutlet DialogController* dialogController;
+    DialogController* dialogController;
 }
 
 
