@@ -19,7 +19,6 @@
 		221F7BA4183A77AA00D9F9E7 /* DCEFit.osirixplugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */; };
 		225843181721931700F9346C /* RegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 225843161721931700F9346C /* RegistrationParams.h */; };
 		225843191721931700F9346C /* RegistrationParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 225843171721931700F9346C /* RegistrationParams.m */; };
-		22591FFF1849149900872958 /* liblog4cplusS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22591FFE1849149900872958 /* liblog4cplusS.a */; };
 		225AA8D217EB58C900628ACB /* OptimizerUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */; };
 		225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA8D117EB58C900628ACB /* OptimizerUtils.h */; };
 		22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22664EAD17294FC6008B7961 /* ProgressWindow.xib */; };
@@ -46,6 +45,7 @@
 		229367CD17204AEF00F1C1EF /* DialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 229367CB17204AEF00F1C1EF /* DialogController.mm */; };
 		22B0AEBA174E6D2200D85184 /* RegProgressValues.h in Headers */ = {isa = PBXBuildFile; fileRef = 22B0AEB8174E6D2100D85184 /* RegProgressValues.h */; };
 		22B0AEBB174E6D2200D85184 /* RegProgressValues.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B0AEB9174E6D2100D85184 /* RegProgressValues.m */; };
+		22B48EBE18510540008C370A /* liblog4cplusS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B48EBD18510540008C370A /* liblog4cplusS.a */; };
 		22C8753617E1F6FD00CD3308 /* ImageSlicer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22C8753417E1F6FD00CD3308 /* ImageSlicer.mm */; };
 		22C8753717E1F6FD00CD3308 /* ImageSlicer.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C8753517E1F6FD00CD3308 /* ImageSlicer.h */; };
 		22CAD0D718043E7F00351867 /* MainDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22CAD0D618043E7F00351867 /* MainDialog.xib */; };
@@ -165,7 +165,6 @@
 		2217E9211732DE4200769974 /* RegistrationManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegistrationManager.mm; sourceTree = "<group>"; };
 		225843161721931700F9346C /* RegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationParams.h; sourceTree = "<group>"; };
 		225843171721931700F9346C /* RegistrationParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationParams.m; sourceTree = "<group>"; };
-		22591FFE1849149900872958 /* liblog4cplusS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblog4cplusS.a; sourceTree = "<group>"; };
 		225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizerUtils.cpp; sourceTree = "<group>"; };
 		225AA8D117EB58C900628ACB /* OptimizerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptimizerUtils.h; sourceTree = "<group>"; };
 		22664EAD17294FC6008B7961 /* ProgressWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressWindow.xib; sourceTree = "<group>"; };
@@ -195,6 +194,7 @@
 		22AF448617CE3C990091644F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		22B0AEB8174E6D2100D85184 /* RegProgressValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegProgressValues.h; sourceTree = "<group>"; };
 		22B0AEB9174E6D2100D85184 /* RegProgressValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegProgressValues.m; sourceTree = "<group>"; };
+		22B48EBD18510540008C370A /* liblog4cplusS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4cplusS.a; path = ../../usr/local/lib/liblog4cplusS.a; sourceTree = "<group>"; };
 		22C8753417E1F6FD00CD3308 /* ImageSlicer.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageSlicer.mm; sourceTree = "<group>"; };
 		22C8753517E1F6FD00CD3308 /* ImageSlicer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSlicer.h; sourceTree = "<group>"; };
 		22CAD0D618043E7F00351867 /* MainDialog.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainDialog.xib; sourceTree = "<group>"; };
@@ -359,7 +359,7 @@
 				22DC08AC17D4BCB700814825 /* libITKStatistics-4.4.a in Frameworks */,
 				22DC08AD17D4BCB700814825 /* libitksys-4.4.a in Frameworks */,
 				22DC08AE17D4BCB700814825 /* libitktiff-4.4.a in Frameworks */,
-				22591FFF1849149900872958 /* liblog4cplusS.a in Frameworks */,
+				22B48EBE18510540008C370A /* liblog4cplusS.a in Frameworks */,
 				22DC08AF17D4BCB700814825 /* libitkv3p_lsqr-4.4.a in Frameworks */,
 				22DC08B017D4BCB700814825 /* libitkv3p_netlib-4.4.a in Frameworks */,
 				22DC08B117D4BCB700814825 /* libitkvcl-4.4.a in Frameworks */,
@@ -587,7 +587,7 @@
 		22AF44A117CE48250091644F /* Logger */ = {
 			isa = PBXGroup;
 			children = (
-				22591FFE1849149900872958 /* liblog4cplusS.a */,
+				22B48EBD18510540008C370A /* liblog4cplusS.a */,
 				22799E0818294697006D5EB1 /* libLog4m.a */,
 			);
 			name = Logger;
