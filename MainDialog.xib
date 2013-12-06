@@ -74,7 +74,7 @@
                                                 <rect key="frame" x="1" y="1" width="415" height="124"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField verticalHuggingPriority="750" id="14">
+                                                    <textField toolTip="The series description (DICOM Tag 0008,103e). This will be appended to the current description if the series is saved." verticalHuggingPriority="750" id="14">
                                                         <rect key="frame" x="18" y="42" width="379" height="45"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="15">
@@ -95,7 +95,7 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <comboBox verticalHuggingPriority="750" id="40">
+                                                    <comboBox toolTip="The image in the series which will be the fixed image." verticalHuggingPriority="750" id="40">
                                                         <rect key="frame" x="97" y="10" width="75" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="41">
@@ -137,7 +137,7 @@
                                                             <rect key="frame" x="1" y="1" width="179" height="110"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" id="109">
+                                                                <matrix toolTip="Select the optimizer." verticalHuggingPriority="750" allowsEmptySelection="NO" id="109">
                                                                     <rect key="frame" x="18" y="42" width="143" height="58"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -167,7 +167,7 @@
                                                                         <binding destination="630" name="selectedIndex" keyPath="self.rigidRegOptimizer" id="645"/>
                                                                     </connections>
                                                                 </matrix>
-                                                                <button verticalHuggingPriority="750" id="123">
+                                                                <button toolTip="Configure the selected optimizer." verticalHuggingPriority="750" id="123">
                                                                     <rect key="frame" x="12" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="124">
@@ -190,7 +190,7 @@
                                                             <rect key="frame" x="1" y="1" width="200" height="110"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" id="116">
+                                                                <matrix toolTip="Select the metric." verticalHuggingPriority="750" allowsEmptySelection="NO" id="116">
                                                                     <rect key="frame" x="18" y="62" width="164" height="38"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -217,7 +217,7 @@
                                                                         <binding destination="630" name="selectedIndex" keyPath="self.rigidRegMetric" id="649"/>
                                                                     </connections>
                                                                 </matrix>
-                                                                <button verticalHuggingPriority="750" id="127">
+                                                                <button toolTip="Configure the selected metric." verticalHuggingPriority="750" id="127">
                                                                     <rect key="frame" x="12" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="128">
@@ -240,7 +240,7 @@
                                                             <rect key="frame" x="1" y="1" width="383" height="46"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <comboBox verticalHuggingPriority="750" tag="1" id="63">
+                                                                <comboBox toolTip="The number of levels in the image pyramid. Valid values: 1 to 4." verticalHuggingPriority="750" tag="1" id="63">
                                                                     <rect key="frame" x="153" y="10" width="75" height="26"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="64">
@@ -254,7 +254,7 @@
                                                                         <outlet property="delegate" destination="-2" id="670"/>
                                                                     </connections>
                                                                 </comboBox>
-                                                                <button id="68">
+                                                                <button toolTip="Select to enable rigid registration." id="68">
                                                                     <rect key="frame" x="16" y="15" width="64" height="18"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="check" title="Enabled" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="69">
@@ -299,7 +299,7 @@
                                                             <rect key="frame" x="1" y="1" width="179" height="108"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" id="286">
+                                                                <matrix toolTip="Select the optimizer." verticalHuggingPriority="750" allowsEmptySelection="NO" id="286">
                                                                     <rect key="frame" x="18" y="40" width="143" height="58"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -329,7 +329,7 @@
                                                                         <binding destination="630" name="selectedIndex" keyPath="self.deformRegOptimizer" id="658"/>
                                                                     </connections>
                                                                 </matrix>
-                                                                <button verticalHuggingPriority="750" id="285">
+                                                                <button toolTip="Configure the selected optimizer." verticalHuggingPriority="750" id="285">
                                                                     <rect key="frame" x="12" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="296">
@@ -352,7 +352,7 @@
                                                             <rect key="frame" x="1" y="1" width="200" height="108"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" id="275">
+                                                                <matrix toolTip="Select the metric." verticalHuggingPriority="750" allowsEmptySelection="NO" id="275">
                                                                     <rect key="frame" x="18" y="60" width="164" height="38"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -379,7 +379,7 @@
                                                                         <binding destination="630" name="selectedIndex" keyPath="self.deformRegMetric" id="662"/>
                                                                     </connections>
                                                                 </matrix>
-                                                                <button verticalHuggingPriority="750" id="274">
+                                                                <button toolTip="Configure the selected metric." verticalHuggingPriority="750" id="274">
                                                                     <rect key="frame" x="12" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="284">
@@ -402,7 +402,7 @@
                                                             <rect key="frame" x="1" y="1" width="383" height="46"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <comboBox verticalHuggingPriority="750" tag="2" id="260">
+                                                                <comboBox toolTip="The number of levels in the image pyramid. Valid values: 1 to 4." verticalHuggingPriority="750" tag="2" id="260">
                                                                     <rect key="frame" x="137" y="10" width="75" height="26"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="269">
@@ -416,7 +416,7 @@
                                                                         <outlet property="delegate" destination="-2" id="668"/>
                                                                     </connections>
                                                                 </comboBox>
-                                                                <button id="259">
+                                                                <button toolTip="Select to enable deformable registration." id="259">
                                                                     <rect key="frame" x="16" y="14" width="64" height="19"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="check" title="Enabled" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="270">
@@ -467,7 +467,7 @@
                                                                         <rect key="frame" x="1" y="1" width="137" height="76"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <tableView verticalHuggingPriority="750" tag="8" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="380">
+                                                                            <tableView toolTip="Set the size of the grid of Bspline control points." verticalHuggingPriority="750" tag="8" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="380">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="137" height="76"/>
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                 <size key="intercellSpacing" width="3" height="2"/>
@@ -522,7 +522,7 @@
                                                 <rect key="frame" x="1" y="1" width="415" height="47"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button verticalHuggingPriority="750" id="427">
+                                                    <button toolTip="Close DCEFit." verticalHuggingPriority="750" id="427">
                                                         <rect key="frame" x="328" y="7" width="75" height="32"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="428">
@@ -533,7 +533,7 @@
                                                             <action selector="regCloseButtonPressed:" target="-2" id="615"/>
                                                         </connections>
                                                     </button>
-                                                    <button verticalHuggingPriority="750" id="422">
+                                                    <button toolTip="Start the registration." verticalHuggingPriority="750" id="422">
                                                         <rect key="frame" x="253" y="7" width="75" height="32"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="423">
