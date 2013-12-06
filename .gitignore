@@ -20,7 +20,7 @@ DerivedData
 *.ipa
 *.save
 *.xcuserstate
-
+*.xcbkptlist
 OsiriX/
 OsiriXAPI/
 
