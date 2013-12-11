@@ -43,11 +43,28 @@
 {
     NSLog(@"DCEFitFilter.filterImage:%@", menuName);
 
-//    NSArray         *pixList = [viewerController pixList: 0];
+    id value;
+    DCMAttribute* attr;
+    NSArray* pixList = [viewerController pixList: 0];
+    NSString* file_path;
+    for (unsigned slice = 0; slice < [pixList count]; ++slice)
+    {
+        DCMPix* curPix = [pixList objectAtIndex:slice];
+        file_path = [curPix sourceFile];
+        DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:file_path decodingPixelData:NO];
+        DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+        attr = [dcmObj attributeForTag:tag];
+        value = [[attr value] description];
+        NSArray* pathComponents = [file_path pathComponents];
+        NSString* fileName = [pathComponents objectAtIndex:[pathComponents count]-1];
+        NSLog(@"%u %@ - Tag Name:%@; ID:%04x,%04x; vr:%@; Value:%@",
+              slice, fileName, tag.name, tag.group, tag.element, tag.vr, value);
+    }
+
+
 //    long            curSlice = [[viewerController imageView] curImage];
 //
 //    DCMPix          *curPix = [pixList objectAtIndex: curSlice];
-//    NSString        *file_path = [curPix sourceFile];
 //
 //    NSString        *dicomTag = @"SeriesDescription";
 //
@@ -62,7 +79,6 @@
 //    if (tag && tag.group && tag.element)
 //    {
 //        attr = [dcmObj attributeForTag:tag];
-//
 //        val = [[attr value] description];
 //
 //    }

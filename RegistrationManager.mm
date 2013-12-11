@@ -39,7 +39,6 @@
         // Get the data from OsiriX
         imageImporter = [[ImageImporter alloc] initWithViewerController:viewer];
         Image3DType::Pointer image = [imageImporter getImage];
-        //typename Image2DType::RegionType region = itkParams->fixedImageRegion;
         
         slicer = new ImageSlicer();
         slicer->SetImage(image);

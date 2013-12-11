@@ -43,20 +43,12 @@ public:
      * @param region The 2D region that we will be extracting and inserting.
      */
     ImageSlicer(typename Image3DType::Pointer inputImage);
-    //    ImageSlicer(typename Image3DType::Pointer inputImage,
-    //                const typename Image2DType::RegionType& region);
 
     /**
      * Sets the image that we wish to slice.
      * @param image The 3D image.
      */
     void SetImage(typename Image3DType::Pointer image);
-
-    /**
-     * Sets the region of the image to use in Get/SetCroppedSlice2D.
-     * @param region THe rectangular region in pixels.
-     */
-    //void SetRegion(const typename Image2DType::RegionType& region);
 
     /**
      * Get a copy of a slice of the image. The image is not cropped to the region.
@@ -72,21 +64,6 @@ public:
      * @param sliceNum The index of the slice.
      */
     void SetSlice2D(typename Image2DType::Pointer sliceImage, unsigned sliceNum);
-
-    /**
-     * Get a copy of a slice of the image. The image is cropped to the region.
-     * @param sliceNum The index of the slice required.
-     * @returns A copy of the data in the image slice, cropped to the region.
-     */
-    //typename Image2DType::Pointer GetCroppedSlice2D(unsigned sliceNum);
-
-    /**
-     * Store the slice back into the image.
-     * @param sliceImage The 2D slice to store.
-     * @param sliceNum The index of the slice.
-     * @param region The region of the slice that the input image represents.
-     */
-    //void SetCroppedSlice2D(typename Image2DType::Pointer sliceImage, unsigned sliceNum);
 
     /**
      * Get a pointer to the stored 3D image.
@@ -106,14 +83,8 @@ public:
     void SetupLogger();
 
 private:
-    //    typedef itk::ImageRegionConstIteratorWithIndex<Image2DType> ConstImageRegionIterator2DType;
-    //    typedef itk::ImageRegionIteratorWithIndex<Image2DType> ImageRegionIterator2DType;
-    //    typedef itk::ImageRegionConstIteratorWithIndex<Image3DType> ConstImageRegionIterator3DType;
-    //    typedef itk::ImageRegionIteratorWithIndex<Image3DType> ImageRegionIterator3DType;
-
     log4cplus::Logger logger_;
     typename Image3DType::Pointer image_;
-    //typename Image2DType::RegionType region_;
     MetaDataDictionaryArrayType metaDataDictionary_;
     itk::Vector<float> sliceSpacing;
 };

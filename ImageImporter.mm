@@ -91,35 +91,6 @@
         spacing[2] = 1.0;
     LOG4M_DEBUG(logger_, @"  Spacing = %f, %f, %f", spacing[0], spacing[1], spacing[2]);
 
-
-//    // file containing first slice
-//    NSString* filePath = [firstPix sourceFile];
-//
-//    // The Dicom Object
-//    DCMObject* dcmObject = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
-//
-//    // take direction from DICOM Image Orientation (Patient) (0020,0037)
-//    NSArray *imageOrientation = [dcmObject attributeArrayWithName: @"ImageOrientationPatient"];
-//    float orients[9];
-//    for (unsigned int i = 0; i < 6; i++)
-//        orients[i] = [[imageOrientation objectAtIndex:i] floatValue];
-//
-//    // calculate the normal vector (cross product of the other two)
-//    orients[6] = orients[1]*orients[5] - orients[2]*orients[4];
-//    orients[7] = orients[2]*orients[3] - orients[0]*orients[5];
-//    orients[8] = orients[0]*orients[4] - orients[1]*orients[3];
-
-    // get the DICOM ImageOrientationPatient
-//    float orients[9];
-//    [firstPix orientation:orients];
-//    
-//    for (int i = 0, k = 0; i < 3; ++i)
-//        for (int j = 0; j < 3; ++j)
-//            direction(i, j) =  orients[k++];
-//
-//    // TODO - just construct transpose in the first place.
-//    direction = direction.GetTranspose();
-
     // For our purposes the DICOM orientation vectors get in the way.
     // We will just set this up so that the image appears to be axial.
     // This means that the upper left corner of the screen is the origin

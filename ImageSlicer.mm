@@ -20,22 +20,10 @@ ImageSlicer::ImageSlicer(typename Image3DType::Pointer inputImage)
     SetupLogger();
 }
 
-//ImageSlicer::ImageSlicer(typename Image3DType::Pointer inputImage,
-//                         const typename Image2DType::RegionType& region)
-//: image_(inputImage), region_(region)
-//{
-//    SetupLogger();
-//}
-
 void ImageSlicer::SetImage(typename Image3DType::Pointer image)
 {
     image_ = image;
 }
-
-//void ImageSlicer::SetRegion(const typename Image2DType::RegionType& region)
-//{
-//    region_ = region;
-//}
 
 typename ImageSlicer::Image2DType::Pointer
         ImageSlicer::GetSlice2D(unsigned sliceNum)
@@ -58,16 +46,6 @@ typename ImageSlicer::Image2DType::Pointer
     // Get the slice
     typename Image2DType::Pointer slice = filter->GetOutput();
     filter->Update();
-
-    /*
-    // Reset the origin to (0.0, 0.0) for internal use
-    typename Image2DType::PointType sliceOrigin;
-    for (unsigned idx = 0; idx < slice->GetImageDimension(); ++idx)
-        sliceOrigin[idx] = 0.0;
-    slice->SetOrigin(sliceOrigin);
-     */
-    
-    //slice->Print(std::cout);
 
     return slice;
 }
@@ -94,98 +72,6 @@ void ImageSlicer::SetSlice2D(typename Image2DType::Pointer sliceImage,
     size_t numBytes = numPixels * sizeof(Image3DType::PixelType);
     memcpy(dstBuffer, srcBuffer, numBytes);
 }
-
-/* Test before using. *************************************
-typename ImageSlicer::Image2DType::Pointer
-        ImageSlicer::GetCroppedSlice2D(unsigned sliceNum)
-{
-    // Take a slice from the contained 3D image. If the region is the same, just return it.
-    typename Image2DType::Pointer fullSlice = GetFullSlice2D(sliceNum);
-    if (region_ == fullSlice->GetLargestPossibleRegion())
-        return fullSlice;
-
-    // Make a new image the size of this->region to return
-    typename Image2DType::Pointer slice = Image2DType::New();
-    typename Image2DType::RegionType largestRegion = fullSlice->GetLargestPossibleRegion();
-
-    // Make sure that the cropping region is inside the full image.
-    // Note the backward (or at least awkward) syntax of IsInside().
-    if (!largestRegion.IsInside(region_))
-    {
-        itk::InvalidArgumentError ex;
-        ex.SetDescription("Registration region not inside image slice.");
-        LOG4CPLUS_FATAL(logger_, "Registration region not inside image slice.");
-        throw ex;
-    }
-
-    // Allocate memory for the new data
-    typename Image2DType::RegionType outputRegion;
-    outputRegion.SetSize(region_.GetSize());
-    slice->SetRegions(outputRegion);
-    slice->Allocate();
-
-    // Adjust the new origin to reflect the cropping
-    //typename Image2DType::PointType inputOrigin = fullSlice->GetOrigin();
-    typename Image2DType::SpacingType inputSpacing = fullSlice->GetSpacing();
-    typename Image2DType::PointType sliceOrigin;
-    for (unsigned idx = 0; idx < fullSlice->GetImageDimension(); ++idx)
-        sliceOrigin[idx] = 0.0;
-    slice->SetSpacing(inputSpacing);
-    slice->SetOrigin(sliceOrigin);
-    slice->FillBuffer(static_cast<TPixel>(0));
-
-    // Set the source iterator to traverse the crop region of the full slice and
-    // set the destination iterator to traverse the whole cropped slice.
-    ConstImageRegionIterator2DType sourceIter(fullSlice, region_);
-    ImageRegionIterator2DType destIter(slice, slice->GetBufferedRegion());
-
-    // Copy the data
-    for (sourceIter.GoToBegin(), destIter.GoToBegin(); !sourceIter.IsAtEnd();
-         ++sourceIter, ++destIter)
-    {
-        destIter.Set(sourceIter.Get());
-    }
-
-    return slice;
-}
-*/
-
-/* Test before using. ******************************************
-void ImageSlicer::SetCroppedSlice2D(typename Image2DType::Pointer sliceImage, unsigned sliceNum)
-{
-    // Create a 3D ImageRegion that corresponds to the 2D slice region
-    typename Image2DType::IndexType regionIndex = region_.GetIndex();
-    typename Image3DType::IndexType sliceIndex;
-    sliceIndex[0] = regionIndex[0];
-    sliceIndex[1] = regionIndex[1];
-    sliceIndex[2] = sliceNum;
-
-    typename Image2DType::SizeType regionSize = region_.GetSize();
-    typename Image3DType::SizeType sliceSize;
-    sliceSize[0] = regionSize[0];
-    sliceSize[1] = regionSize[1];
-    sliceSize[2] = 1;
-
-    typename Image3DType::RegionType region3d;
-    region3d.SetIndex(sliceIndex);
-    region3d.SetSize(sliceSize);
-
-    // Set the source iterator to traverse the whole 2D image and
-    // set the destination iterator to traverse the region inside the selected slice
-    // inside the 3D image.
-    ConstImageRegionIterator2DType sourceIter(sliceImage, sliceImage->GetBufferedRegion());
-    ImageRegionIterator3DType destIter(image_, region3d);
-
-    // Copy the data
-    for (sourceIter.GoToBegin(), destIter.GoToBegin(); !sourceIter.IsAtEnd();
-         ++sourceIter, ++destIter)
-    {
-        destIter.Set(sourceIter.Get());
-    }
-
-    //    image->Print(std::cout);
-}
-*/
 
 typename ImageSlicer::Image3DType::Pointer ImageSlicer::GetImage()
 {
