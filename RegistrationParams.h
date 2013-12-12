@@ -19,6 +19,8 @@
     unsigned numImages;
     unsigned fixedImageNumber;
     BOOL flippedData;
+
+    // Series description in DICOM file
     NSString* seriesDescription;
 
     // Rectangular region to be used in either

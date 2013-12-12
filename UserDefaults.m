@@ -73,12 +73,16 @@ static UserDefaults* sharedInstance;
     
     // These are the initial "factory" settings. They will appear as the
     // defaults settings on the first running of the program
-    NSDictionary* initDict = [self createFactoryDefaults];
+    NSDictionary* factoryDict = [self createFactoryDefaults];
 
     // We now get whatever may have been stored before.
-    NSDictionary* curDefaultsDict = [[defaults persistentDomainForName:bundleId] mutableCopy];
+    NSMutableDictionary* curDefaultsDict = [[defaults persistentDomainForName:bundleId] mutableCopy];
+
+    // Remove any invalid keys/objects and reset the defaults
+    [self removeObsoleteKeysFrom:curDefaultsDict using:factoryDict];
+    [defaults setPersistentDomain:curDefaultsDict forName:bundleId];
    
-    defaultsDict = [initDict mutableCopy];
+    defaultsDict = [factoryDict mutableCopy];
     [defaultsDict addEntriesFromDictionary:curDefaultsDict];
 
     // Give back the memory
@@ -89,8 +93,7 @@ static UserDefaults* sharedInstance;
 
 + (NSDictionary*)createFactoryDefaults
 {
-    NSDictionary* d =
-    [NSDictionary dictionaryWithObjectsAndKeys:
+    NSDictionary* d = [NSDictionary dictionaryWithObjectsAndKeys:
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 
@@ -136,6 +139,21 @@ static UserDefaults* sharedInstance;
 + (UserDefaults*)sharedInstance
 {
     return sharedInstance;
+}
+
++ (void)removeObsoleteKeysFrom:(NSMutableDictionary*)currentDict using:(NSDictionary*)validDict
+{
+    // Create an array of all of the valid keys.
+    NSArray* validKeys = [validDict allKeys];
+
+    // Create array of current keys, some of which may be invalid
+    NSArray* dictKeys = [currentDict allKeys];
+    for (NSString* key in dictKeys)
+    {
+        if (![validKeys containsObject:key])
+            [currentDict removeObjectForKey:key];
+        [currentDict class];
+    }
 }
 
 - (void) setupLogger
@@ -251,14 +269,6 @@ static UserDefaults* sharedInstance;
     LOG4M_TRACE(logger_, @"key = %@", key);
     
 	NSNumber* value = [defaultsDict valueForKey:key];
-	if (value == nil)
-    {
-        NSString* raison =
-        [NSString stringWithFormat:@"No user default is stored with key: %@", key];
-        NSException* ex = [NSException exceptionWithName:@"NonexistentKey"
-                                                  reason:raison userInfo:nil];
-        [ex raise];
-    }
     return [value boolValue];
 }
 
