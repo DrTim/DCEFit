@@ -232,6 +232,7 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
 
     ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(transform);
+    resampler->SetInterpolator(interpolator);
     resampler->SetInput(movingImage);
     resampler->SetSize(fixedImage_->GetLargestPossibleRegion().GetSize());
     resampler->SetOutputOrigin(fixedImage_->GetOrigin());

@@ -281,9 +281,10 @@ enum TableTags
         regParams.fixedImageRegion.width = [firstPix pwidth];
         regParams.fixedImageRegion.height = [firstPix pheight];
 
-        LOG4M_INFO(logger_, @"Registration region set to full image: [x:%ld y:%ld w:%ld h:%ld]",
-                   regParams.fixedImageRegion.x, regParams.fixedImageRegion.y, regParams.fixedImageRegion.width,
-                   regParams.fixedImageRegion.height);
+        LOG4M_INFO(logger_,
+                   @"Registration region set to full image: [x:%ld y:%ld w:%ld h:%ld]",
+                   regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,
+                   regParams.fixedImageRegion.width, regParams.fixedImageRegion.height);
     }
 }
 
@@ -423,6 +424,8 @@ enum TableTags
 
     // Copy the current dataset and viewer. We will work only with the new one.
  	viewerController2 = [parentFilter duplicateCurrent2DViewerWindow];
+ 	//viewerController2 = [parentFilter copyCurrent4DViewerWindow];
+    // 	viewerController2 = [parentFilter copy4DViewerWindow];
     if (viewerController2 == nil)
     {
         LOG4M_ERROR(logger_, @"Failed to duplicate current 2D viewer.");
@@ -434,7 +437,8 @@ enum TableTags
     [viewerController2 setPostprocessed:TRUE];
 
     // We want the flippedData flag to be the same in each viewer.
-    if ([viewerController2 imageView].flippedData != [viewerController1 imageView].flippedData)
+    if ([viewerController2 imageView].flippedData !=
+        [viewerController1 imageView].flippedData)
         [viewerController2 flipDataSeries:nil];
 
     registrationManager = [[RegistrationManager alloc]

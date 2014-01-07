@@ -20,6 +20,8 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkExceptionObject.h>
 
+#include <map>
+
 /**
  * This class takes an image and stores a region of it. Primarily it is
  * designed to allow easy access to slices which can be retrieved and
@@ -28,9 +30,6 @@
 class ImageSlicer
 {
 public:
-    typedef itk::Image<TPixel, 3u > Image3DType; /**< Convenient typedef for arbitrary 3D image */
-    typedef itk::Image<TPixel, 2u > Image2DType; /**< Convenient typedef for arbitrary 2D image */
-
     /**
      * Default constructor.
      */
@@ -83,10 +82,10 @@ public:
     void SetupLogger();
 
 private:
-    log4cplus::Logger logger_;
-    typename Image3DType::Pointer image_;
-    MetaDataDictionaryArrayType metaDataDictionary_;
-    itk::Vector<float> sliceSpacing;
+    log4cplus::Logger logger_;            /**< The logger. */
+    typename Image3DType::Pointer image_; /**< The contained image. */
+    unsigned sliceDim_;                   /**< Number of 2D planes in returned slice. */
+    std::map<unsigned, unsigned> sliceMap;
 };
 
 #endif /* defined(__DCEFit__ImageSlicer__) */

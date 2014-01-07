@@ -16,7 +16,7 @@
 {
     Logger* logger_;
     ViewerController* viewer;
-    unsigned slicesPerTime;
+    unsigned slicesPerTimeIncr;
     float timeIncrement;
 }
 
@@ -44,5 +44,12 @@
  * @returns The number of 2D slices in a time increment.
  */
 - (unsigned)slicesPerTimeIncrement;
+
+/**
+ * Get time increment in the 4D series.
+ *
+ * @returns The time increment in the 4D series in seconds.
+ */
+- (float)timeIncrement;
 
 @end

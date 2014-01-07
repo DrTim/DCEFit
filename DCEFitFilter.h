@@ -10,6 +10,7 @@
 #import "OsiriXAPI/PluginFilter.h"
 
 @class DialogController;
+@class Logger;
 
 /**
  * This is the class that OsiriX will load. It is this class which provides the link
@@ -18,6 +19,8 @@
 @interface DCEFitFilter : PluginFilter
 {
     DialogController* dialogController;
+    Logger* logger_;
+    //NSArray* stackArray;
 }
 
 
@@ -25,6 +28,7 @@
 	The main dialog for the plugin.
  */
 @property (assign) DialogController* dialogController;
+//@property (assign, readonly) NSArray* stackArray;
 
 
 /**
@@ -47,5 +51,8 @@
  */
 - (void)initPlugin;
 
+- (ViewerController *)copyCurrent4DViewerWindow;
+
+//- (ViewerController*)copy4DViewerWindow;
 
 @end

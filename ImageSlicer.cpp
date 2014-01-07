@@ -25,7 +25,7 @@ void ImageSlicer::SetImage(typename Image3DType::Pointer image)
     image_ = image;
 }
 
-typename ImageSlicer::Image2DType::Pointer
+typename Image2DType::Pointer
         ImageSlicer::GetSlice2D(unsigned sliceNum)
 {
     // Instantiate a filter to effect dimensional reduction
@@ -73,7 +73,7 @@ void ImageSlicer::SetSlice2D(typename Image2DType::Pointer sliceImage,
     memcpy(dstBuffer, srcBuffer, numBytes);
 }
 
-typename ImageSlicer::Image3DType::Pointer ImageSlicer::GetImage()
+typename Image3DType::Pointer ImageSlicer::GetImage()
 {
     return image_;
 }

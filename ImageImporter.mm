@@ -133,4 +133,14 @@
     return image;
 }
 
+- (unsigned int)slicesPerTimeIncrement
+{
+    return slicesPerTimeIncr;
+}
+
+- (float)timeIncrement
+{
+    return timeIncrement;
+}
+
 @end

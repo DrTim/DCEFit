@@ -128,43 +128,12 @@
     
 }
 
-//- (void)insertCroppedSliceIntoViewer:(Image2DType::Pointer)slice SliceIndex:(unsigned)sliceIndex
-//{
-//    // Do this to get back the full sized (uncropped) slice to reinsert into OsiriX
-//    slicer->SetSlice2D(slice, sliceIndex);
-//    Image2DType::Pointer fullSlice = slicer->GetSlice2D(sliceIndex);
-//
-//    // calculate the offset of this slice in the data block in OsiriX
-//    // and the number of bytes to copy
-//    float* data = [viewer volumePtr];
-//    Image2DType::SizeType size = fullSlice->GetLargestPossibleRegion().GetSize();
-//    unsigned long numFloats = size[0] * size[1];
-//    unsigned long offset = numFloats * sliceIndex;
-//    data += offset;
-//    size_t numBytes = numFloats * sizeof(float);
-//
-//    // copy the data into the OsiriX data block
-//    float* imageData = fullSlice->GetPixelContainer()->GetBufferPointer();
-//    memcpy(data, imageData, numBytes);
-//
-//    [viewer performSelectorOnMainThread:@selector(needsDisplayUpdate) withObject:nil
-//                          waitUntilDone:YES];
-//    
-//}
-
 - (Image2DType::Pointer)getSliceFromImage:(unsigned)sliceNumber
 {
     Image2DType::Pointer slice = slicer->GetSlice2D(sliceNumber);
 
     return slice;
 }
-
-//- (Image2DType::Pointer)getCroppedSliceFromImage:(unsigned)sliceNumber
-//{
-//    Image2DType::Pointer slice = slicer->GetCroppedSlice2D(sliceNumber);
-//
-//    return slice;
-//}
 
 - (void)doRegistration
 {
