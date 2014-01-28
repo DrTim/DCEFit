@@ -1,11 +1,12 @@
 /*
- * File:   RegisterOneImageMultiResDeformable2D.mm
+ * File:   RegisterOneImageDeformable2D.mm
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
-#include "RegisterOneImageMultiResDeformable2D.h"
+#include "RegisterOneImageDeformable2D.h"
+#include "ItkTypedefs.h"
 #include "OptimizerUtils.h"
 #include "RegistrationObserver.h"
 #include "ParseITKException.h"
@@ -13,16 +14,14 @@
 
 #import "ProgressWindowController.h"
 
-#include <itkBSplineTransformInitializer.h>
-
 #include <log4cplus/loggingmacros.h>
 
-RegisterOneImageMultiResDeformable2D::RegisterOneImageMultiResDeformable2D(
-    ProgressWindowController* progressController, Image2DType::Pointer fixedImage,
+RegisterOneImageDeformable2D::RegisterOneImageDeformable2D(
+    ProgressWindowController* progressController, Image2D::Pointer fixedImage,
     const ItkRegistrationParams& params)
-    : RegisterOneImage2D(progressController, fixedImage, params)
+    : RegisterOneImage<Image2D>(progressController, fixedImage, params)
 {
-    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageMultiResDeformable2D";
+    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDeformable2D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
     
@@ -35,22 +34,28 @@ RegisterOneImageMultiResDeformable2D::RegisterOneImageMultiResDeformable2D(
     }
 }
 
-Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
-                                Image2DType::Pointer movingImage, ResultCode& code)
+Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
+                                Image2D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
     // Assume the best to start.
     code = SUCCESS;
     
-    // typedefs for ITK classes
-    typedef itk::ResampleImageFilter<Image2DType, Image2DType> ResampleFilterType;
-    typedef itk::BSplineTransformInitializer<BSplineTransform, Image2DType> TransformInitializerType;
-    typedef itk::BSplineInterpolateImageFunction<Image2DType> InterpolatorType;
+    //    // typedefs for ITK classes
+    //    typedef itk::ResampleImageFilter<Image2D, Image2D> ResampleFilterType;
+    //    typedef itk::BSplineTransformInitializer<BSplineTransform, Image2D> TransformInitializerType;
+    //    typedef itk::BSplineInterpolateImageFunction<Image2D> InterpolatorType;
+    //    typedef itk::MultiResolutionImageRegistrationMethod<Image2D, Image2D>
+    //            MultiResRegistration;
+    //    typedef itk::MultiResolutionPyramidImageFilter<Image2D, Image2D> ImagePyramid;
+    //    typedef itk::ImageToImageMetric<Image2D, Image2D> ImageToImageMetric;
+    //    typedef itk::MattesMutualInformationImageToImageMetric<Image2D, Image2D>
+    //            MMIImageToImageMetric;
+    //    typedef itk::MeanSquaresImageToImageMetric<Image2D, Image2D> MSImageToImageMetric;
 
     // Set the resolution schedule
-    MultiResRegistration::ScheduleType resolutionSchedule(itkParams_.deformLevels,
-                                                          Image2DType::ImageDimension);
+    Registration2D::ScheduleType resolutionSchedule(itkParams_.deformLevels, 2u);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
                 double>(std::pow(2.0, static_cast<double>(itkParams_.deformLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
@@ -70,7 +75,7 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    RegistrationObserver::Pointer observer = RegistrationObserver::New();
+    RegistrationObserver2D::Pointer observer = RegistrationObserver2D::New();
     observer->SetNumberOfLevels(itkParams_.deformLevels);
     observer->SetGridSizeSchedule(itkParams_.deformGridSizes);
     observer->SetProgressWindowController(progController_);
@@ -81,12 +86,12 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
     // This needs to be set up here rather than in the observer because the registration
     // method PreparePyramids expects to have a working transform so that it can know the number of
     // parameters needed.
-    BSplineTransform::Pointer transform = BSplineTransform::New();
-    BSplineTransform::MeshSizeType meshSize;
+    BSplineTransform2D::Pointer transform = BSplineTransform2D::New();
+    BSplineTransform2D::MeshSizeType meshSize;
     unsigned int numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
     meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
 
-    TransformInitializerType::Pointer transformInitializer = TransformInitializerType::New();
+    BSplineTransformInitializer2D::Pointer transformInitializer = BSplineTransformInitializer2D::New();
     transformInitializer->SetTransform(transform);
     transformInitializer->SetImage(fixedImage_);
     transformInitializer->SetTransformDomainMeshSize(meshSize);
@@ -94,7 +99,7 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
     //LOG4CPLUS_DEBUG(logger_, "Initial transform params:" << transform->GetParameters());
 
     const itk::SizeValueType numberOfParameters = transform->GetNumberOfParameters();
-    BSplineTransform::ParametersType parameters(numberOfParameters);
+    BSplineTransform2D::ParametersType parameters(numberOfParameters);
     parameters.Fill(0.0);
     transform->SetParameters(parameters);
 
@@ -103,13 +108,14 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
      * We can set up those things which will not change between levels here and
      * leave the rest for the first IterationEvent in the observer.
      */
-    MMIImageToImageMetric::Pointer mmiMetric;
-    MSImageToImageMetric::Pointer msMetric;
-    ImageToImageMetric::Pointer metric;
+
+    MMIImageToImageMetric2D::Pointer mmiMetric;
+    MSImageToImageMetric2D::Pointer msMetric;
+    ImageToImageMetric2D::Pointer metric;
     switch (itkParams_.deformRegMetric)
     {
         case MattesMutualInformation:
-            mmiMetric = MMIImageToImageMetric::New();
+            mmiMetric = MMIImageToImageMetric2D::New();
             mmiMetric->UseExplicitPDFDerivativesOff();
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
@@ -118,7 +124,7 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
             metric = mmiMetric;
             break;
         case MeanSquares:
-            msMetric = MSImageToImageMetric::New();
+            msMetric = MSImageToImageMetric2D::New();
             msMetric->SetNumberOfThreads(1);
             metric = msMetric;
             break;
@@ -163,21 +169,21 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
     //
     // Set up the interpolator
     // This does not change during registration
-    InterpolatorType::Pointer interpolator = InterpolatorType::New();
+    BSplineInterpolator2D::Pointer interpolator = BSplineInterpolator2D::New();
     interpolator->SetSplineOrder(BSPLINE_ORDER);
     interpolator->SetNumberOfThreads(1);
 
     //
     // The image pyramids
     // These will be set up by the registration object.
-    ImagePyramid::Pointer fixedImagePyramid = ImagePyramid::New();
+    ImagePyramid2D::Pointer fixedImagePyramid = ImagePyramid2D::New();
     fixedImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
 
-    ImagePyramid::Pointer movingImagePyramid = ImagePyramid::New();
+    ImagePyramid2D::Pointer movingImagePyramid = ImagePyramid2D::New();
     movingImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
 
     // Set up the registration
-    MultiResRegistration::Pointer registration = MultiResRegistration::New();
+    Registration2D::Pointer registration = Registration2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
@@ -226,11 +232,11 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
 
     if (itkParams_.deformShowField)
     {
-        ImageTagger<Image2DType> tagImage(10);
+        ImageTagger<Image2D> tagImage(10);
         tagImage(*(movingImage.GetPointer()));
     }
 
-    ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+    ResampleFilter2D::Pointer resampler = ResampleFilter2D::New();
     resampler->SetTransform(transform);
     resampler->SetInterpolator(interpolator);
     resampler->SetInput(movingImage);
@@ -241,7 +247,7 @@ Image2DType::Pointer RegisterOneImageMultiResDeformable2D::registerImage(
     resampler->SetDefaultPixelValue(0.0);
     resampler->Update();
 
-    Image2DType::Pointer result = resampler->GetOutput();
+    Image2D::Pointer result = resampler->GetOutput();
 
     return result;
 }

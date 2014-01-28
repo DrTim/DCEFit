@@ -8,15 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class SeriesInfo;
+@class Logger;
 @class RegistrationParams;
 @class RegistrationManager;
 @class ProgressWindowController;
 @class LBFGSBConfigWindowController;
-@class ViewerController;  // OsiriX 2D viewer
 @class DCEFitFilter;
 @class DCMObject;
+@class ViewerController;  // OsiriX 2D viewer
 @class DicomSeries;
-@class Logger;
 
 @interface DialogController : NSWindowController
     <NSWindowDelegate, NSTabViewDelegate, NSTextFieldDelegate, NSComboBoxDelegate,
@@ -26,8 +27,6 @@
 
     NSWindow* openSheet_; // scratch variable for sheet management
 
-    unsigned numSlices;
-    int keyIdx;
     DCEFitFilter* parentFilter;
 
     IBOutlet RegistrationParams *regParams;
@@ -37,6 +36,7 @@
     ViewerController* viewerController2;      // copy for registered image
 
     RegistrationManager* registrationManager; // The object which does the registration
+    SeriesInfo* seriesInfo;
 
     // Main dialog
     //
@@ -90,13 +90,12 @@
 }
 
 // properties associated with non-outlet members
-@property (assign) unsigned numSlices;
-@property (assign) int keyIdx;
 @property (assign) DCEFitFilter* parentFilter;
 @property (assign) ViewerController* viewerController1;
 @property (assign) ViewerController* viewerController2;
 @property (assign) ProgressWindowController* progressWindowController;
 @property (readonly) RegistrationParams* regParams;
+@property (assign) SeriesInfo* seriesInfo;
 
 // properties associated with outlet members
 @property (assign) IBOutlet NSComboBox *fixedImageComboBox;

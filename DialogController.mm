@@ -6,20 +6,23 @@
 //
 //
 
+#import <OsiriXAPI/ViewerController.h>
+#import <OsiriXAPI/DCMPix.h>
+#import <OsiriXAPI/PluginFilter.h>
+#import <OsiriXAPI/DicomSeries.h>
+
+#import <OsiriX/DCMObject.h>
+#import <OsiriX/DCMAttributeTag.h>
+
+#import "ViewerController+ExportTimeSeries.h"
 #import "DialogController.h"
 #import "DCEFitFilter.h"
 #import "ProgressWindowController.h"
 #import "RegistrationParams.h"
 #import "RegistrationManager.h"
 #import "UserDefaults.h"
+#import "SeriesInfo.h"
 
-#import "OsiriXAPI/ViewerController.h"
-#import "OsiriXAPI/DCMPix.h"
-#import "OsiriXAPI/PluginFilter.h"
-#import "OsiriXAPI/DicomSeries.h"
-
-#import "OsiriX/DCMObject.h"
-#import "OsiriX/DCMAttributeTag.h"
 
 @implementation DialogController;
 
@@ -28,6 +31,7 @@
 @synthesize parentFilter;
 @synthesize viewerController1;
 @synthesize viewerController2;
+@synthesize seriesInfo;
 
 @synthesize fixedImageComboBox;
 @synthesize seriesDescriptionTextField;
@@ -43,10 +47,7 @@
 @synthesize deformRegOptimizerRadioMatrix;
 @synthesize deformShowFieldCheckBox;
 @synthesize regCloseButton;
-
 @synthesize regStartButton;
-@synthesize numSlices;
-@synthesize keyIdx;
 
 /**
  * Tags for the tables in the parameter panels.
@@ -89,22 +90,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"Enter");
 
- //    for(int y = 0; y < [viewerController1 maxMovieIndex]; y++)
-//    {
-//        NSArray* pixList = [viewerController1 pixList];
-//        for(int x = 0; x < [pixList[y] count]; x++)
-//        {
-//            for(int i = 0; i < [[roiList[y] objectAtIndex: x] count]; i++)
-//            {
-//                ROI *curROI = [[roiList[y] objectAtIndex: x] objectAtIndex:i];
-//
-//                [curROI setName: [roiRenameName stringValue]];
-//
-//                [[NSNotificationCenter defaultCenter] postNotificationName: OsirixROIChangeNotification object:curROI userInfo: nil];
-//            }
-//        }
-//    }
-
     // Get the version from the bundle that contains this class
     NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
     NSDictionary* infoDict = [bundle infoDictionary];
@@ -136,7 +121,6 @@ enum TableTags
 - (void)connectToViewer:(ViewerController *)viewer 
 {
     viewerController1 = viewer;
-    keyIdx = -1;  // -1 flags that key image is not found
     regParams.flippedData = [[viewerController1 imageView] flippedData];
 }
 
@@ -144,23 +128,11 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"Enter");
 
-    // set things up based upon the OsiriX viewer controller
-    NSArray* pixList = [viewerController1 pixList];
-    self.numSlices = [pixList count];
-    regParams.numImages = self.numSlices;
+    // set things up based upon the image series information
+    regParams.numImages = seriesInfo.numTimeSamples;
     
     // Find the first key image and assume that it is the desired fixed slice.
-    keyIdx = -1;
-    for (unsigned idx = 0; idx < self.numSlices; ++idx)
-    {
-        if ([viewerController1 isKeyImage:idx])
-        {
-            keyIdx = idx;
-            break;
-        }
-    }
-
-    if (keyIdx == -1)
+    if (seriesInfo.keyImageIdx == -1)
     {
         regParams.fixedImageNumber = 1;
         LOG4M_INFO(logger_, @"No key image found. ");
@@ -168,12 +140,14 @@ enum TableTags
     }
     else
     {
-        regParams.fixedImageNumber = [regParams indexToImageNumber:keyIdx];
+        regParams.fixedImageNumber = seriesInfo.keyImageIdx + 1;
         LOG4M_INFO(logger_, @"Fixed image set to key image: %d", regParams.fixedImageNumber);
     }
 
     [self setupRegionFromFixedImage];
-    [self setupMaskFromFixedImage];
+
+    // This function needs to be rewritten before using.
+    //[self setupMaskFromFixedImage];
     
     NSInteger index = regParams.fixedImageNumber - 1;
     [fixedImageComboBox selectItemAtIndex:index];
@@ -218,39 +192,19 @@ enum TableTags
 
 - (void)setupRegionFromFixedImage
 {
-    // If there is a key image we will use it as the fixed image. We will also look for
-    // a region of interest (ROI). If there are more than one ROI we pick the one named "Reg".
-    // If none is named "Reg" we take the first one on the list.
-    // look for entry named "Reg"
-    ROI* regRoi = nil;      // ROI which defines our itk::ImageRegion
-
-    // Now see if there is a ROI associated with this image
-    // This is a list of NSMutableArrays one for each image. The array element
-    // corresponding to the image is the array of ROIs.
-    NSArray* roiList = [viewerController1 roiList];
-
-    // Array of ROIs for key image
-    unsigned index = [regParams imageNumberToIndex:regParams.fixedImageNumber];
-
-    NSMutableArray* rois = [roiList objectAtIndex:index];
-    if ([rois count] != 0)
-    {
-        // Take the first one
-        regRoi = [rois objectAtIndex:0];
-        LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key image as registration region.",
-                    [regRoi name]);
-        if ([rois count] > 1)
-            LOG4M_WARN(logger_, @"More than one ROI on key image. Using ROI named \'%@\'.",
-                       [regRoi name]);
-    }
+    // ROI which defines our itk::ImageRegion
+    ROI* regRoi = seriesInfo.firstROI;
 
     if (regRoi != nil)
     {
+        LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key slice as registration region.", [regRoi name]);
+
         // we create the rectangle which just encloses the ROI
         CGFloat xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
 
         // MyPoint is a wrapper class for NSRect defined in OsiriX.
-        for (MyPoint* point in [regRoi points])
+        NSArray* roiPoints = [regRoi points];
+        for (MyPoint* point in roiPoints)
         {
             if (point.x < xmin)
                 xmin = point.x;
@@ -262,12 +216,12 @@ enum TableTags
                 ymax = point.y;
         }
 
-        regParams.fixedImageRegion = [[[Region alloc]
+        regParams.fixedImageRegion = [[[Region2D alloc]
                              initWithX:(unsigned)round(xmin) Y:(unsigned)round(ymin)
                              W:(unsigned)round(xmax - xmin) H:(unsigned)round(ymax - ymin)]
                             autorelease];
 
-        LOG4M_INFO(logger_, @"Registration region set to [x:%ld y:%ld w:%ld h:%ld]",
+        LOG4M_INFO(logger_, @"Registration region set to [x:%u y:%u w:%u h:%u]",
                    regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,
                    regParams.fixedImageRegion.width, regParams.fixedImageRegion.height);
     }
@@ -282,7 +236,7 @@ enum TableTags
         regParams.fixedImageRegion.height = [firstPix pheight];
 
         LOG4M_INFO(logger_,
-                   @"Registration region set to full image: [x:%ld y:%ld w:%ld h:%ld]",
+                   @"Registration region set to full image: [x:%u y:%u w:%u h:%u]",
                    regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,
                    regParams.fixedImageRegion.width, regParams.fixedImageRegion.height);
     }
@@ -302,7 +256,7 @@ enum TableTags
     NSArray* roiList = [viewerController1 roiList];
 
     // Array of ROIs for key image
-    unsigned index = [regParams imageNumberToIndex:regParams.fixedImageNumber];
+    unsigned index = regParams.fixedImageNumber - 1;
 
     NSMutableArray* rois = [roiList objectAtIndex:index];
     if ([rois count] != 0)
@@ -409,12 +363,11 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    //[self setupRegionFromKeyImage];
     [self disableControls];
 
     progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
     
-    [progressWindowController setProgressMinimum:0.0 andMaximum:numSlices + 1];
+    [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
     [progressWindowController showWindow:self];
 
     // Show the panel as a sheet.
@@ -423,13 +376,12 @@ enum TableTags
     //   didEndSelector:nil contextInfo:nil];
 
     // Copy the current dataset and viewer. We will work only with the new one.
- 	viewerController2 = [parentFilter duplicateCurrent2DViewerWindow];
- 	//viewerController2 = [parentFilter copyCurrent4DViewerWindow];
-    // 	viewerController2 = [parentFilter copy4DViewerWindow];
+ 	viewerController2 = [parentFilter copyCurrent4DViewerWindow];
+
     if (viewerController2 == nil)
     {
-        LOG4M_ERROR(logger_, @"Failed to duplicate current 2D viewer.");
-        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 2D viewer.",
+        LOG4M_ERROR(logger_, @"Failed to duplicate current 4D viewer.");
+        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 4D viewer.",
                                 @"Close", nil, nil);
         return;
     }
@@ -443,7 +395,8 @@ enum TableTags
 
     registrationManager = [[RegistrationManager alloc]
                            initWithViewer:viewerController2 Params:regParams
-                           ProgressWindow:progressWindowController];
+                           ProgressWindow:progressWindowController
+                           SeriesInfo:seriesInfo];
 
     [registrationManager doRegistration];
 }
@@ -1306,7 +1259,7 @@ enum TableTags
     {
         NSString* seriesName = [self makeSeriesName];
         LOG4M_DEBUG(logger_, @"Exporting series description: %@", seriesName);
-        [viewerController2 exportAllImages:seriesName];
+        [viewerController2 exportAllImages4D:seriesName];
     }
     else
         LOG4M_DEBUG(logger_, @"Closing without saving.");

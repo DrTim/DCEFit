@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #include "ProjectDefs.h"
-#include "Region.h"
+#include "Region2D.h"
 
 @interface RegistrationParams : NSObject
 {
@@ -18,13 +18,14 @@
     // General registration parameters
     unsigned numImages;
     unsigned fixedImageNumber;
+    unsigned slicesPerImage;
     BOOL flippedData;
     NSString* seriesDescription;
 
     // Rectangular region to be used in either
     // itk::ImageRegistrationRegion::SetFixedImageRegion() or
     // itk::ImageToImageMetric::SetFixedImageRegion()
-    Region* fixedImageRegion;
+    Region2D* fixedImageRegion;
 
     // Arbitrary list of points taken from the OsiriX ROI to be used
     // to create an itk::BlobSpatialObject<2> which will become the
@@ -68,10 +69,11 @@
 
 // General registration parameters
 @property (assign) unsigned numImages;
-@property (assign) unsigned fixedImageNumber;   // what the user sees, ie 1,2,3 
+@property (assign) unsigned fixedImageNumber;   // what the user sees, ie 1,2,3
+@property (assign) unsigned slicesPerImage;
 @property (assign) BOOL flippedData;
 @property (copy) NSString* seriesDescription;
-@property (copy) Region* fixedImageRegion;
+@property (copy) Region2D* fixedImageRegion;
 @property (retain) NSMutableArray* fixedImageMask;
 
 // rigid registration parameters
@@ -113,15 +115,15 @@
 - (void)setFromUserDefaults;
 
 /**
- * Convert the 1 based image number that the user sees to a
- * 0 based slice index in the stack.
+ * Convert the 1 based slice number that the user sees in osirix to a
+ * 0 based slice index.
  */
-- (unsigned)imageNumberToIndex:(unsigned)number;
+- (unsigned)sliceNumberToIndex:(unsigned)number;
 
 /**
- * Convert the 0 based slice index in the stack to a 
- * 1 based image number that the user sees.
+ * Convert the 0 based slice index to a 1 based image number that
+ * the user sees in osirix.
  */
-- (unsigned)indexToImageNumber:(unsigned)index;
+- (unsigned)indexToSliceNumber:(unsigned)index;
 
 @end

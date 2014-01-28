@@ -14,7 +14,8 @@
 @synthesize curLevel;
 @synthesize curMetric;
 @synthesize curStepSize;
-@synthesize curSlice;
+@synthesize curImage;
+@synthesize numImages;
 @synthesize curStage;
 @synthesize maxIterations;
 
@@ -27,8 +28,9 @@
         curLevel = 0;
         curMetric = 0.0;
         curStepSize = 0.0;
-        curSlice = 0;
+        curImage = 0;
         curStage = @"None";
+        numImages = 0;
         maxIterations = 0;
     }
     return self;

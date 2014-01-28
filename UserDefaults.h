@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Region.h"
+#import "Region2D.h"
 
 /**
  * These are the keys for the dictionary holding the user defaults.
@@ -219,7 +219,7 @@ extern NSString* const DeformRegMaxIterKey;
  * @param key The key used to store the value.
  * @returns The value corresponding to the key.
  */
-- (Region*)regionForKey:(NSString*)key;
+- (Region2D*)regionForKey:(NSString*)key;
 
 /**
  * Set the NSObject corresponding to key. If the key exists, the value will be
@@ -227,7 +227,7 @@ extern NSString* const DeformRegMaxIterKey;
  * @param region The value we wish to store.
  * @param key The key with which we wish to use to store the value.
  */
-- (void)setRegion:(Region*)region forKey:(NSString*)key;
+- (void)setRegion:(Region2D*)region forKey:(NSString*)key;
 
 /**
  * Get an NSObject corresponding to the key.

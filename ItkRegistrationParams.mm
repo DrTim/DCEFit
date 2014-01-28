@@ -8,12 +8,13 @@
 
 
 #import "ItkRegistrationParams.h"
-#import "Region.h"
+#import "Region2D.h"
 
 #include <itkContinuousIndex.h>
 
 ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
 : numImages(params.numImages),
+  slicesPerImage(params.slicesPerImage),
   fixedImageNumber(params.fixedImageNumber),
   flippedData(params.flippedData),
   seriesName([params.seriesDescription UTF8String]),
@@ -29,7 +30,7 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
   deformRegMetric(params.deformRegMetric),
   deformRegOptimiser(params.deformRegOptimizer),
 
-  ocParams(params)
+  objcParams(params)
 {
     std::string name = std::string(LOGGER_NAME) + ".ItkRegistrationParams";
     logger_ = log4cplus::Logger::getInstance(name);
@@ -95,18 +96,18 @@ ItkRegistrationParams::~ItkRegistrationParams()
     //[ocParams release];
 }
 
-unsigned ItkRegistrationParams::imageNumberToIndex(unsigned number)
+unsigned ItkRegistrationParams::sliceNumberToIndex(unsigned number)
 {
     if (flippedData)
-        return numImages - number;
+        return slicesPerImage - number;
     else
         return number - 1;
 }
 
-unsigned ItkRegistrationParams::indexToImageNumber(unsigned index)
+unsigned ItkRegistrationParams::indexToSliceNumber(unsigned index)
 {
     if (flippedData)
-        return numImages - index;
+        return slicesPerImage - index;
     else
         return index + 1;
 }
@@ -118,6 +119,7 @@ std::string ItkRegistrationParams::Print() const
 
     str << "ItkRegistrationParams\n";
     str << "Number of images: " << numImages << "\n";
+    str << "Slices per image: " << slicesPerImage << "\n";
     str << "Flipped data: " << (flippedData ? "Yes" : "No") << "\n";
     str << "Fixed image number: " << fixedImageNumber << "\n";
     str << "Series name: " << seriesName << "\n";
@@ -233,52 +235,52 @@ std::string ItkRegistrationParams::Print() const
     return str.str();
 }
 
-void ItkRegistrationParams::setRegion(const Region* reg)
+void ItkRegistrationParams::setRegion(const Region2D* reg)
 {
     // Set the registration region
-    Image2DType::RegionType::IndexType index;
+    Image2D::RegionType::IndexType index;
     index.SetElement(0, reg.x);
     index.SetElement(1, reg.y);
-    Image2DType::SizeType size;
+    Image2D::SizeType size;
     size.SetElement(0, reg.width);
     size.SetElement(1, reg.height);
     fixedImageRegion.SetIndex(index);
     fixedImageRegion.SetSize(size);
 }
 
-void ItkRegistrationParams::createFixedImageMask(Image2DType::Pointer image)
+void ItkRegistrationParams::createFixedImageMask(Image2D::Pointer image)
 {
     
-    if ([ocParams.fixedImageMask count] == 0)
+    if ([objcParams.fixedImageMask count] == 0)
         return;
 
-    Mask2DType::PointListType points;
-    unsigned len = [ocParams.fixedImageMask count];
+    SpatialMask2D::PointListType points;
+    unsigned len = [objcParams.fixedImageMask count];
     for(unsigned int idx = 0; idx < len; idx += 2)
     {
-        float x = [(NSNumber*)[ocParams.fixedImageMask objectAtIndex:idx] floatValue];
-        float y = [(NSNumber*)[ocParams.fixedImageMask objectAtIndex:idx+1] floatValue];
+        float x = [(NSNumber*)[objcParams.fixedImageMask objectAtIndex:idx] floatValue];
+        float y = [(NSNumber*)[objcParams.fixedImageMask objectAtIndex:idx+1] floatValue];
 
         itk::ContinuousIndex<double, 2> itkIndex;
         itkIndex[0] = x;
         itkIndex[1] = y;
         
-        Image2DType::PointType physicalPoint;
+        Image2D::PointType physicalPoint;
         image->TransformContinuousIndexToPhysicalPoint(itkIndex, physicalPoint);
 
-        Mask2DType::BlobPointType point;
+        SpatialMask2D::BlobPointType point;
         point.SetPosition(physicalPoint[0], physicalPoint[1]);
         points.push_back(point);
     }
 
-    fixedImageMask = Mask2DType::New();
+    fixedImageMask = SpatialMask2D::New();
     fixedImageMask->SetPoints(points);
 
     unsigned len1 = points.size();
     LOG4CPLUS_INFO(logger_, "ITK fixed image mask set.");
     for (unsigned idx = 0; idx < len1; ++idx)
     {
-        Mask2DType::PointType point = points[idx].GetPosition();
+        SpatialMask2D::PointType point = points[idx].GetPosition();
         LOG4CPLUS_DEBUG(logger_, "    " << std::fixed << point);
     }
 

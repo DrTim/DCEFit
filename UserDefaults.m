@@ -355,13 +355,13 @@ static UserDefaults* sharedInstance;
     [self setString:rectStr forKey:key];
 }
 
--(Region*)regionForKey:(NSString *)key
+-(Region2D*)regionForKey:(NSString *)key
 {
     NSString* regStr = [self stringForKey:key];
-    return [Region regionFromString:regStr];
+    return [Region2D regionFromString:regStr];
 }
 
--(void)setRegion:(Region *)region forKey:(NSString *)key
+-(void)setRegion:(Region2D *)region forKey:(NSString *)key
 {
     NSString* regStr = [region asString];
     [self setString:regStr forKey:key];

@@ -1,19 +1,19 @@
 /*
- * File:   RegisterOneImageMultiResRigid2D.h
+ * File:   RegisterOneImageRigid2D.h
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
-#ifndef REGISTERONEIMAGEMULTIRESRIGID2D_H
-#define	REGISTERONEIMAGEMULTIRESRIGID2D_H
+#ifndef REGISTERONEIMAGERIGID2D_H
+#define	REGISTERONEIMAGERIGID2D_H
 
-#include "RegisterOneImage2D.h"
+#include "RegisterOneImage.h"
 
 /**
  * Performs a multiresolution rigid registration of one image
  */
-class RegisterOneImageMultiResRigid2D : public RegisterOneImage2D
+class RegisterOneImageRigid2D : public RegisterOneImage<Image2D>
 {
 public:
     /**
@@ -22,15 +22,15 @@ public:
      * @param fixedImage The fixed image.
      * @param params The registration parameters.
      */
-    RegisterOneImageMultiResRigid2D(ProgressWindowController* progressController,
-                Image2DType::Pointer fixedImage, const ItkRegistrationParams& itkParams);
+    RegisterOneImageRigid2D(ProgressWindowController* progressController,
+                Image2D::Pointer fixedImage, const ItkRegistrationParams& itkParams);
 
     /**
      * Do the registration.
      * @param movingImage The moving image to be registered.
      * @return The registered moving image.
      */
-    virtual Image2DType::Pointer registerImage(Image2DType::Pointer movingImage, ResultCode& code);
+    virtual Image2D::Pointer registerImage(Image2D::Pointer movingImage, ResultCode& code);
 };
 
 #endif	/* REGISTERONEIMAGEMULTIRESRIGID_H */

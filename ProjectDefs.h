@@ -31,6 +31,16 @@ enum OptimizerType
     RSGD = 2
 };
 
+/**
+ * Values to use to return the results of the registration.
+ */
+enum ResultCode
+{
+    SUCCESS = 0,   /// All went well.
+    FAILURE = 1,   /// Registration was suboptimal but we can continue.
+    DISASTER = 2   /// Complete failure resulting in an exception being thrown by ITK.
+};
+
 // The size of the arrays containing registration pyramid parameters.
 #define MAX_ARRAY_PARAMS 4
 #define BSPLINE_ORDER 3

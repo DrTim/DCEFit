@@ -6,14 +6,14 @@
 //
 //
 
+#if __OBJC__
+
 #import <Foundation/Foundation.h>
 
 @class DialogController;
 @class RegProgressValues;
 @class RegistrationManager;
 @class Logger;
-
-class RegistrationObserver;
 
 extern const NSString* RegistrationStageRigid;
 extern const NSString* RegistrationStageDeformable;
@@ -22,6 +22,8 @@ extern NSString* StopRegistrationNotification;
 @interface ProgressWindowController : NSWindowController <NSWindowDelegate>
 {
     Logger* logger_;
+    void* observer_;
+    unsigned observerDims_;
 
     BOOL registrationCancelled;
     BOOL registrationFinished;
@@ -30,7 +32,7 @@ extern NSString* StopRegistrationNotification;
     RegistrationManager* regManager;
 
     NSProgressIndicator *progressIndicator;
-    NSTextField *sliceTextField;
+    NSTextField *imageTextField;
     NSTextField *stageTextField;
     NSTextField *levelTextField;
     NSTextField *iterationTextField;
@@ -43,12 +45,11 @@ extern NSString* StopRegistrationNotification;
     NSButton *quitButton;
     NSTextView *stopConditionTextView;
 
-    RegistrationObserver* observer;
     NSTextField *statusTextField;
 }
 
 @property (assign) IBOutlet NSProgressIndicator *progressIndicator;
-@property (assign) IBOutlet NSTextField *sliceTextField;
+@property (assign) IBOutlet NSTextField *imageTextField;
 @property (assign) IBOutlet NSTextField *stageTextField;
 @property (assign) IBOutlet NSTextField *levelTextField;
 @property (assign) IBOutlet NSTextField *iterationTextField;
@@ -66,7 +67,7 @@ extern NSString* StopRegistrationNotification;
 
 @property (readonly) IBOutlet RegProgressValues* progressValues;
 
-@property (assign) RegistrationObserver* observer;
+//@property (assign) RegistrationObserver* observer;
 
 - (id)initWithDialogController:(DialogController*)parent;
 
@@ -80,9 +81,9 @@ extern NSString* StopRegistrationNotification;
 
 - (void)setProgressMinimum:(double)minVal andMaximum:(double)maxVal;
 
-- (void)setCurSlice:(NSNumber*)slice;
+- (void)setCurImage:(NSNumber*)imageIdx;
 
-- (void)incrCurSlice;
+- (void)incrCurImage;
 
 - (void)setCurLevel:(NSNumber*)level;
 
@@ -100,6 +101,14 @@ extern NSString* StopRegistrationNotification;
 
 - (void)setManager:(RegistrationManager*)manager;
 
-- (void)setObserver:(RegistrationObserver*)observer;
+- (void)setObserver:(void*)observer;
+
+- (void)stopRegistration;
 
 @end
+
+#else
+
+typedef void ProgressWindowController;
+
+#endif

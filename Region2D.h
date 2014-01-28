@@ -1,5 +1,5 @@
 //
-//  Region.h
+//  Region2D.h
 //  DCEFit
 //
 //  Created by Tim Allman on 2013-07-03.
@@ -12,7 +12,7 @@
  * This class represents a rectangle in pixel space. It uses integers to represent
  * the region unlike NSRect which uses doubles.
  */
-@interface Region : NSObject <NSCopying>
+@interface Region2D : NSObject <NSCopying>
 {
     unsigned x_;
     unsigned y_;
@@ -33,7 +33,7 @@
 
 - (NSString*)asString;
 
-+ (Region*)regionFromString:(NSString*)string;
++ (Region2D*)regionFromString:(NSString*)string;
 
 @end
 

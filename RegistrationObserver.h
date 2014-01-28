@@ -9,12 +9,20 @@
 #ifndef __DCEFit__RegistrationObserver__
 #define __DCEFit__RegistrationObserver__
 
+#include "ItkRegistrationParams.h"
+
+#include <itkCommand.h>
+
 #include <log4cplus/logger.h>
 
-#import "ProgressWindowController.h"
+class MultiResRegistration;
 
-#include "ItkTypedefs.h"
-#include "ItkRegistrationParams.h"
+#ifdef __OBJC__
+@class ProgressWindowController;
+typedef ProgressWindowController* ProgressWindowControllerPtr;
+#else
+typedef void* ProgressWindowControllerPtr;
+#endif
 
 /**
  * Observer class for deformable registrations.
@@ -26,6 +34,7 @@
  * During multiresolution registrations it updates the registration parameters
  * at each resolution change.
  */
+template <class TImage>
 class RegistrationObserver: public itk::Command
 {
 public:
@@ -35,6 +44,8 @@ public:
     itkNewMacro(Self);
     
     typedef double CoordinateRepType;
+    typedef TImage ImageType;
+    typedef itk::MultiResolutionImageRegistrationMethod<TImage, TImage> RegistrationMethod;
     
     /**
      * Called by the registration or optimisation object after each iteration.
@@ -156,9 +167,10 @@ public:
     /**
      * Recalculates the registration parameters at each level of a
      * multi-resolution registration.
-     * @param multiReg The multi-resolution registration object.
+     * @param multiResReg The multi-resolution registration object.
      */
-    void CalcMultiResRegistrationParameters(MultiResRegistration* multiReg);
+    void CalcMultiResRegistrationParameters(
+                        itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg);
 
     /**
      * Sets the pointer to the progress window controller.
@@ -179,11 +191,13 @@ protected:
 private:
     log4cplus::Logger logger_;
 
+    const unsigned DIMS;
+    
     /// Stops the registration when set.
     bool stopReg;
 
     /// The registration method object
-    MultiResRegistration* multiResReg;
+    itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg;
 
     /// The optimizers. Only one will be set but we need this to terminate
     /// a registration early
@@ -229,7 +243,14 @@ private:
     ParamVector<unsigned> maxIterSchedule;
 
     // Used for displaying progress in GUI
-    ProgressWindowController* progressWindowController;
+    ProgressWindowControllerPtr progressWindowController;
 };
+
+// Explictly instantiate these classes
+template class RegistrationObserver<Image2D>;
+template class RegistrationObserver<Image3D>;
+
+typedef RegistrationObserver<Image2D> RegistrationObserver2D;
+typedef RegistrationObserver<Image3D> RegistrationObserver3D;
 
 #endif /* defined(__DCEFit__RegistrationObserver__) */

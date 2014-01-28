@@ -6,14 +6,14 @@
 //
 //
 
+#import <OsirixAPI/ViewerController.h>
+#import <OsirixAPI/DCMPix.h>
+#import <OsiriX/DCMObject.h>
+#import <OsiriX/DCMAttributeTag.h>
+
 #import "ImageImporter.h"
 
 #include "ItkTypedefs.h"
-
-#import "OsirixAPI/ViewerController.h"
-#import "OsirixAPI/DCMPix.h"
-#import "OsiriX/DCMObject.h"
-#import "OsiriX/DCMAttributeTag.h"
 
 @implementation ImageImporter
 
@@ -42,16 +42,16 @@
     logger_ = [[Logger newInstance:loggerName] retain];
 }
 
-- (Image3DType::Pointer)getImage
+- (Image3D::Pointer)getImageAtIndex:(unsigned)imageIdx
 {
     LOG4M_TRACE(logger_, @"Enter");
-    ImportImageFilterType::Pointer importFilter = ImportImageFilterType::New();
-    ImportImageFilterType::SizeType size;
-    ImportImageFilterType::IndexType start;
-    ImportImageFilterType::SpacingType spacing;
-    ImportImageFilterType::RegionType region;
-    ImportImageFilterType::OriginType origin;
-    ImportImageFilterType::DirectionType direction;
+    ImportImageFilter3D::Pointer importFilter = ImportImageFilter3D::New();
+    ImportImageFilter3D::SizeType size;
+    ImportImageFilter3D::IndexType start;
+    ImportImageFilter3D::SpacingType spacing;
+    ImportImageFilter3D::RegionType region;
+    ImportImageFilter3D::OriginType origin;
+    ImportImageFilter3D::DirectionType direction;
 
     //importFilter->DebugOn();
 
@@ -59,7 +59,7 @@
     // Extract the needed information from OsiriX
     //
     // pointer to the first slice (i.e. start of buffer)
-    NSMutableArray* pixList = [viewer pixList];
+    NSMutableArray* pixList = [viewer pixList:imageIdx];
     DCMPix* firstPix = [pixList objectAtIndex:0];
 
     // start of the image in pixels
@@ -105,7 +105,8 @@
                 direction(i, j) = 0.0;
         }
 
-    LOG4M_DEBUG(logger_, @"itk::Image::direction = \n     [%3.4f, %3.4f, %3.4f]\n     [%3.4f, %3.4f, %3.4f]\n     [%3.4f, %3.4f, %3.4f]",
+    LOG4M_DEBUG(logger_, @"itk::Image::direction = \n     [%3.4f, %3.4f, %3.4f]\n     "
+                "[%3.4f, %3.4f, %3.4f]\n     [%3.4f, %3.4f, %3.4f]",
                 direction(0, 0), direction(0, 1), direction(0, 2),
                 direction(1, 0), direction(1, 1), direction(1, 2),
                 direction(2, 0), direction(2, 1), direction(2, 2));
@@ -118,7 +119,7 @@
 	region.SetSize(size);
 
     // pointer to the data
-    float* data = [viewer volumePtr];
+    float* data = [viewer volumePtr:imageIdx];
 	importFilter->SetRegion(region);
 	importFilter->SetOrigin(origin);
 	importFilter->SetSpacing(spacing);
@@ -127,20 +128,10 @@
     // set this so that the filter does not own the data, OsiriX does
 	importFilter->SetImportPointer(data, bufferSize, false);
 
-    Image3DType::Pointer image = importFilter->GetOutput();
+    Image3D::Pointer image = importFilter->GetOutput();
 	image->Update();
 
     return image;
-}
-
-- (unsigned int)slicesPerTimeIncrement
-{
-    return slicesPerTimeIncr;
-}
-
-- (float)timeIncrement
-{
-    return timeIncrement;
 }
 
 @end

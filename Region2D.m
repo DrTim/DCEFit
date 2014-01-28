@@ -6,9 +6,9 @@
 //
 //
 
-#import "Region.h"
+#import "Region2D.h"
 
-@implementation Region
+@implementation Region2D
 
 @synthesize x = x_;
 @synthesize y = y_;
@@ -43,7 +43,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    Region* r = [[Region allocWithZone:zone] initWithX:x_ Y:y_ W:width_ H:height_];
+    Region2D* r = [[Region2D allocWithZone:zone] initWithX:x_ Y:y_ W:width_ H:height_];
     return r;
 }
 
@@ -53,7 +53,7 @@
     return str;
 }
 
-+ (Region *)regionFromString:(NSString *)string
++ (Region2D *)regionFromString:(NSString *)string
 {
     NSScanner* scanner = [NSScanner scannerWithString:string];
     NSCharacterSet* skipThese = [NSCharacterSet characterSetWithCharactersInString:@"{}, "];
@@ -65,7 +65,7 @@
     [scanner scanInt:&w];
     [scanner scanInt:&h];
    
-    Region* region = [[[Region alloc] initWithX:(unsigned)x Y:(unsigned)y
+    Region2D* region = [[[Region2D alloc] initWithX:(unsigned)x Y:(unsigned)y
                                               W:(unsigned)w H:(unsigned)h] autorelease];
     return region;
 }

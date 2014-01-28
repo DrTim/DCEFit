@@ -14,6 +14,7 @@
 // General registration parameters
 @synthesize numImages;
 @synthesize fixedImageNumber;
+@synthesize slicesPerImage;
 @synthesize flippedData;
 @synthesize seriesDescription;
 @synthesize fixedImageRegion;
@@ -61,7 +62,7 @@
         // Initialise this instance from the user defaults
         [self setFromUserDefaults];
         self.flippedData = NO;
-        self.fixedImageRegion = [Region regionFromString:@"{{0, 0}, {0, 0}}"];
+        self.fixedImageRegion = [Region2D regionFromString:@"{{0, 0}, {0, 0}}"];
         self.fixedImageMask = [[[NSMutableArray alloc] init] autorelease];
         [self setupLogger];
 
@@ -185,21 +186,20 @@
                              [def objectForKey:DeformRegMaxIterKey]];
 }
 
-- (unsigned)imageNumberToIndex:(unsigned)number
+- (unsigned)sliceNumberToIndex:(unsigned)number
 {
     if (flippedData)
-        return numImages - number;
+        return slicesPerImage - number;
     else
         return number - 1;
 }
 
-- (unsigned)indexToImageNumber:(unsigned)index
+- (unsigned)indexToSliceNumber:(unsigned int)index
 {
     if (flippedData)
-        return numImages - index;
+        return slicesPerImage - index;
     else
         return index + 1;
 }
-
 
 @end

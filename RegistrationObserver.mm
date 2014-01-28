@@ -8,12 +8,11 @@
 
 #import "RegistrationObserver.h"
 #import "RegProgressValues.h"
-
+#import "ProgressWindowController.h"
 #include "OptimizerUtils.h"
 
 #include <itkCommand.h>
 #include <itkLBFGSOptimizer.h>
-#include <itkImageRegistrationMethod.h>
 #include <itkMultiResolutionImageRegistrationMethod.h>
 #include <itkBSplineTransform.h>
 #include <itkBSplineTransformParametersAdaptor.h>
@@ -24,20 +23,24 @@
 
 #include <log4cplus/loggingmacros.h>
 
-RegistrationObserver::RegistrationObserver()
-: stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
+
+template <class TImage>
+RegistrationObserver<TImage>::RegistrationObserver()
+: DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
 {
     std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "Enter");
 };
 
-void RegistrationObserver::Execute(itk::Object* caller, const itk::EventObject& event)
+template <class TImage>
+void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::EventObject& event)
 {
     // The first event caller is always the registration object. We use this
     // opportunity to set up the optimiser pointers and to make it safe to call
     // multiresReg->StopRegistration()
-    MultiResRegistration* mrr = dynamic_cast<MultiResRegistration*>(caller);
+    itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* mrr;
+    mrr = dynamic_cast<itk::MultiResolutionImageRegistrationMethod<TImage, TImage>*>(caller);
     if (mrr != 0)
     {
         multiResReg = mrr;
@@ -45,10 +48,6 @@ void RegistrationObserver::Execute(itk::Object* caller, const itk::EventObject& 
         LBFGSOpt = dynamic_cast<LBFGSOptimizer*>(multiResReg->GetOptimizer());
         RSGDOpt = dynamic_cast<RSGDOptimizer*>(multiResReg->GetOptimizer());
     }
-
-//    LBFGSBOpt = dynamic_cast<LBFGSBOptimizer*>(caller);
-//    LBFGSOpt = dynamic_cast<LBFGSOptimizer*>(caller);
-//    RSGDOpt = dynamic_cast<RSGDOptimizer*>(caller);
 
     std::string eventName = event.GetEventName();
     
@@ -263,27 +262,29 @@ void RegistrationObserver::Execute(itk::Object* caller, const itk::EventObject& 
  * @param caller Pointer to the caller
  * @param event Reference to an EventObject. May be any kind of event.
  */
-void RegistrationObserver::Execute(const itk::Object* caller, const itk::EventObject& event)
+template <class TImage>
+void RegistrationObserver<TImage>::Execute(const itk::Object* caller, const itk::EventObject& event)
 {
     LOG4CPLUS_WARN(logger_, "Unexpected const object event: " << event.GetEventName());
 }
 
-void RegistrationObserver::CalcMultiResRegistrationParameters(MultiResRegistration* multiReg)
+template <class TImage>
+void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(RegistrationMethod* multiResReg)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
-    BSplineTransform* bsplineTransform = dynamic_cast<BSplineTransform*>(multiReg->GetTransform());
-//    LBFGSBOptimizer* LBFGSBOpt = dynamic_cast<LBFGSBOptimizer*>(multiReg->GetOptimizer());
-//    LBFGSOptimizer* LBFGSOpt = dynamic_cast<LBFGSOptimizer*>(multiReg->GetOptimizer());
-//    RSGDOptimizer* RSGDOpt = dynamic_cast<RSGDOptimizer*>(multiReg->GetOptimizer());
-    MMIImageToImageMetric* MMIMetric = dynamic_cast<MMIImageToImageMetric*>(multiReg->GetMetric());
+    typedef itk::BSplineTransform<double, TImage::ImageDimension, 3u> BSplineTransform;
+    typedef itk::MattesMutualInformationImageToImageMetric<TImage, TImage> MMIMetric;
+
+    BSplineTransform* bsplineTransform = dynamic_cast<BSplineTransform*>(multiResReg->GetTransform());
+    MMIMetric* mmiMetric = dynamic_cast<MMIMetric*>(multiResReg->GetMetric());
     
     // for logging information below
     std::ostringstream stream;
     
     // These are needed every pass
-    unsigned level = multiReg->GetCurrentLevel();
-    unsigned numberOfParameters = multiReg->GetTransform()->GetNumberOfParameters();
+    unsigned level = multiResReg->GetCurrentLevel();
+    unsigned numberOfParameters = multiResReg->GetTransform()->GetNumberOfParameters();
     LOG4CPLUS_DEBUG(logger_, "Registration level = " << level);
 
     // If this is the first pass (ie level == 0) the transform has partially
@@ -296,13 +297,13 @@ void RegistrationObserver::CalcMultiResRegistrationParameters(MultiResRegistrati
     if (bsplineTransform != 0)
     {
         // Reset the transform based upon the grid size for this level.
-        BSplineTransform::MeshSizeType meshSize;
+        typename BSplineTransform::MeshSizeType meshSize;
         unsigned numberOfGridNodesInOneDimension = gridSizeSchedule[level];
         unsigned splineOrder = bsplineTransform->SplineOrder;
         meshSize.Fill(numberOfGridNodesInOneDimension - splineOrder);
         
         typedef itk::BSplineTransformParametersAdaptor<BSplineTransform> TransformAdaptorType;
-        TransformAdaptorType::Pointer adaptor = TransformAdaptorType::New();
+        typename TransformAdaptorType::Pointer adaptor = TransformAdaptorType::New();
         adaptor->SetTransform(bsplineTransform);
         adaptor->SetRequiredTransformDomainOrigin(bsplineTransform->GetTransformDomainOrigin());
         adaptor->SetRequiredTransformDomainDirection(bsplineTransform->GetTransformDomainDirection());
@@ -314,7 +315,7 @@ void RegistrationObserver::CalcMultiResRegistrationParameters(MultiResRegistrati
         numberOfParameters = bsplineTransform->GetNumberOfParameters();
         
         // Start this level off where the last one ended
-        multiReg->SetInitialTransformParametersOfNextLevel(bsplineTransform->GetParameters());
+        multiResReg->SetInitialTransformParametersOfNextLevel(bsplineTransform->GetParameters());
     }
     
     // Set the optimizer termination criterion
@@ -376,37 +377,37 @@ void RegistrationObserver::CalcMultiResRegistrationParameters(MultiResRegistrati
     // region for calculations below. We will just use the fixed image region
     // and divide it by the appropriate values from the schedule. We will assume
     // that the fixed and moving images are the same size.
-    if (MMIMetric != 0)
+    if (mmiMetric != 0)
     {
-        MultiResRegistration::ScheduleType pyramidSchedule = multiReg->GetFixedImagePyramidSchedule();
-        unsigned numPixels = multiReg->GetFixedImageRegion().GetNumberOfPixels();
+        typename RegistrationMethod::ScheduleType pyramidSchedule = multiResReg->GetFixedImagePyramidSchedule();
+        unsigned numPixels = multiResReg->GetFixedImageRegion().GetNumberOfPixels();
         unsigned numSamples = numPixels;
         
         if (mmiSampleRateSchedule[level] > 0.999)
-            MMIMetric->UseAllPixelsOn();
+            mmiMetric->UseAllPixelsOn();
         else
         {
             float columnFactor = pyramidSchedule[level][0];   // linear factor in column dimension
             float rowFactor = pyramidSchedule[level][1];      // linear factor in row dimension
             numSamples /= columnFactor * rowFactor;           // use floats to avoid integer division
             numSamples *= mmiSampleRateSchedule[level];          // apply user setting for sample rate
-            MMIMetric->SetNumberOfSpatialSamples(numSamples);
+            mmiMetric->SetNumberOfSpatialSamples(numSamples);
         }
 
-        MMIMetric->SetNumberOfHistogramBins(mmiNumBinsSchedule[level]);
+        mmiMetric->SetNumberOfHistogramBins(mmiNumBinsSchedule[level]);
 
         LOG4CPLUS_DEBUG(logger_, "Mattes MI parameters");
         LOG4CPLUS_DEBUG(logger_, "   Multiresolution level  = " << level);
         LOG4CPLUS_DEBUG(logger_, "   Column shrink factor   = " << pyramidSchedule[level][0]);
         LOG4CPLUS_DEBUG(logger_, "   Row shrink factor      = " << pyramidSchedule[level][1]);
         LOG4CPLUS_DEBUG(logger_, "   Number of pixels       = " << numPixels);
-        if (MMIMetric->GetUseAllPixels())
+        if (mmiMetric->GetUseAllPixels())
             LOG4CPLUS_DEBUG(logger_, "   Using all pixels.");
         else
             LOG4CPLUS_DEBUG(logger_, "   Number of samples      = "
-                            << MMIMetric->GetNumberOfSpatialSamples());
+                            << mmiMetric->GetNumberOfSpatialSamples());
         LOG4CPLUS_DEBUG(logger_, "   Number of bins         = "
-                        << MMIMetric->GetNumberOfHistogramBins());
+                        << mmiMetric->GetNumberOfHistogramBins());
     }
     
 //    stream.str("");
@@ -417,7 +418,8 @@ void RegistrationObserver::CalcMultiResRegistrationParameters(MultiResRegistrati
 //    LOG4CPLUS_TRACE(logger_, stream.str());
 }
 
-void RegistrationObserver::StopRegistration()
+template <class TImage>
+void RegistrationObserver<TImage>::StopRegistration()
 {
     stopReg = true;
     LOG4CPLUS_DEBUG(logger_, "Registration stopped. Exiting.");

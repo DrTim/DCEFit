@@ -11,7 +11,7 @@
 		22004547175E55BA001A8EF2 /* RegisterImageOp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22004545175E55B9001A8EF2 /* RegisterImageOp.mm */; };
 		2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */; };
 		2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */; };
-		22098ECB17AD2D7600428C86 /* RegisterOneImage2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22098EC917AD2D7600428C86 /* RegisterOneImage2D.h */; };
+		22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 22098EC917AD2D7600428C86 /* RegisterOneImage.h */; };
 		2217E91E1732C56C00769974 /* ImageImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E91C1732C56C00769974 /* ImageImporter.h */; };
 		2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E91D1732C56C00769974 /* ImageImporter.mm */; };
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
@@ -21,6 +21,10 @@
 		225843191721931700F9346C /* RegistrationParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 225843171721931700F9346C /* RegistrationParams.m */; };
 		225AA8D217EB58C900628ACB /* OptimizerUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */; };
 		225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA8D117EB58C900628ACB /* OptimizerUtils.h */; };
+		225F6FEC187F280A00558EF7 /* RegisterOneImageDeformable3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 225F6FE8187F280A00558EF7 /* RegisterOneImageDeformable3D.h */; };
+		225F6FED187F280A00558EF7 /* RegisterOneImageDeformable3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 225F6FE9187F280A00558EF7 /* RegisterOneImageDeformable3D.mm */; };
+		225F6FEE187F280A00558EF7 /* RegisterOneImageRigid3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */; };
+		225F6FEF187F280A00558EF7 /* RegisterOneImageRigid3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 225F6FEB187F280A00558EF7 /* RegisterOneImageRigid3D.mm */; };
 		22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22664EAD17294FC6008B7961 /* ProgressWindow.xib */; };
 		22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664EAF172959BA008B7961 /* ProgressWindowController.h */; };
 		22664EB2172959BA008B7961 /* ProgressWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664EB0172959BA008B7961 /* ProgressWindowController.mm */; };
@@ -32,10 +36,10 @@
 		22664ED01729ADC7008B7961 /* SetupLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ECE1729ADC7008B7961 /* SetupLogger.h */; };
 		22664ED31729AE19008B7961 /* ParseITKException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22664ED11729AE19008B7961 /* ParseITKException.cpp */; };
 		22664ED41729AE19008B7961 /* ParseITKException.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ED21729AE19008B7961 /* ParseITKException.h */; };
-		22664ED91729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664ED51729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.mm */; };
-		22664EDA1729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ED61729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.h */; };
-		22664EDB1729AED2008B7961 /* RegisterOneImageMultiResRigid2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664ED71729AED2008B7961 /* RegisterOneImageMultiResRigid2D.mm */; };
-		22664EDC1729AED2008B7961 /* RegisterOneImageMultiResRigid2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ED81729AED2008B7961 /* RegisterOneImageMultiResRigid2D.h */; };
+		22664ED91729AED2008B7961 /* RegisterOneImageDeformable2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664ED51729AED2008B7961 /* RegisterOneImageDeformable2D.mm */; };
+		22664EDA1729AED2008B7961 /* RegisterOneImageDeformable2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ED61729AED2008B7961 /* RegisterOneImageDeformable2D.h */; };
+		22664EDB1729AED2008B7961 /* RegisterOneImageRigid2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */; };
+		22664EDC1729AED2008B7961 /* RegisterOneImageRigid2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */; };
 		22664EDF1729AFF8008B7961 /* RegistrationObserver.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664EDD1729AFF8008B7961 /* RegistrationObserver.mm */; };
 		22664EE01729AFF8008B7961 /* RegistrationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664EDE1729AFF8008B7961 /* RegistrationObserver.h */; };
 		22799E0918294697006D5EB1 /* libLog4m.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22799E0818294697006D5EB1 /* libLog4m.a */; };
@@ -43,11 +47,14 @@
 		2284DDC1181561960008B134 /* ImageTagger.h in Headers */ = {isa = PBXBuildFile; fileRef = 2284DDBF181561960008B134 /* ImageTagger.h */; };
 		229367CC17204AEF00F1C1EF /* DialogController.h in Headers */ = {isa = PBXBuildFile; fileRef = 229367CA17204AEF00F1C1EF /* DialogController.h */; };
 		229367CD17204AEF00F1C1EF /* DialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 229367CB17204AEF00F1C1EF /* DialogController.mm */; };
-		2293737D1868B6320094A3C2 /* OsirixStackItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2293737B1868B6320094A3C2 /* OsirixStackItem.h */; };
-		2293737E1868B6320094A3C2 /* OsirixStackItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2293737C1868B6320094A3C2 /* OsirixStackItem.m */; };
+		2293D972188DC0FC00619245 /* SeriesInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2293D970188DC0FC00619245 /* SeriesInfo.h */; };
+		2293D973188DC0FC00619245 /* SeriesInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2293D971188DC0FC00619245 /* SeriesInfo.m */; };
 		22B0AEBA174E6D2200D85184 /* RegProgressValues.h in Headers */ = {isa = PBXBuildFile; fileRef = 22B0AEB8174E6D2100D85184 /* RegProgressValues.h */; };
 		22B0AEBB174E6D2200D85184 /* RegProgressValues.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B0AEB9174E6D2100D85184 /* RegProgressValues.m */; };
 		22B48EBE18510540008C370A /* liblog4cplusS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B48EBD18510540008C370A /* liblog4cplusS.a */; };
+		22C326A21892B59A00E8A071 /* ViewerController+ExportTimeSeries.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */; };
+		22C326A31892B59A00E8A071 /* ViewerController+ExportTimeSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */; };
+		22C326A61892C0DB00E8A071 /* OsiriXAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */; };
 		22C8753617E1F6FD00CD3308 /* ImageSlicer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */; };
 		22C8753717E1F6FD00CD3308 /* ImageSlicer.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C8753517E1F6FD00CD3308 /* ImageSlicer.h */; };
 		22CAD0D718043E7F00351867 /* MainDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22CAD0D618043E7F00351867 /* MainDialog.xib */; };
@@ -131,9 +138,8 @@
 		22DC08B917D4BCB700814825 /* libitkzlib-4.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DC086C17D4BCB700814825 /* libitkzlib-4.4.a */; };
 		22DC08BA17D4BCB700814825 /* libITKznz-4.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DC086D17D4BCB700814825 /* libITKznz-4.4.a */; };
 		22DC09F417D4C30F00814825 /* symbolList in Resources */ = {isa = PBXBuildFile; fileRef = 22DC09F317D4C30F00814825 /* symbolList */; };
-		22ED12BD17847FC60047AF58 /* Region.h in Headers */ = {isa = PBXBuildFile; fileRef = 22ED12BB17847FC60047AF58 /* Region.h */; };
-		22ED12BE17847FC60047AF58 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 22ED12BC17847FC60047AF58 /* Region.m */; };
-		22FE639E186347D1003C0950 /* ImageResampler2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22FE639C186347D1003C0950 /* ImageResampler2D.h */; };
+		22ED12BD17847FC60047AF58 /* Region2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22ED12BB17847FC60047AF58 /* Region2D.h */; };
+		22ED12BE17847FC60047AF58 /* Region2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 22ED12BC17847FC60047AF58 /* Region2D.m */; };
 		8D5B49AE048680CD000E48DA /* DCEFit_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABA48A640680BB600089EB4F /* DCEFitFilter.h */; };
@@ -161,7 +167,7 @@
 		22004545175E55B9001A8EF2 /* RegisterImageOp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterImageOp.mm; sourceTree = "<group>"; };
 		22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItkRegistrationParams.h; sourceTree = "<group>"; };
 		22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ItkRegistrationParams.mm; sourceTree = "<group>"; };
-		22098EC917AD2D7600428C86 /* RegisterOneImage2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImage2D.h; sourceTree = "<group>"; };
+		22098EC917AD2D7600428C86 /* RegisterOneImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImage.h; sourceTree = "<group>"; };
 		2217E91C1732C56C00769974 /* ImageImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageImporter.h; sourceTree = "<group>"; };
 		2217E91D1732C56C00769974 /* ImageImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageImporter.mm; sourceTree = "<group>"; };
 		2217E9201732DE4200769974 /* RegistrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationManager.h; sourceTree = "<group>"; };
@@ -170,6 +176,10 @@
 		225843171721931700F9346C /* RegistrationParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationParams.m; sourceTree = "<group>"; };
 		225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizerUtils.cpp; sourceTree = "<group>"; };
 		225AA8D117EB58C900628ACB /* OptimizerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptimizerUtils.h; sourceTree = "<group>"; };
+		225F6FE8187F280A00558EF7 /* RegisterOneImageDeformable3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageDeformable3D.h; sourceTree = "<group>"; };
+		225F6FE9187F280A00558EF7 /* RegisterOneImageDeformable3D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageDeformable3D.mm; sourceTree = "<group>"; };
+		225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageRigid3D.h; sourceTree = "<group>"; };
+		225F6FEB187F280A00558EF7 /* RegisterOneImageRigid3D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageRigid3D.mm; sourceTree = "<group>"; };
 		22664EAD17294FC6008B7961 /* ProgressWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressWindow.xib; sourceTree = "<group>"; };
 		22664EAF172959BA008B7961 /* ProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressWindowController.h; sourceTree = "<group>"; };
 		22664EB0172959BA008B7961 /* ProgressWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ProgressWindowController.mm; sourceTree = "<group>"; };
@@ -182,10 +192,10 @@
 		22664ECE1729ADC7008B7961 /* SetupLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupLogger.h; sourceTree = "<group>"; };
 		22664ED11729AE19008B7961 /* ParseITKException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParseITKException.cpp; sourceTree = "<group>"; };
 		22664ED21729AE19008B7961 /* ParseITKException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseITKException.h; sourceTree = "<group>"; };
-		22664ED51729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageMultiResDeformable2D.mm; sourceTree = "<group>"; };
-		22664ED61729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageMultiResDeformable2D.h; sourceTree = "<group>"; };
-		22664ED71729AED2008B7961 /* RegisterOneImageMultiResRigid2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageMultiResRigid2D.mm; sourceTree = "<group>"; };
-		22664ED81729AED2008B7961 /* RegisterOneImageMultiResRigid2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageMultiResRigid2D.h; sourceTree = "<group>"; };
+		22664ED51729AED2008B7961 /* RegisterOneImageDeformable2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageDeformable2D.mm; sourceTree = "<group>"; };
+		22664ED61729AED2008B7961 /* RegisterOneImageDeformable2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageDeformable2D.h; sourceTree = "<group>"; };
+		22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageRigid2D.mm; sourceTree = "<group>"; };
+		22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageRigid2D.h; sourceTree = "<group>"; };
 		22664EDD1729AFF8008B7961 /* RegistrationObserver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegistrationObserver.mm; sourceTree = "<group>"; };
 		22664EDE1729AFF8008B7961 /* RegistrationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationObserver.h; sourceTree = "<group>"; };
 		22799E0818294697006D5EB1 /* libLog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLog4m.a; path = ../../usr/local/lib/libLog4m.a; sourceTree = "<group>"; };
@@ -193,13 +203,16 @@
 		2284DDBF181561960008B134 /* ImageTagger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTagger.h; sourceTree = "<group>"; };
 		229367CA17204AEF00F1C1EF /* DialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialogController.h; sourceTree = "<group>"; };
 		229367CB17204AEF00F1C1EF /* DialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DialogController.mm; sourceTree = "<group>"; };
-		2293737B1868B6320094A3C2 /* OsirixStackItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OsirixStackItem.h; sourceTree = "<group>"; };
-		2293737C1868B6320094A3C2 /* OsirixStackItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OsirixStackItem.m; sourceTree = "<group>"; };
+		2293D970188DC0FC00619245 /* SeriesInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriesInfo.h; sourceTree = "<group>"; };
+		2293D971188DC0FC00619245 /* SeriesInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriesInfo.m; sourceTree = "<group>"; };
 		22AF448217CE3C990091644F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		22AF448617CE3C990091644F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		22B0AEB8174E6D2100D85184 /* RegProgressValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegProgressValues.h; sourceTree = "<group>"; };
 		22B0AEB9174E6D2100D85184 /* RegProgressValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegProgressValues.m; sourceTree = "<group>"; };
 		22B48EBD18510540008C370A /* liblog4cplusS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4cplusS.a; path = ../../usr/local/lib/liblog4cplusS.a; sourceTree = "<group>"; };
+		22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewerController+ExportTimeSeries.h"; sourceTree = "<group>"; };
+		22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewerController+ExportTimeSeries.m"; sourceTree = "<group>"; };
+		22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OsiriXAPI.framework; path = ../osirix/build/Development/OsiriXAPI.framework; sourceTree = "<group>"; };
 		22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSlicer.cpp; sourceTree = "<group>"; };
 		22C8753517E1F6FD00CD3308 /* ImageSlicer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSlicer.h; sourceTree = "<group>"; };
 		22CAD0D618043E7F00351867 /* MainDialog.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainDialog.xib; sourceTree = "<group>"; };
@@ -283,10 +296,9 @@
 		22DC086C17D4BCB700814825 /* libitkzlib-4.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libitkzlib-4.4.a"; path = "../../usr/local/ITK/Universal/Release/lib/libitkzlib-4.4.a"; sourceTree = "<group>"; };
 		22DC086D17D4BCB700814825 /* libITKznz-4.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libITKznz-4.4.a"; path = "../../usr/local/ITK/Universal/Release/lib/libITKznz-4.4.a"; sourceTree = "<group>"; };
 		22DC09F317D4C30F00814825 /* symbolList */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbolList; sourceTree = "<group>"; };
-		22ED12BB17847FC60047AF58 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Region.h; sourceTree = "<group>"; };
-		22ED12BC17847FC60047AF58 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Region.m; sourceTree = "<group>"; };
+		22ED12BB17847FC60047AF58 /* Region2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Region2D.h; sourceTree = "<group>"; };
+		22ED12BC17847FC60047AF58 /* Region2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Region2D.m; sourceTree = "<group>"; };
 		22F2DD8E172AA06800F75C06 /* ProjectDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectDefs.h; sourceTree = "<group>"; };
-		22FE639C186347D1003C0950 /* ImageResampler2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageResampler2D.h; sourceTree = "<group>"; };
 		32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCEFit_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DCEFit.osirixplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -306,6 +318,7 @@
 				22DC087217D4BCB700814825 /* libitkdouble-conversion-4.4.a in Frameworks */,
 				22DC087317D4BCB700814825 /* libITKEXPAT-4.4.a in Frameworks */,
 				22DC087417D4BCB700814825 /* libITKFEM-4.4.a in Frameworks */,
+				22C326A61892C0DB00E8A071 /* OsiriXAPI.framework in Frameworks */,
 				22DC087517D4BCB700814825 /* libitkgdcmCommon-4.4.a in Frameworks */,
 				22DC087617D4BCB700814825 /* libitkgdcmDICT-4.4.a in Frameworks */,
 				22DC087717D4BCB700814825 /* libitkgdcmDSED-4.4.a in Frameworks */,
@@ -401,6 +414,7 @@
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				22C326A41892C02D00E8A071 /* Osirix Frameworks */,
 				22CF47D117D4EBCE00C49614 /* Private Frameworks */,
 				22AF44A117CE48250091644F /* Logger */,
 				229793FD17248441004CCBC6 /* ITK */,
@@ -430,7 +444,6 @@
 				229367CB17204AEF00F1C1EF /* DialogController.mm */,
 				2217E91C1732C56C00769974 /* ImageImporter.h */,
 				2217E91D1732C56C00769974 /* ImageImporter.mm */,
-				22FE639C186347D1003C0950 /* ImageResampler2D.h */,
 				22C8753517E1F6FD00CD3308 /* ImageSlicer.h */,
 				22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */,
 				2284DDBF181561960008B134 /* ImageTagger.h */,
@@ -438,20 +451,22 @@
 				22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */,
 				22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */,
 				22664EB31729A73D008B7961 /* ItkTypedefs.h */,
-				2293737B1868B6320094A3C2 /* OsirixStackItem.h */,
-				2293737C1868B6320094A3C2 /* OsirixStackItem.m */,
 				22664EAF172959BA008B7961 /* ProgressWindowController.h */,
 				22664EB0172959BA008B7961 /* ProgressWindowController.mm */,
 				22F2DD8E172AA06800F75C06 /* ProjectDefs.h */,
-				22ED12BB17847FC60047AF58 /* Region.h */,
-				22ED12BC17847FC60047AF58 /* Region.m */,
+				22ED12BB17847FC60047AF58 /* Region2D.h */,
+				22ED12BC17847FC60047AF58 /* Region2D.m */,
 				22004544175E55B9001A8EF2 /* RegisterImageOp.h */,
 				22004545175E55B9001A8EF2 /* RegisterImageOp.mm */,
-				22098EC917AD2D7600428C86 /* RegisterOneImage2D.h */,
-				22664ED61729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.h */,
-				22664ED51729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.mm */,
-				22664ED81729AED2008B7961 /* RegisterOneImageMultiResRigid2D.h */,
-				22664ED71729AED2008B7961 /* RegisterOneImageMultiResRigid2D.mm */,
+				22098EC917AD2D7600428C86 /* RegisterOneImage.h */,
+				22664ED61729AED2008B7961 /* RegisterOneImageDeformable2D.h */,
+				22664ED51729AED2008B7961 /* RegisterOneImageDeformable2D.mm */,
+				22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */,
+				22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */,
+				225F6FE8187F280A00558EF7 /* RegisterOneImageDeformable3D.h */,
+				225F6FE9187F280A00558EF7 /* RegisterOneImageDeformable3D.mm */,
+				225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */,
+				225F6FEB187F280A00558EF7 /* RegisterOneImageRigid3D.mm */,
 				2217E9201732DE4200769974 /* RegistrationManager.h */,
 				2217E9211732DE4200769974 /* RegistrationManager.mm */,
 				22664EDE1729AFF8008B7961 /* RegistrationObserver.h */,
@@ -460,8 +475,12 @@
 				225843171721931700F9346C /* RegistrationParams.m */,
 				22B0AEB8174E6D2100D85184 /* RegProgressValues.h */,
 				22B0AEB9174E6D2100D85184 /* RegProgressValues.m */,
+				2293D970188DC0FC00619245 /* SeriesInfo.h */,
+				2293D971188DC0FC00619245 /* SeriesInfo.m */,
 				22D6C5F31743AC9E002EA2AB /* UserDefaults.h */,
 				22D6C5F41743AC9E002EA2AB /* UserDefaults.m */,
+				22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */,
+				22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -602,6 +621,14 @@
 			name = Logger;
 			sourceTree = "<group>";
 		};
+		22C326A41892C02D00E8A071 /* Osirix Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */,
+			);
+			name = "Osirix Frameworks";
+			sourceTree = "<group>";
+		};
 		22CF47D117D4EBCE00C49614 /* Private Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -624,29 +651,31 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				225F6FEE187F280A00558EF7 /* RegisterOneImageRigid3D.h in Headers */,
 				8D5B49AE048680CD000E48DA /* DCEFit_Prefix.pch in Headers */,
-				2293737D1868B6320094A3C2 /* OsirixStackItem.h in Headers */,
 				ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */,
 				229367CC17204AEF00F1C1EF /* DialogController.h in Headers */,
+				22C326A21892B59A00E8A071 /* ViewerController+ExportTimeSeries.h in Headers */,
 				225843181721931700F9346C /* RegistrationParams.h in Headers */,
-				22FE639E186347D1003C0950 /* ImageResampler2D.h in Headers */,
 				22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */,
 				22664EB71729A864008B7961 /* CopyMetaDataDictionary.h in Headers */,
 				225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */,
 				22664EBB1729A95D008B7961 /* DumpDicomMetaDataDictionary.h in Headers */,
 				22664ED01729ADC7008B7961 /* SetupLogger.h in Headers */,
 				22664ED41729AE19008B7961 /* ParseITKException.h in Headers */,
-				22664EDA1729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.h in Headers */,
-				22664EDC1729AED2008B7961 /* RegisterOneImageMultiResRigid2D.h in Headers */,
+				22664EDA1729AED2008B7961 /* RegisterOneImageDeformable2D.h in Headers */,
+				22664EDC1729AED2008B7961 /* RegisterOneImageRigid2D.h in Headers */,
 				22664EE01729AFF8008B7961 /* RegistrationObserver.h in Headers */,
 				2217E91E1732C56C00769974 /* ImageImporter.h in Headers */,
 				2217E9221732DE4300769974 /* RegistrationManager.h in Headers */,
+				2293D972188DC0FC00619245 /* SeriesInfo.h in Headers */,
 				22D6C5F51743AC9E002EA2AB /* UserDefaults.h in Headers */,
 				22B0AEBA174E6D2200D85184 /* RegProgressValues.h in Headers */,
 				22004546175E55BA001A8EF2 /* RegisterImageOp.h in Headers */,
 				2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */,
-				22ED12BD17847FC60047AF58 /* Region.h in Headers */,
-				22098ECB17AD2D7600428C86 /* RegisterOneImage2D.h in Headers */,
+				22ED12BD17847FC60047AF58 /* Region2D.h in Headers */,
+				22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */,
+				225F6FEC187F280A00558EF7 /* RegisterOneImageDeformable3D.h in Headers */,
 				22C8753717E1F6FD00CD3308 /* ImageSlicer.h in Headers */,
 				2284DDC1181561960008B134 /* ImageTagger.h in Headers */,
 			);
@@ -734,25 +763,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABA48A670680BB690089EB4F /* DCEFitFilter.mm in Sources */,
-				2293737E1868B6320094A3C2 /* OsirixStackItem.m in Sources */,
 				229367CD17204AEF00F1C1EF /* DialogController.mm in Sources */,
 				225843191721931700F9346C /* RegistrationParams.m in Sources */,
 				22664EB2172959BA008B7961 /* ProgressWindowController.mm in Sources */,
 				22664EB61729A864008B7961 /* CopyMetaDataDictionary.cpp in Sources */,
+				22C326A31892B59A00E8A071 /* ViewerController+ExportTimeSeries.m in Sources */,
 				22664EBA1729A95D008B7961 /* DumpDicomMetaDataDictionary.cpp in Sources */,
 				22664ECF1729ADC7008B7961 /* SetupLogger.mm in Sources */,
 				22664ED31729AE19008B7961 /* ParseITKException.cpp in Sources */,
-				22664ED91729AED2008B7961 /* RegisterOneImageMultiResDeformable2D.mm in Sources */,
-				22664EDB1729AED2008B7961 /* RegisterOneImageMultiResRigid2D.mm in Sources */,
+				22664ED91729AED2008B7961 /* RegisterOneImageDeformable2D.mm in Sources */,
+				22664EDB1729AED2008B7961 /* RegisterOneImageRigid2D.mm in Sources */,
 				22664EDF1729AFF8008B7961 /* RegistrationObserver.mm in Sources */,
+				2293D973188DC0FC00619245 /* SeriesInfo.m in Sources */,
 				2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */,
 				225AA8D217EB58C900628ACB /* OptimizerUtils.cpp in Sources */,
+				225F6FED187F280A00558EF7 /* RegisterOneImageDeformable3D.mm in Sources */,
 				2217E9231732DE4300769974 /* RegistrationManager.mm in Sources */,
 				22D6C5F61743AC9E002EA2AB /* UserDefaults.m in Sources */,
 				22B0AEBB174E6D2200D85184 /* RegProgressValues.m in Sources */,
 				22004547175E55BA001A8EF2 /* RegisterImageOp.mm in Sources */,
+				225F6FEF187F280A00558EF7 /* RegisterOneImageRigid3D.mm in Sources */,
 				2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */,
-				22ED12BE17847FC60047AF58 /* Region.m in Sources */,
+				22ED12BE17847FC60047AF58 /* Region2D.m in Sources */,
 				22C8753617E1F6FD00CD3308 /* ImageSlicer.cpp in Sources */,
 				2284DDC0181561960008B134 /* ImageTagger.cpp in Sources */,
 			);
@@ -783,7 +815,10 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 0.2;
 				DEBUGGING_SYMBOLS = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"~/devel/osirix/build/Development",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -804,14 +839,11 @@
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					build/Release/Log4m.framework/Headers,
-					"/Users/tim/usr/local/ITK/i386/Release/include/ITK-4.4",
-					"~/usr/local/include",
-					osirix/build/Development/OsiriXAPI.framework/Headers,
-					osirix/build/Development/OsiriX.framework/Headers,
+					"$(inherited)",
+					"~/usr/local/ITK/i386/Release/include/ITK-4.4",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"~/Library/Application\\ Support/OsiriX/Plugins\"";
+				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application\\ Support/OsiriX/Plugins\"";
 				LD_GENERATE_MAP_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -821,7 +853,7 @@
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-undefined",
 					dynamic_lookup,
@@ -846,7 +878,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 0.2;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"~/devel/osirix/build/Development",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DCEFit_Prefix.pch;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -864,14 +899,11 @@
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					build/Release/Log4m.framework/Headers,
-					"/Users/tim/usr/local/ITK/i386/Release/include/ITK-4.4",
-					"~/usr/local/include",
-					osirix/build/Development/OsiriXAPI.framework/Headers,
-					osirix/build/Development/OsiriX.framework/Headers,
+					"$(inherited)",
+					"~/usr/local/ITK/i386/Release/include/ITK-4.4",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"~/Library/Application\\ Support/OsiriX/Plugins\"";
+				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application\\ Support/OsiriX/Plugins\"";
 				LD_GENERATE_MAP_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -881,7 +913,7 @@
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-undefined",
 					dynamic_lookup,
@@ -899,6 +931,7 @@
 		CE6A9A9508AC841300D0C1EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -919,7 +952,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					/opt/local/include,
+					"~/usr/local/include",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -930,6 +966,7 @@
 		CE6A9A9608AC841300D0C1EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -949,7 +986,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					/opt/local/include,
+					"~/usr/local/include",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;

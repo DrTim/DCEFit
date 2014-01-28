@@ -13,41 +13,32 @@
 #include "ProjectDefs.h"
 #include "ItkRegistrationParams.h"
 
-#include <log4cplus/logger.h>
-
 #import "ProgressWindowController.h"
+
+#include <log4cplus/logger.h>
 
 /**
  * Abstract base class for performing a multiresolution registration of one image
  */
-class RegisterOneImage2D
+template <class TImage>
+class RegisterOneImage
 {
-public:
-    /**
-     * Values to use to return the results of the registration.
-     */
-    enum ResultCode
-    {
-        SUCCESS = 0,   /// All went well.
-        FAILURE = 1,   /// Registration was suboptimal but we can continue.
-        DISASTER = 2   /// Complete failure resulting in an exception being thrown by ITK.
-    };
-
+  public:
     /**
      * Constructor.
      * @param progressController ProgressController for updates and registration mamagement.
      * @param fixedImage The fixed image.
      * @param params The registration parameters.
      */
-    RegisterOneImage2D(ProgressWindowController* progressController,
-                       Image2DType::Pointer fImage,
-                       const ItkRegistrationParams& itkParms)
-    : progController_(progressController), fixedImage_(fImage), itkParams_(itkParms)
+    RegisterOneImage(ProgressWindowController* progressController,
+                       typename TImage::Pointer fixedImage,
+                       const ItkRegistrationParams& itkParams)
+    : progController_(progressController), fixedImage_(fixedImage), itkParams_(itkParams)
     {
 
     }
 
-    virtual ~RegisterOneImage2D()
+    virtual ~RegisterOneImage()
     {
         [progController_ setObserver:0];
     }
@@ -58,13 +49,13 @@ public:
      * @param code The result of the registration.
      * @return The registered moving image.
      */
-    virtual Image2DType::Pointer registerImage(Image2DType::Pointer movingImage,
+    virtual typename TImage::Pointer registerImage(typename TImage::Pointer movingImage,
                                                ResultCode& code) = 0;
 
 protected:
     log4cplus::Logger logger_;
     ProgressWindowController* progController_;
-    Image2DType::Pointer fixedImage_;
+    typename TImage::Pointer fixedImage_;
     ItkRegistrationParams itkParams_;
 };
 

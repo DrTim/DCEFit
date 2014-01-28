@@ -7,9 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OsiriXAPI/PluginFilter.h"
+#import <OsiriXAPI/PluginFilter.h>
 
 @class DialogController;
+@class SeriesInfo;
 @class Logger;
 
 /**
@@ -20,7 +21,7 @@
 {
     DialogController* dialogController;
     Logger* logger_;
-    //NSArray* stackArray;
+    SeriesInfo* seriesInfo;
 }
 
 
@@ -28,7 +29,7 @@
 	The main dialog for the plugin.
  */
 @property (assign) DialogController* dialogController;
-//@property (assign, readonly) NSArray* stackArray;
+@property (assign, readonly) SeriesInfo* seriesInfo;
 
 
 /**
@@ -52,7 +53,5 @@
 - (void)initPlugin;
 
 - (ViewerController *)copyCurrent4DViewerWindow;
-
-//- (ViewerController*)copy4DViewerWindow;
 
 @end

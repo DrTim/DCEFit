@@ -38,7 +38,7 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 @synthesize quitButton;
 @synthesize stopConditionTextView;
 @synthesize progressValues;
-@synthesize observer;
+//@synthesize observer;
 
 - (id)initWithDialogController:(DialogController *)parent
 {
@@ -91,18 +91,18 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 //                                               object:nil];
 }
 
-- (void)setCurSlice:(NSNumber*)slice
+- (void)setCurImage:(NSNumber *)imageNum
 {
-    progressValues.curSlice = [slice unsignedIntValue];
+    progressValues.curImage = [imageNum unsignedIntValue];
     [sliceTextField setIntegerValue:progressValues.curSlice];
-    [progressIndicator setDoubleValue:(double)progressValues.curSlice];
+    [progressIndicator setDoubleValue:(double)progressValues.curImage];
 }
 
-- (void)incrCurSlice
+- (void)incrCurImage
 {
-    ++progressValues.curSlice;
-    [sliceTextField setIntegerValue:progressValues.curSlice];
-    [progressIndicator setDoubleValue:(double)progressValues.curSlice];
+    ++progressValues.curImage;
+    [sliceTextField setIntegerValue:progressValues.curImage];
+    [progressIndicator setDoubleValue:(double)progressValues.curImage];
 }
 
 - (void)setCurLevel:(NSNumber*)level
@@ -150,6 +150,23 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     [iterationTextField setIntegerValue:progressValues.curIteration];
 }
 
+- (void)setObserver:(void *)observer
+{
+    // This is an effort to shoehorn namespaces and templates into Obj-C.
+    // If *observer_ is not one of the acceptable classes observerDims
+    // will be 0.
+    itk::Command* obs = static_cast<itk::Command*>(observer_);
+    observer_ = obs;
+
+    if (dynamic_cast<RegistrationObserver<Image2D>* >(obs) != 0)
+        observerDims_ = 2;
+    else if (dynamic_cast<RegistrationObserver<Image3D>* >(obs) != 0)
+        observerDims_ = 3;
+
+    NSAssert(((observerDims_ != 2) && (observerDims_ != 3)),
+        @"Argument 'observer' not an instantiation of RegistrationObserver<>");
+}
+
 - (void)setMaxIterations:(NSNumber*)iterations
 {
     progressValues.maxIterations = [iterations unsignedIntValue];
@@ -171,7 +188,11 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     NSInteger i = NSRunAlertPanel(@"DCE-Fit", @"Stop registration?", @"Yes", @"No", nil);
     if (i == NSAlertDefaultReturn)
     {
-        observer->StopRegistration();
+        if (observerDims_ == 2)
+            dynamic_cast<RegistrationObserver<Image2D>* >((itk::Command*)observer_)->StopRegistration();
+        else if (observerDims_ == 3)
+            dynamic_cast<RegistrationObserver<Image3D>* >((itk::Command*)observer_)->StopRegistration();
+
         [regManager cancelRegistration];
         [statusTextField setStringValue:@"Waiting for termination."];
         registrationCancelled = YES;
@@ -237,11 +258,12 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     regManager = manager;
 }
 
-//- (void)registrationCancelled
-//{
-//	LOG4M_TRACE(logger_, @"Enter");
-//    [self.window close];
-//	[self autorelease];
-//}
+- (void)stopRegistration
+{
+    if (observerDims_ == 2)
+        dynamic_cast<RegistrationObserver<Image2D>* >((itk::Command*)observer_)->StopRegistration();
+    else if (observerDims_ == 3)
+        dynamic_cast<RegistrationObserver<Image3D>* >((itk::Command*)observer_)->StopRegistration();
+}
 
 @end

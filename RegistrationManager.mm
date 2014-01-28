@@ -10,6 +10,8 @@
 #import "RegistrationManager.h"
 #import "ImageImporter.h"
 #import "RegisterImageOp.h"
+#import "ProgressWindowController.h"
+#import "SeriesInfo.h"
 
 #import "OsiriXAPI/ViewerController.h"
 
@@ -17,10 +19,14 @@
 
 @synthesize itkParams;
 @synthesize progressController = progressController_;
+@synthesize viewer;
+@synthesize seriesInfo = seriesInfo_;
 
 - (id)initWithViewer:(ViewerController *)viewerController
-                                Params:(RegistrationParams*)regParams
-                        ProgressWindow:(ProgressWindowController*)progController
+              Params:(RegistrationParams*)regParams
+      ProgressWindow:(ProgressWindowController*)progController
+          SeriesInfo:(SeriesInfo *)seriesInfo
+
 {
     self = [super init];
     if (self)
@@ -31,18 +37,22 @@
         params = regParams;
         viewer = viewerController;
         progressController_ = progController;
+        seriesInfo_ = seriesInfo;
 
         // Copy the Objective-C params to itk params
         itkParams = new ItkRegistrationParams(params);
         LOG4M_DEBUG(logger_, [NSString stringWithUTF8String:itkParams->Print().c_str()]);
 
         // Get the data from OsiriX
-        imageImporter = [[ImageImporter alloc] initWithViewerController:viewer];
-        Image3DType::Pointer image = [imageImporter getImage];
-        
         slicer = new ImageSlicer();
-        slicer->SetImage(image);
-        //slicer->SetRegion(region);
+        imageImporter = [[ImageImporter alloc] initWithViewerController:viewer];
+
+        unsigned numImages = itkParams->numImages;
+        for (unsigned idx = 0; idx < numImages; ++idx)
+        {
+            Image3D::Pointer image = [imageImporter getImageAtIndex:idx];
+            slicer->AddImage(image);
+        }
 
         opQueue = [[NSOperationQueue alloc] init];
         //[opQueue setMaxConcurrentOperationCount:1];
@@ -71,15 +81,9 @@
     logger_ = [[Logger newInstance:loggerName] retain];
 }
 
-- (Image3DType::Pointer)getImage
+- (Image3D::Pointer)imageAtIndex:(unsigned int)imageIdx
 {
-    return slicer->GetImage();
-}
-
-- (void)setupRegistration
-{
-    LOG4M_TRACE(logger_, @"Enter");
-
+    return slicer->GetImage(imageIdx);
 }
 
 - (void) viewerWillClose:(NSNotification*)notification
@@ -99,28 +103,28 @@
         // Remove ourselves because the viewer is no longer valid and we must close.
         [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-        progressController_.observer->StopRegistration();
+        [progressController_ stopRegistration];
         [self cancelRegistration];
     }
 }
 
-- (void)insertSliceIntoViewer:(Image2DType::Pointer)slice SliceIndex:(unsigned)sliceIndex
+- (void)insertSliceIntoViewer:(Image2D::Pointer)slice ImageIndex:(unsigned int)imageIndex SliceIndex:(unsigned int)sliceIndex
 {
     // Do this to get back the full sized (uncropped) slice to reinsert into OsiriX
-    slicer->SetSlice2D(slice, sliceIndex);
-    Image2DType::Pointer fullSlice = slicer->GetSlice2D(sliceIndex);
-    
+    slicer->SetSlice2D(slice, imageIndex, sliceIndex);
+    //Image2D::Pointer fullSlice = slicer->GetSlice2D(imageIndex, sliceIndex);
+
     // calculate the offset of this slice in the data block in OsiriX
     // and the number of bytes to copy
-    float* data = [viewer volumePtr];
-    Image2DType::SizeType size = fullSlice->GetLargestPossibleRegion().GetSize();
+    float* data = [viewer volumePtr:imageIndex];
+    Image2D::SizeType size = slice->GetLargestPossibleRegion().GetSize();
     unsigned long numFloats = size[0] * size[1];
     unsigned long offset = numFloats * sliceIndex;
     data += offset;
     size_t numBytes = numFloats * sizeof(float);
 
     // copy the data into the OsiriX data block
-    float* imageData = fullSlice->GetPixelContainer()->GetBufferPointer();
+    float* imageData = slice->GetPixelContainer()->GetBufferPointer();
     memcpy(data, imageData, numBytes);
 
     [viewer performSelectorOnMainThread:@selector(needsDisplayUpdate) withObject:nil
@@ -128,9 +132,32 @@
     
 }
 
-- (Image2DType::Pointer)getSliceFromImage:(unsigned)sliceNumber
+- (void)insertImageIntoViewer:(Image3D::Pointer)image Index:(unsigned int)imageIndex
 {
-    Image2DType::Pointer slice = slicer->GetSlice2D(sliceNumber);
+    // Do this to get back the full sized (uncropped) slice to reinsert into OsiriX
+    slicer-> SetImage(image, imageIndex);
+
+    // calculate the offset of this slice in the data block in OsiriX
+    // and the number of bytes to copy
+    float* data = [viewer volumePtr:imageIndex];
+    Image3D::SizeType size = image->GetLargestPossibleRegion().GetSize();
+    unsigned long numFloats = size[0] * size[1] * size[2];
+    unsigned long offset = numFloats * imageIndex;
+    data += offset;
+    size_t numBytes = numFloats * sizeof(float);
+
+    // copy the data into the OsiriX data block
+    float* imageData = image->GetPixelContainer()->GetBufferPointer();
+    memcpy(data, imageData, numBytes);
+
+    [viewer performSelectorOnMainThread:@selector(needsDisplayUpdate) withObject:nil
+                          waitUntilDone:YES];
+    
+}
+
+- (Image2D::Pointer)slice:(unsigned int)sliceIndex FromImage:(unsigned int)imageIndex
+{
+    Image2D::Pointer slice = slicer->GetSlice2D(imageIndex, sliceIndex);
 
     return slice;
 }
@@ -144,7 +171,6 @@
                                              selector:@selector(viewerWillClose:)
                                                  name:@"CloseViewerNotification"
                                                object:viewer];
-    [self setupRegistration];
     
     LOG4M_INFO(logger_, @"Starting registration.");
     

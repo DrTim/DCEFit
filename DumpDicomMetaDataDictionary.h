@@ -10,9 +10,9 @@
 
 #include "ItkTypedefs.h"
 
-std::string DumpDicomMetaDataDictionary(const MetaDataDictionaryType* dict);
+std::string DumpDicomMetaDataDictionary(const MetaDataDictionary* dict);
 
-std::string DumpDicomMetaDataDictionaryArray(const MetaDataDictionaryArrayType* dict);
+std::string DumpDicomMetaDataDictionaryArray(const MetaDataDictionaryArray* dict);
 
 #endif	/* DUMPMETADATADICTIONARY_H */
 

@@ -1,11 +1,11 @@
 /*
- * File:   RegisterOneImageMultiResRigid2D.mm
+ * File:   RegisterOneImageRigid2D.mm
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
-#include "RegisterOneImageMultiResRigid2D.h"
+#include "RegisterOneImageRigid2D.h"
 #include "OptimizerUtils.h"
 #include "RegistrationObserver.h"
 #include "ParseITKException.h"
@@ -18,12 +18,12 @@
 
 #include <log4cplus/loggingmacros.h>
 
-RegisterOneImageMultiResRigid2D::RegisterOneImageMultiResRigid2D(
-    ProgressWindowController* progressController, Image2DType::Pointer fixedImage,
+RegisterOneImageRigid2D::RegisterOneImageRigid2D(
+    ProgressWindowController* progressController, Image2D::Pointer fixedImage,
     const ItkRegistrationParams& itkParams)
-    : RegisterOneImage2D(progressController, fixedImage, itkParams)
+    : RegisterOneImage(progressController, fixedImage, itkParams)
 {
-    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageMultiResRigid2D";
+    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageRigid2D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
 
@@ -36,8 +36,8 @@ RegisterOneImageMultiResRigid2D::RegisterOneImageMultiResRigid2D(
     }
 }
 
-Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
-                                Image2DType::Pointer movingImage, ResultCode& code)
+Image2D::Pointer RegisterOneImageRigid2D::registerImage(
+                                Image2D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
     
@@ -45,15 +45,14 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
     code = SUCCESS;
 
     // typedefs for ITK classes
-    typedef itk::ResampleImageFilter<Image2DType, Image2DType> ResampleFilterType;
-    typedef itk::CenteredTransformInitializer<CenteredRigid2DTransform, Image2DType, Image2DType>
-            TransformInitializerType;
-    typedef itk::BSplineInterpolateImageFunction<Image2DType> BSplineInterpolatorType;
-    typedef itk::LinearInterpolateImageFunction<Image2DType> LinearInterpolatorType;
+//    typedef itk::ResampleImageFilter<Image2D, Image2D> ResampleFilterType;
+//    typedef itk::CenteredTransformInitializer<CenteredRigid2DTransform, Image2D, Image2D>
+//            TransformInitializerType;
+//    typedef itk::BSplineInterpolateImageFunction<Image2D> BSplineInterpolatorType;
+//    typedef itk::LinearInterpolateImageFunction<Image2D> LinearInterpolatorType;
 
     // Set the resolution schedule
-    MultiResRegistration::ScheduleType resolutionSchedule(itkParams_.rigidLevels,
-                                                          Image2DType::ImageDimension);
+    Registration2D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image2D::ImageDimension);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
                     double>(std::pow(2.0, static_cast<double>(itkParams_.rigidLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
@@ -72,7 +71,8 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    RegistrationObserver::Pointer observer = RegistrationObserver::New();
+    typedef RegistrationObserver<Image2D> ObserverType;
+    ObserverType::Pointer observer = ObserverType::New();
     observer->SetProgressWindowController(progController_);
     observer->SetNumberOfLevels(itkParams_.rigidLevels);
     [progController_ setObserver:observer];
@@ -101,7 +101,7 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
      * Use the initializer to set up the transform
      */
     CenteredRigid2DTransform::Pointer transform = CenteredRigid2DTransform::New();
-    TransformInitializerType::Pointer transformInitializer = TransformInitializerType::New();
+    CenteredTransformInitializer2D::Pointer transformInitializer = CenteredTransformInitializer2D::New();
     transformInitializer->SetTransform(transform);
     transformInitializer->SetFixedImage(fixedImage_);
     transformInitializer->SetMovingImage(movingImage);
@@ -115,13 +115,13 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
      *leave the rest for the first IterationEvent in the observer.
      */
     
-    MMIImageToImageMetric::Pointer MMImetric;
-    MSImageToImageMetric::Pointer MSMetric;
-    ImageToImageMetric::Pointer metric;
+    MMIImageToImageMetric2D::Pointer MMImetric;
+    MSImageToImageMetric2D::Pointer MSMetric;
+    ImageToImageMetric2D::Pointer metric;
     switch (itkParams_.rigidRegMetric)
     {
         case MattesMutualInformation:
-            MMImetric = MMIImageToImageMetric::New();
+            MMImetric = MMIImageToImageMetric2D::New();
             MMImetric->UseExplicitPDFDerivativesOff();
             MMImetric->SetUseCachingOfBSplineWeights(true); // default == true
             MMImetric->SetNumberOfThreads(1);
@@ -131,7 +131,7 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
             metric = MMImetric;
             break;
         case MeanSquares:
-            MSMetric = MSImageToImageMetric::New();
+            MSMetric = MSImageToImageMetric2D::New();
             MSMetric->SetNumberOfThreads(1);
             metric = MSMetric;
             break;
@@ -190,21 +190,21 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
     //
     // Set up the interpolator
     // This does not change during registration
-    LinearInterpolatorType::Pointer interpolator = LinearInterpolatorType::New();
+    LinearInterpolator2D::Pointer interpolator = LinearInterpolator2D::New();
     //interpolator->SetSplineOrder(BSPLINE_ORDER);
     //interpolator->SetNumberOfThreads(1);
 
     //
     // The image pyramids
     // These will be set up by the registration object.
-    ImagePyramid::Pointer fixedImagePyramid = ImagePyramid::New();
+    ImagePyramid2D::Pointer fixedImagePyramid = ImagePyramid2D::New();
     fixedImagePyramid->SetNumberOfLevels(itkParams_.rigidLevels);
 
-    ImagePyramid::Pointer movingImagePyramid = ImagePyramid::New();
+    ImagePyramid2D::Pointer movingImagePyramid = ImagePyramid2D::New();
     movingImagePyramid->SetNumberOfLevels(itkParams_.rigidLevels);
 
     // Set up the registration
-    MultiResRegistration::Pointer registration = MultiResRegistration::New();
+    Registration2D::Pointer registration = Registration2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
@@ -266,11 +266,11 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
     transform->SetParameters(finalParameters);
 
     /*
-     ImageTagger<Image2DType> tagImage(10);
+     ImageTagger<Image2D> tagImage(10);
      tagImage(*(movingImage.GetPointer()));
      */
 
-    ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+    ResampleFilter2D::Pointer resampler = ResampleFilter2D::New();
     resampler->SetTransform(transform);
     resampler->SetInput(movingImage);
     resampler->SetSize(fixedImage_->GetLargestPossibleRegion().GetSize());
@@ -280,7 +280,7 @@ Image2DType::Pointer RegisterOneImageMultiResRigid2D::registerImage(
     resampler->SetDefaultPixelValue(0.0);
     resampler->Update();
 
-    Image2DType::Pointer result = resampler->GetOutput();
+    Image2D::Pointer result = resampler->GetOutput();
     return result;
 }
 

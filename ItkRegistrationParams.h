@@ -37,16 +37,17 @@ public:
     virtual ~ItkRegistrationParams();
     
     std::string Print() const;
-    unsigned imageNumberToIndex(unsigned number);
-    unsigned indexToImageNumber(unsigned index);
+    unsigned sliceNumberToIndex(unsigned number);
+    unsigned indexToSliceNumber(unsigned index);
 
 public:
     unsigned numImages;
+    unsigned slicesPerImage;
     unsigned fixedImageNumber;
     bool flippedData;
     std::string seriesName;
-    Image2DType::RegionType fixedImageRegion;
-    Mask2DType::Pointer fixedImageMask;
+    Image2D::RegionType fixedImageRegion;
+    SpatialMask2D::Pointer fixedImageMask;
 
     bool rigidRegEnabled;
     unsigned rigidLevels;
@@ -81,12 +82,12 @@ public:
     ParamVector<float> deformRSGDRelaxationFactor;
     ParamVector<unsigned> deformMaxIter;
 
-    void createFixedImageMask(Image2DType::Pointer image);
+    void createFixedImageMask(Image2D::Pointer image);
 
 private:
     log4cplus::Logger logger_;
-    void setRegion(const Region* reg);
-    const RegistrationParams* ocParams;
+    void setRegion(const Region2D* reg);
+    const RegistrationParams* objcParams;
 };
 
 
