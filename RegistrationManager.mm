@@ -132,21 +132,19 @@
     
 }
 
-- (void)insertImageIntoViewer:(Image3D::Pointer)image Index:(unsigned int)imageIndex
+- (void)insertImageIntoViewer:(Image3D::Pointer)image Index:(unsigned)imageIndex
 {
-    // Do this to get back the full sized (uncropped) slice to reinsert into OsiriX
     slicer-> SetImage(image, imageIndex);
 
-    // calculate the offset of this slice in the data block in OsiriX
-    // and the number of bytes to copy
+    // Get the data block inside OsiriX
     float* data = [viewer volumePtr:imageIndex];
+
+    // Calculate the number of bytes to copy
     Image3D::SizeType size = image->GetLargestPossibleRegion().GetSize();
     unsigned long numFloats = size[0] * size[1] * size[2];
-    unsigned long offset = numFloats * imageIndex;
-    data += offset;
     size_t numBytes = numFloats * sizeof(float);
 
-    // copy the data into the OsiriX data block
+    // copy the ITK image data into the OsiriX data block
     float* imageData = image->GetPixelContainer()->GetBufferPointer();
     memcpy(data, imageData, numBytes);
 
@@ -206,8 +204,6 @@
 	LOG4M_INFO(logger_, @"Registration Cancelled.");
     
     [op cancel];
-//    NSLog(@"[op isFinished] = %d", [op isFinished]);
-//    NSLog(@"[op isExecuting] = %d", [op isExecuting]);
 }
 
 @end

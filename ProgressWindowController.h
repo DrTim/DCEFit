@@ -6,8 +6,6 @@
 //
 //
 
-#if __OBJC__
-
 #import <Foundation/Foundation.h>
 
 @class DialogController;
@@ -39,13 +37,13 @@ extern NSString* StopRegistrationNotification;
     NSTextField *metricTextField;
     NSTextField *stepSizeTextField;
     NSTextField *stepSizeLabel;
+    NSTextField *numImagesLabel;
+    NSTextField *statusTextField;
     NSTextField *maxIterLabel;
     NSButton *stopButton;
     NSButton *saveButton;
     NSButton *quitButton;
     NSTextView *stopConditionTextView;
-
-    NSTextField *statusTextField;
 }
 
 @property (assign) IBOutlet NSProgressIndicator *progressIndicator;
@@ -56,8 +54,11 @@ extern NSString* StopRegistrationNotification;
 @property (assign) IBOutlet NSTextField *metricTextField;
 @property (assign) IBOutlet NSTextField *stepSizeTextField;
 @property (assign) IBOutlet NSTextField *stepSizeLabel;
+@property (assign) IBOutlet NSTextField *numImagesLabel;
+@property (assign) IBOutlet NSTextField *statusTextField;
 
 @property (assign) IBOutlet NSTextField *maxIterLabel;
+
 @property (assign) IBOutlet NSButton *stopButton;
 @property (assign) IBOutlet NSButton *saveButton;
 @property (assign) IBOutlet NSButton *quitButton;
@@ -66,8 +67,6 @@ extern NSString* StopRegistrationNotification;
 @property (assign) IBOutlet NSTextView *stopConditionTextView;
 
 @property (readonly) IBOutlet RegProgressValues* progressValues;
-
-//@property (assign) RegistrationObserver* observer;
 
 - (id)initWithDialogController:(DialogController*)parent;
 
@@ -97,6 +96,8 @@ extern NSString* StopRegistrationNotification;
 
 - (void)setMaxIterations:(NSNumber*)iterations;
 
+- (void)setNumImages:(NSNumber*)images;
+
 - (void)setStopCondition:(NSString*)stopCondition;
 
 - (void)setManager:(RegistrationManager*)manager;
@@ -106,9 +107,3 @@ extern NSString* StopRegistrationNotification;
 - (void)stopRegistration;
 
 @end
-
-#else
-
-typedef void ProgressWindowController;
-
-#endif

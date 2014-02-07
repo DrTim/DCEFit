@@ -41,53 +41,71 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
     setRegion(params.fixedImageRegion);
     //    createFixedImageMask(params.fixedImageMask);
     
-    for (unsigned idx = 0; idx < MAX_ARRAY_PARAMS; ++idx)
+    for (unsigned level = 0; level < MAX_ARRAY_PARAMS; ++level)
     {
         // Rigid registration
-        NSNumber* num = [params.rigidRegMMIHistogramBins objectAtIndex:idx];
-        rigidMMINumBins[idx] = [num unsignedIntValue];
-        num = [params.rigidRegMMISampleRate objectAtIndex:idx];
-        rigidMMISampleRate[idx] = [num floatValue];
-        num = [params.rigidRegLBFGSBCostConvergence objectAtIndex:idx];
-        rigidLBFGSBCostConvergence[idx] = [num floatValue];
-        num = [params.rigidRegLBFGSBGradientTolerance objectAtIndex:idx];
-        rigidLBFGSBGradientTolerance[idx] = [num floatValue];
-        num = [params.rigidRegLBFGSGradientConvergence objectAtIndex:idx];
-        rigidLBFGSGradientConvergence[idx] = [num floatValue];
-        num = [params.rigidRegLBFGSDefaultStepSize objectAtIndex:idx];
-        rigidLBFGSDefaultStepSize[idx] = [num floatValue];
-        num = [params.rigidRegRSGDMinStepSize objectAtIndex:idx];
-        rigidRSGDMinStepSize[idx] = [num floatValue];
-        num = [params.rigidRegRSGDMaxStepSize objectAtIndex:idx];
-        rigidRSGDMaxStepSize[idx] = [num floatValue];
-        num = [params.rigidRegRSGDRelaxationFactor objectAtIndex:idx];
-        rigidRSGDRelaxationFactor[idx] = [num floatValue];
-        num = [params.rigidRegMaxIter objectAtIndex:idx];
-        rigidMaxIter[idx] = [num unsignedIntValue];
+        NSNumber* num = [params.rigidRegMMIHistogramBins objectAtIndex:level];
+        rigidMMINumBins[level] = [num unsignedIntValue];
+        num = [params.rigidRegMMISampleRate objectAtIndex:level];
+        rigidMMISampleRate[level] = [num floatValue];
+        num = [params.rigidRegLBFGSBCostConvergence objectAtIndex:level];
+        rigidLBFGSBCostConvergence[level] = [num floatValue];
+        num = [params.rigidRegLBFGSBGradientTolerance objectAtIndex:level];
+        rigidLBFGSBGradientTolerance[level] = [num floatValue];
+        num = [params.rigidRegLBFGSGradientConvergence objectAtIndex:level];
+        rigidLBFGSGradientConvergence[level] = [num floatValue];
+        num = [params.rigidRegLBFGSDefaultStepSize objectAtIndex:level];
+        rigidLBFGSDefaultStepSize[level] = [num floatValue];
+
+        num = [params.rigidRegRSGDMinStepSize objectAtIndex:level];
+        rigidRSGDMinStepSize[level] = [num floatValue];
+        num = [params.rigidRegRSGDMaxStepSize objectAtIndex:level];
+        rigidRSGDMaxStepSize[level] = [num floatValue];
+        num = [params.rigidRegRSGDRelaxationFactor objectAtIndex:level];
+        rigidRSGDRelaxationFactor[level] = [num floatValue];
+
+        num = [params.rigidRegVersorOptTransScale objectAtIndex:level];
+        rigidVersorOptTransScale[level] = [num floatValue];
+        num = [params.rigidRegVersorOptMinStepSize objectAtIndex:level];
+        rigidVersorOptMinStepSize[level] = [num floatValue];
+        num = [params.rigidRegVersorOptMaxStepSize objectAtIndex:level];
+        rigidVersorOptMaxStepSize[level] = [num floatValue];
+        num = [params.rigidRegVersorOptRelaxationFactor objectAtIndex:level];
+        rigidVersorOptRelaxationFactor[level] = [num floatValue];
+
+        num = [params.rigidRegMaxIter objectAtIndex:level];
+        rigidMaxIter[level] = [num unsignedIntValue];
 
         // Deformable registration
-        num = [params.deformRegGridSize objectAtIndex:idx];
-        deformGridSizes[idx] = [num unsignedIntValue];
-        num = [params.deformRegMMIHistogramBins objectAtIndex:idx];
-        deformMMINumBins[idx] = [num unsignedIntValue];
-        num = [params.deformRegMMISampleRate objectAtIndex:idx];
-        deformMMISampleRate[idx] = [num floatValue];
-        num = [params.deformRegLBFGSBCostConvergence objectAtIndex:idx];
-        deformLBFGSBCostConvergence[idx] = [num floatValue];
-        num = [params.deformRegLBFGSBGradientTolerance objectAtIndex:idx];
-        deformLBFGSBGradientTolerance[idx] = [num floatValue];
-        num = [params.deformRegLBFGSGradientConvergence objectAtIndex:idx];
-        deformLBFGSGradientConvergence[idx] = [num floatValue];
-        num = [params.deformRegLBFGSDefaultStepSize objectAtIndex:idx];
-        deformLBFGSDefaultStepSize[idx] = [num floatValue];
-        num = [params.deformRegRSGDMinStepSize objectAtIndex:idx];
-        deformRSGDMinStepSize[idx] = [num floatValue];
-        num = [params.deformRegRSGDMaxStepSize objectAtIndex:idx];
-        deformRSGDMaxStepSize[idx] = [num floatValue];
-        num = [params.deformRegRSGDRelaxationFactor objectAtIndex:idx];
-        deformRSGDRelaxationFactor[idx] = [num floatValue];
-        num = [params.deformRegMaxIter objectAtIndex:idx];
-        deformMaxIter[idx] = [num unsignedIntValue];
+        NSArray* gridSizes = [NSArray arrayWithArray:[params.deformRegGridSizeArray objectAtIndex:level]];
+        for (unsigned dim = 0; dim < 3; ++dim)
+        {
+            num = [gridSizes objectAtIndex:dim];
+            deformGridSizes(level, dim) = [num unsignedIntValue];
+        }
+
+//        num = [params.deformRegGridSizeArray objectAtIndex:level] ;
+//        deformGridSizes[level] = [num unsignedIntValue];
+        num = [params.deformRegMMIHistogramBins objectAtIndex:level];
+        deformMMINumBins[level] = [num unsignedIntValue];
+        num = [params.deformRegMMISampleRate objectAtIndex:level];
+        deformMMISampleRate[level] = [num floatValue];
+        num = [params.deformRegLBFGSBCostConvergence objectAtIndex:level];
+        deformLBFGSBCostConvergence[level] = [num floatValue];
+        num = [params.deformRegLBFGSBGradientTolerance objectAtIndex:level];
+        deformLBFGSBGradientTolerance[level] = [num floatValue];
+        num = [params.deformRegLBFGSGradientConvergence objectAtIndex:level];
+        deformLBFGSGradientConvergence[level] = [num floatValue];
+        num = [params.deformRegLBFGSDefaultStepSize objectAtIndex:level];
+        deformLBFGSDefaultStepSize[level] = [num floatValue];
+        num = [params.deformRegRSGDMinStepSize objectAtIndex:level];
+        deformRSGDMinStepSize[level] = [num floatValue];
+        num = [params.deformRegRSGDMaxStepSize objectAtIndex:level];
+        deformRSGDMaxStepSize[level] = [num floatValue];
+        num = [params.deformRegRSGDRelaxationFactor objectAtIndex:level];
+        deformRSGDRelaxationFactor[level] = [num floatValue];
+        num = [params.deformRegMaxIter objectAtIndex:level];
+        deformMaxIter[level] = [num unsignedIntValue];
     }
 }
 
@@ -159,11 +177,22 @@ std::string ItkRegistrationParams::Print() const
             case RSGD:
                 str << "RSGD\n";
                 str << "  RSGD Min. step size: " << std::scientific << std::setprecision(2)
-                                                 << rigidRSGDMinStepSize << "\n";
+                << rigidRSGDMinStepSize << "\n";
                 str << "  RSGD Max. step size: " << std::scientific << std::setprecision(2)
-                                                 << rigidRSGDMaxStepSize << "\n";
+                << rigidRSGDMaxStepSize << "\n";
                 str << "  RSGD Relaxation factor: " << std::fixed << std::setprecision(2)
-                                                    << rigidRSGDRelaxationFactor << "\n";
+                << rigidRSGDRelaxationFactor << "\n";
+                break;
+            case Versor:
+                str << "Versor\n";
+                str << "  Versor translation scale: " << std::scientific << std::setprecision(2)
+                << rigidVersorOptTransScale << "\n";
+                str << "  Versor Min. step size: " << std::scientific << std::setprecision(2)
+                << rigidVersorOptMinStepSize << "\n";
+                str << "  Versor Max. step size: " << std::scientific << std::setprecision(2)
+                << rigidVersorOptMaxStepSize << "\n";
+                str << "  Versor Relaxation factor: " << std::fixed << std::setprecision(2)
+                << rigidVersorOptRelaxationFactor << "\n";
                 break;
             default:;
         }

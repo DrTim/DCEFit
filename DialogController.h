@@ -47,7 +47,7 @@
     // Rigid registration box
     IBOutlet NSButton *rigidRegEnableCheckBox;
     IBOutlet NSComboBox *rigidRegLevelsComboBox;
-    IBOutlet NSMatrix *rigidRegOptimizerRadioMatrix;
+    IBOutlet NSTextField *rigidRegOptimizerLabel;
     IBOutlet NSButton *rigidRegOptimizerConfigButton;
     IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
     IBOutlet NSButton *rigidRegMetricConfigButton;
@@ -57,7 +57,6 @@
     IBOutlet NSButton *deformShowFieldCheckBox;
     IBOutlet NSComboBox *deformRegLevelsComboBox;
     IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
-    NSButton *showDeformationFieldCheckBox;
     IBOutlet NSButton *deformRegOptimizerConfigButton;
     IBOutlet NSMatrix *deformRegMetricRadioMatrix;
     IBOutlet NSButton *deformRegMetricConfigButton;
@@ -72,6 +71,7 @@
     IBOutlet NSPanel *rigidRegLBFGSBOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegLBFGSOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegRSGDOptimizerConfigPanel;
+    IBOutlet NSPanel *rigidVersorOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegMMIMetricConfigPanel;
     IBOutlet NSPanel *deformRegLBFGSBOptimizerConfigPanel;
     IBOutlet NSPanel *deformRegLBFGSOptimizerConfigPanel;
@@ -82,6 +82,7 @@
     IBOutlet NSTableView *rigidRegLBFGSBOptimizerTableView;
     IBOutlet NSTableView *rigidRegLBFGSOptimizerTableView;
     IBOutlet NSTableView *rigidRegRSGDOptOptimizerTableView;
+    IBOutlet NSTableView *rigidRegVersorOptimizerTableView;
     IBOutlet NSTableView *rigidRegMMIMetricTableView;
     IBOutlet NSTableView *deformRegLBFGSBOptimizerTableView;
     IBOutlet NSTableView *deformRegLBFGSOptimizerTableView;
@@ -103,8 +104,8 @@
 
 @property (assign) IBOutlet NSButton *rigidRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *rigidRegLevelsComboBox;
+@property (assign) IBOutlet NSTextField* rigidRegOptimizerLabel;
 @property (assign) IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
-@property (assign) IBOutlet NSMatrix *rigidRegOptimizerRadioMatrix;
 
 @property (assign) IBOutlet NSButton *deformRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *deformRegLevelsComboBox;
@@ -138,7 +139,9 @@
 - (IBAction)rigidRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton*)sender;
 - (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender;
+
 - (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
@@ -151,7 +154,9 @@
  * @param filter The class derived from OsiriX's PluginFilter.
  * @return The instance (self).
  */
-//- (id)initWithViewerController:(ViewerController*)viewerController Filter:(DCEFitFilter*)filter;
+- (id)initWithViewerController:(ViewerController*)viewerController
+                        Filter:(DCEFitFilter*)filter
+                    SeriesInfo:(SeriesInfo*)info;
 
 - (void)registrationEnded:(BOOL)saveData;
 

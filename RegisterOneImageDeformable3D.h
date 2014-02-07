@@ -15,7 +15,7 @@
  */
 class RegisterOneImageDeformable3D : public RegisterOneImage<Image3D>
 {
-public:
+  public:
     /**
      * Constructor.
      * @param progressController ProgressController for updates and registration mamagement.
@@ -32,6 +32,7 @@ public:
      */
     virtual Image3D::Pointer registerImage(Image3D::Pointer movingImage, ResultCode& code);
 
+  private:
     /**
      * Set up the registration region. The region will be a 3D region defined by the 2D region
      * in the plane of the slices and the full thickness of the image.

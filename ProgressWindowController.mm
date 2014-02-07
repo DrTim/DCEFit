@@ -25,20 +25,21 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 @implementation ProgressWindowController
 
 @synthesize progressIndicator;
-@synthesize sliceTextField;
+@synthesize imageTextField;
 @synthesize stageTextField;
 @synthesize levelTextField;
 @synthesize iterationTextField;
 @synthesize metricTextField;
 @synthesize stepSizeTextField;
 @synthesize stepSizeLabel;
+@synthesize numImagesLabel;
+@synthesize statusTextField;
 @synthesize maxIterLabel;
 @synthesize stopButton;
 @synthesize saveButton;
 @synthesize quitButton;
 @synthesize stopConditionTextView;
 @synthesize progressValues;
-//@synthesize observer;
 
 - (id)initWithDialogController:(DialogController *)parent
 {
@@ -75,33 +76,30 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     [progressIndicator setMinValue:0.0];
     [progressIndicator setMaxValue:100.0];
     [progressIndicator setDoubleValue:1];
-    [sliceTextField setIntegerValue:1];
+    [imageTextField setIntegerValue:1];
     [stageTextField setStringValue:(NSString*)RegistrationStageRigid];
     [levelTextField setIntegerValue:1];
     [iterationTextField setIntegerValue:0];
     [metricTextField setDoubleValue:0.0];
     [statusTextField setStringValue:@"Performing registration."];
+    [numImagesLabel setIntValue:-1];
+    [maxIterLabel setIntValue:-1];
     [stopButton setEnabled:YES];
     [saveButton setEnabled:NO];
     [quitButton setEnabled:NO];
-
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(registrationCancelled)
-//                                                 name:StopRegistrationNotification
-//                                               object:nil];
 }
 
 - (void)setCurImage:(NSNumber *)imageNum
 {
     progressValues.curImage = [imageNum unsignedIntValue];
-    [sliceTextField setIntegerValue:progressValues.curSlice];
+    [imageTextField setIntegerValue:progressValues.curImage];
     [progressIndicator setDoubleValue:(double)progressValues.curImage];
 }
 
 - (void)incrCurImage
 {
     ++progressValues.curImage;
-    [sliceTextField setIntegerValue:progressValues.curImage];
+    [imageTextField setIntegerValue:progressValues.curImage];
     [progressIndicator setDoubleValue:(double)progressValues.curImage];
 }
 
@@ -131,7 +129,7 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     if ([stage isEqualToString:@"Rigid"])
     {
         OptimizerType optType = parentController_.regParams.rigidRegOptimizer;
-        if (optType == RSGD)
+        if ((optType == RSGD) || (optType == Versor))
         {
             [stepSizeTextField setHidden:NO];
             [stepSizeLabel setHidden:NO];
@@ -155,15 +153,15 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     // This is an effort to shoehorn namespaces and templates into Obj-C.
     // If *observer_ is not one of the acceptable classes observerDims
     // will be 0.
-    itk::Command* obs = static_cast<itk::Command*>(observer_);
+    itk::Command* obs = static_cast<itk::Command*>(observer);
     observer_ = obs;
 
-    if (dynamic_cast<RegistrationObserver<Image2D>* >(obs) != 0)
+    if (dynamic_cast<RegistrationObserver<Image2D>*>(obs) != 0)
         observerDims_ = 2;
-    else if (dynamic_cast<RegistrationObserver<Image3D>* >(obs) != 0)
+    else if (dynamic_cast<RegistrationObserver<Image3D>*>(obs) != 0)
         observerDims_ = 3;
 
-    NSAssert(((observerDims_ != 2) && (observerDims_ != 3)),
+    NSAssert(((observerDims_ == 2) || (observerDims_ == 3)),
         @"Argument 'observer' not an instantiation of RegistrationObserver<>");
 }
 
@@ -171,6 +169,12 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 {
     progressValues.maxIterations = [iterations unsignedIntValue];
     [maxIterLabel setIntegerValue:progressValues.maxIterations];
+}
+
+- (void)setNumImages:(NSNumber *)images
+{
+    progressValues.numImages = [images unsignedIntValue];
+    [numImagesLabel setIntValue:progressValues.numImages];
 }
 
 - (void)setStopCondition:(NSString *)stopCondition
@@ -188,15 +192,7 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     NSInteger i = NSRunAlertPanel(@"DCE-Fit", @"Stop registration?", @"Yes", @"No", nil);
     if (i == NSAlertDefaultReturn)
     {
-        if (observerDims_ == 2)
-            dynamic_cast<RegistrationObserver<Image2D>* >((itk::Command*)observer_)->StopRegistration();
-        else if (observerDims_ == 3)
-            dynamic_cast<RegistrationObserver<Image3D>* >((itk::Command*)observer_)->StopRegistration();
-
-        [regManager cancelRegistration];
-        [statusTextField setStringValue:@"Waiting for termination."];
-        registrationCancelled = YES;
-        [stopButton setEnabled:NO];
+        [self stopRegistration];
     }
 }
 
@@ -221,7 +217,7 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     LOG4M_TRACE(logger_, @"Enter");
 
     if (registrationCancelled)
-        [statusTextField setStringValue:@"Terminated by user."];
+        [statusTextField setStringValue:@"Registration cancelled by user."];
     else
         [statusTextField setStringValue:@"Registration finished normally."];
 
@@ -260,10 +256,23 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 
 - (void)stopRegistration
 {
+    itk::Command* obs = static_cast<itk::Command*>(observer_);
+
     if (observerDims_ == 2)
-        dynamic_cast<RegistrationObserver<Image2D>* >((itk::Command*)observer_)->StopRegistration();
+    {
+        RegistrationObserver<Image2D>* obs2D = dynamic_cast<RegistrationObserver<Image2D>*>(obs);
+        obs2D->StopRegistration();
+    }
     else if (observerDims_ == 3)
-        dynamic_cast<RegistrationObserver<Image3D>* >((itk::Command*)observer_)->StopRegistration();
+    {
+        RegistrationObserver<Image3D>* obs3D = dynamic_cast<RegistrationObserver<Image3D>*>(obs);
+        obs3D->StopRegistration();
+    }
+
+    [regManager cancelRegistration];
+    [statusTextField setStringValue:@"Waiting for termination."];
+    registrationCancelled = YES;
+    [stopButton setEnabled:NO];
 }
 
 @end

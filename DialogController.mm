@@ -39,7 +39,7 @@
 @synthesize rigidRegEnableCheckBox;
 @synthesize rigidRegLevelsComboBox;
 @synthesize rigidRegMetricRadioMatrix;
-@synthesize rigidRegOptimizerRadioMatrix;
+@synthesize rigidRegOptimizerLabel;
 @synthesize deformRegEnableCheckBox;
 @synthesize deformRegLevelsComboBox;
 @synthesize deformRegGridSizeTableView;
@@ -65,9 +65,12 @@ enum TableTags
     RigidMattesMIMetricTag = 6,
     DeformMattesMIMetricTag = 7,
     DeformBsplineGridSizeTag = 8,
+	RigidVersorOptimizerTag = 9
 };
 
-- (id)init
+- (id)initWithViewerController:(ViewerController *)viewerController
+                        Filter:(DCEFitFilter *)filter
+                    SeriesInfo:(SeriesInfo *)info
 {
     self = [super initWithWindowNibName:@"MainDialog"];
     if (self)
@@ -75,6 +78,9 @@ enum TableTags
         [self setupLogger];
         LOG4M_TRACE(logger_, @"");
         openSheet_ = nil;
+        viewerController1 = viewerController;
+        parentFilter = filter;
+        seriesInfo = info;
     }
     return self;
 }
@@ -106,8 +112,6 @@ enum TableTags
                                                  name:@"CloseViewerNotification"
                                                object:viewerController1];
     
-
-    [self connectToViewer:viewerController1];
     [self setupControlsFromParams];
 }
 
@@ -118,19 +122,15 @@ enum TableTags
     logger_ = [[Logger newInstance:loggerName] retain];
 }
 
-- (void)connectToViewer:(ViewerController *)viewer 
-{
-    viewerController1 = viewer;
-    regParams.flippedData = [[viewerController1 imageView] flippedData];
-}
-
 - (void)setupControlsFromParams
 {
     LOG4M_TRACE(logger_, @"Enter");
 
     // set things up based upon the image series information
     regParams.numImages = seriesInfo.numTimeSamples;
-    
+    regParams.rigidRegOptimizer = regParams.slicesPerImage == 1 ? RSGD : Versor;
+    regParams.flippedData = [[viewerController1 imageView] flippedData];
+
     // Find the first key image and assume that it is the desired fixed slice.
     if (seriesInfo.keyImageIdx == -1)
     {
@@ -148,13 +148,20 @@ enum TableTags
 
     // This function needs to be rewritten before using.
     //[self setupMaskFromFixedImage];
-    
+
+    // Set up combobox to reflect number of images in series
     NSInteger index = regParams.fixedImageNumber - 1;
     [fixedImageComboBox selectItemAtIndex:index];
     [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
                             objectValueForItemAtIndex:index]];
     [fixedImageComboBox reloadData];
-    
+
+    // Set up label to reflect number of dimensions in images
+    if (regParams.slicesPerImage == 1)
+        [rigidRegOptimizerLabel setStringValue:@"Regular Step Gradient descent"];
+    else
+        [rigidRegOptimizerLabel setStringValue:@"Centred Versor 3D"];
+
     // enable the controls based upon the parameters
     [self enableControls];
 }
@@ -200,7 +207,7 @@ enum TableTags
         LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key slice as registration region.", [regRoi name]);
 
         // we create the rectangle which just encloses the ROI
-        CGFloat xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
+        float xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
 
         // MyPoint is a wrapper class for NSRect defined in OsiriX.
         NSArray* roiPoints = [regRoi points];
@@ -333,6 +340,10 @@ enum TableTags
 
         parentFilter.dialogController = nil;
 
+        [progressWindowController close];
+        [progressWindowController autorelease];
+        progressWindowController = nil;
+
         [self close];
         [self autorelease];
     }
@@ -369,11 +380,6 @@ enum TableTags
     
     [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
     [progressWindowController showWindow:self];
-
-    // Show the panel as a sheet.
-    // It is closed in ProgressWindowController -(IBAction)stopButtonPressed:(NSButton*)sender
-    //[NSApp beginSheet:progressWindowController.window modalForWindow:self.window modalDelegate:nil
-    //   didEndSelector:nil contextInfo:nil];
 
     // Copy the current dataset and viewer. We will work only with the new one.
  	viewerController2 = [parentFilter copyCurrent4DViewerWindow];
@@ -419,14 +425,13 @@ enum TableTags
     //[self enableConfigButtons:NO];
     switch (regParams.rigidRegOptimizer)
     {
-        case LBFGSB:
-            openSheet_ = rigidRegLBFGSBOptimizerConfigPanel;
-            break;
-        case LBFGS:
-            openSheet_ = rigidRegLBFGSOptimizerConfigPanel;
-            break;
         case RSGD:
             openSheet_ = rigidRegRSGDOptimizerConfigPanel;
+            break;
+        case Versor:
+            openSheet_ = rigidVersorOptimizerConfigPanel;
+            break;
+        default:
             break;
     }
 
@@ -449,6 +454,8 @@ enum TableTags
             break;
         case RSGD:
             openSheet_ = deformRegRSGDOptimizerConfigPanel;
+            break;
+        default:
             break;
     }
 
@@ -503,54 +510,51 @@ enum TableTags
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender
 {
     [self closeSheet];
-    //[self enableConfigButtons:YES];
+}
+
+- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
 }
 
 - (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegMMIConfigCloseButtonPressed:(NSButton *)sender
 {
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 // NSWindowDelegate methods
@@ -633,6 +637,7 @@ enum TableTags
         case RigidLBFGSOptimizerTag:
         case RigidRSGDOptimizerTag:
         case RigidMattesMIMetricTag:
+        case RigidVersorOptimizerTag:
             retVal = regParams.rigidRegMultiresLevels;
             break;
         case DeformLBFGSBOptimizerTag:
@@ -717,6 +722,28 @@ enum TableTags
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
             }
             break;
+        case RigidVersorOptimizerTag:  // rigid Versor optim. parameters
+            if ([colIdent isEqualToString:@"minstepsize"])
+            {
+                retVal = [regParams.rigidRegVersorOptMinStepSize objectAtIndex:row];
+            }
+            else if ([colIdent isEqualToString:@"initstepsize"])
+            {
+                retVal = [regParams.rigidRegVersorOptMaxStepSize objectAtIndex:row];
+            }
+            else if ([colIdent isEqualToString:@"relaxation"])
+            {
+                retVal = [regParams.rigidRegVersorOptRelaxationFactor objectAtIndex:row];
+            }
+            else if ([colIdent isEqualToString:@"transscaling"])
+            {
+                retVal = [regParams.rigidRegVersorOptTransScale objectAtIndex:row];
+            }
+            else if ([colIdent isEqualToString:@"iterations"])
+            {
+                retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
+            }
+            break;
         case DeformLBFGSBOptimizerTag:  // deformable LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
             {
@@ -784,8 +811,18 @@ enum TableTags
             }
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
-            if ([colIdent isEqualToString:@"gridsize"])
-                retVal = [regParams.deformRegGridSize objectAtIndex:row];
+            if ([colIdent isEqualToString:@"x"])
+            {
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:0];
+            }
+            else if ([colIdent isEqualToString:@"y"])
+            {
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:1];
+            }
+            else if ([colIdent isEqualToString:@"z"])
+            {
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:2];
+            }
             break;
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in objectValueForTableColumn", (long)tag);
@@ -807,6 +844,7 @@ enum TableTags
     // This could be any of the tables so we again use their tags to select the data provided
     NSInteger tag = [tableView tag];
     NSString* colIdent = [tableColumn identifier];
+    NSMutableArray* array; // used below
 
     LOG4M_DEBUG(logger_, @"setObjectValue:forTableColumn tag = %ld, column ident = %@, object = %@",
                 (long)tag, colIdent, object);
@@ -859,7 +897,33 @@ enum TableTags
             else if ([colIdent isEqualToString:@"relaxation"])
             {
                 [regParams.rigidRegRSGDRelaxationFactor replaceObjectAtIndex:row
-                                                                   withObject:object];
+                                                                  withObject:object];
+            }
+            else if ([colIdent isEqualToString:@"iterations"])
+            {
+                [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
+            }
+            break;
+        case RigidVersorOptimizerTag:
+            if ([colIdent isEqualToString:@"minstepsize"])
+            {
+                [regParams.rigidRegVersorOptMinStepSize replaceObjectAtIndex:row
+                                                             withObject:object];
+            }
+            else if ([colIdent isEqualToString:@"initstepsize"])
+            {
+                [regParams.rigidRegVersorOptMaxStepSize replaceObjectAtIndex:row
+                                                             withObject:object];
+            }
+            else if ([colIdent isEqualToString:@"relaxation"])
+            {
+                [regParams.rigidRegVersorOptRelaxationFactor replaceObjectAtIndex:row
+                                                                  withObject:object];
+            }
+            else if ([colIdent isEqualToString:@"transscaling"])
+            {
+                [regParams.rigidRegVersorOptTransScale replaceObjectAtIndex:row
+                                                                  withObject:object];
             }
             else if ([colIdent isEqualToString:@"iterations"])
             {
@@ -947,8 +1011,23 @@ enum TableTags
             }
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
-            [regParams.deformRegGridSize replaceObjectAtIndex:row withObject:object];
+            if ([colIdent isEqualToString:@"x"])
+            {
+                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
+                [array replaceObjectAtIndex:0 withObject:object];
+            }
+            else if ([colIdent isEqualToString:@"y"])
+            {
+                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
+                [array replaceObjectAtIndex:1 withObject:object];
+            }
+            if ([colIdent isEqualToString:@"z"])
+            {
+                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
+                [array replaceObjectAtIndex:2 withObject:object];
+            }
             break;
+
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in tableView:setObjectValue:forTableColumn:row", (long)tag);
             [NSException raise:NSInternalInconsistencyException
@@ -967,6 +1046,7 @@ enum TableTags
     [rigidRegLBFGSBOptimizerTableView reloadData];
     [rigidRegLBFGSOptimizerTableView reloadData];
     [rigidRegRSGDOptOptimizerTableView reloadData];
+    [rigidRegVersorOptimizerTableView reloadData];
     [rigidRegMMIMetricTableView reloadData];
     [deformRegLBFGSBOptimizerTableView reloadData];
     [deformRegLBFGSOptimizerTableView reloadData];
@@ -999,6 +1079,7 @@ enum TableTags
             [rigidRegLBFGSBOptimizerTableView reloadData];
             [rigidRegLBFGSOptimizerTableView reloadData];
             [rigidRegRSGDOptOptimizerTableView reloadData];
+            [rigidRegVersorOptimizerTableView reloadData];
             [rigidRegMMIMetricTableView reloadData];
             break;
 
@@ -1068,7 +1149,7 @@ enum TableTags
     switch (tag)
     {
         case 0:  // fixed image number
-            retVal = (NSInteger)regParams.numImages;
+            retVal = (NSInteger)seriesInfo.numTimeSamples;
             break;
 
         case 1:  // rigid levels
@@ -1099,7 +1180,7 @@ enum TableTags
     [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricRadioMatrix setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricConfigButton setEnabled:regParams.rigidRegEnabled];
-    [rigidRegOptimizerRadioMatrix setEnabled:regParams.rigidRegEnabled];
+    [rigidRegOptimizerLabel setEnabled:regParams.rigidRegEnabled];
     [rigidRegOptimizerConfigButton setEnabled:regParams.rigidRegEnabled];
 
     if (regParams.rigidRegEnabled)
@@ -1180,7 +1261,7 @@ enum TableTags
 
     [rigidRegEnableCheckBox setEnabled:NO];
     [rigidRegLevelsComboBox setEnabled:NO];
-    [rigidRegOptimizerRadioMatrix setEnabled:NO];
+    [rigidRegOptimizerLabel setEnabled:NO];
     [rigidRegOptimizerConfigButton setEnabled:NO];
     [rigidRegMetricRadioMatrix setEnabled:NO];
     [rigidRegMetricConfigButton setEnabled:NO];
@@ -1216,7 +1297,7 @@ enum TableTags
     [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricRadioMatrix setEnabled:regParams.rigidRegEnabled];
     [rigidRegOptimizerConfigButton setEnabled:regParams.rigidRegEnabled];
-    [rigidRegOptimizerRadioMatrix setEnabled:regParams.rigidRegEnabled];
+    [rigidRegOptimizerLabel setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricConfigButton setEnabled:regParams.rigidRegEnabled];
     if (regParams.rigidRegEnabled)
     {

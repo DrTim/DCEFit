@@ -38,9 +38,11 @@
                 <outlet property="rigidRegMetricConfigButton" destination="127" id="621"/>
                 <outlet property="rigidRegMetricRadioMatrix" destination="116" id="603"/>
                 <outlet property="rigidRegOptimizerConfigButton" destination="123" id="620"/>
-                <outlet property="rigidRegOptimizerRadioMatrix" destination="109" id="602"/>
+                <outlet property="rigidRegOptimizerLabel" destination="F8Y-ig-lek" id="C1x-0F-Uw2"/>
                 <outlet property="rigidRegRSGDOptOptimizerTableView" destination="991" id="1006"/>
                 <outlet property="rigidRegRSGDOptimizerConfigPanel" destination="963" id="1005"/>
+                <outlet property="rigidRegVersorOptimizerTableView" destination="QO2-CE-7zj" id="5oS-mQ-R4f"/>
+                <outlet property="rigidVersorOptimizerConfigPanel" destination="d0a-EX-YBo" id="t4e-At-nBK"/>
                 <outlet property="seriesDescriptionTextField" destination="14" id="597"/>
                 <outlet property="showDeformationFieldCheckBox" destination="1250" id="1256"/>
                 <outlet property="window" destination="1" id="836"/>
@@ -51,24 +53,24 @@
         <window title="DCEFit" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" wantsToBeColor="NO" frameAutosaveName="DCEFitMainDialog" animationBehavior="default" id="1" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="491" height="803"/>
+            <rect key="contentRect" x="196" y="240" width="491" height="821"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="491" height="803"/>
+                <rect key="frame" x="0.0" y="0.0" width="491" height="821"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView id="3">
-                        <rect key="frame" x="13" y="10" width="465" height="787"/>
+                        <rect key="frame" x="13" y="10" width="465" height="805"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Registration" identifier="1" id="5">
                                 <view key="view" id="6">
-                                    <rect key="frame" x="10" y="33" width="445" height="741"/>
+                                    <rect key="frame" x="10" y="33" width="445" height="759"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <box autoresizesSubviews="NO" title="Top" borderType="line" titlePosition="noTitle" id="19">
-                                            <rect key="frame" x="14" y="614" width="417" height="126"/>
+                                            <rect key="frame" x="14" y="632" width="417" height="126"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <view key="contentView">
                                                 <rect key="frame" x="1" y="1" width="415" height="124"/>
@@ -124,51 +126,21 @@
                                             <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
                                         <box autoresizesSubviews="NO" title="Rigid Registration" borderType="line" id="157">
-                                            <rect key="frame" x="14" y="398" width="417" height="212"/>
+                                            <rect key="frame" x="14" y="416" width="417" height="212"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <view key="contentView">
                                                 <rect key="frame" x="1" y="1" width="415" height="196"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <box autoresizesSubviews="NO" title="Optimizer" borderType="line" id="134">
-                                                        <rect key="frame" x="15" y="10" width="181" height="126"/>
+                                                        <rect key="frame" x="15" y="26" width="181" height="110"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
-                                                            <rect key="frame" x="1" y="1" width="179" height="110"/>
+                                                            <rect key="frame" x="1" y="1" width="179" height="94"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <matrix toolTip="Select the optimizer." verticalHuggingPriority="750" allowsEmptySelection="NO" id="109">
-                                                                    <rect key="frame" x="18" y="42" width="143" height="58"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    <size key="cellSize" width="143" height="18"/>
-                                                                    <size key="intercellSpacing" width="4" height="2"/>
-                                                                    <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="110">
-                                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <cells>
-                                                                        <column>
-                                                                            <buttonCell type="radio" title="LBFGSB" imagePosition="left" alignment="left" state="on" tag="1" inset="2" id="111">
-                                                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                <font key="font" metaFont="smallSystem"/>
-                                                                            </buttonCell>
-                                                                            <buttonCell type="radio" title="LBFGS" imagePosition="left" alignment="left" inset="2" id="112">
-                                                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                <font key="font" metaFont="smallSystem"/>
-                                                                            </buttonCell>
-                                                                            <buttonCell type="radio" title="Gradient Descent" imagePosition="left" alignment="left" inset="2" id="131">
-                                                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                                <font key="font" metaFont="smallSystem"/>
-                                                                            </buttonCell>
-                                                                        </column>
-                                                                    </cells>
-                                                                    <connections>
-                                                                        <binding destination="630" name="selectedIndex" keyPath="self.rigidRegOptimizer" id="645"/>
-                                                                    </connections>
-                                                                </matrix>
                                                                 <button toolTip="Configure the selected optimizer." verticalHuggingPriority="750" id="123">
-                                                                    <rect key="frame" x="12" y="7" width="103" height="32"/>
+                                                                    <rect key="frame" x="38" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="124">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -178,20 +150,29 @@
                                                                         <action selector="rigidRegOptimizerConfigButtonPressed:" target="-2" id="674"/>
                                                                     </connections>
                                                                 </button>
+                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="F8Y-ig-lek">
+                                                                    <rect key="frame" x="20" y="43" width="144" height="43"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" placeholderString="Optimiser" id="iaU-IZ-eWT">
+                                                                        <font key="font" metaFont="system"/>
+                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                </textField>
                                                             </subviews>
                                                         </view>
                                                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </box>
                                                     <box autoresizesSubviews="NO" title="Metric" borderType="line" id="148">
-                                                        <rect key="frame" x="198" y="10" width="202" height="126"/>
+                                                        <rect key="frame" x="198" y="26" width="202" height="110"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
-                                                            <rect key="frame" x="1" y="1" width="200" height="110"/>
+                                                            <rect key="frame" x="1" y="1" width="200" height="94"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <matrix toolTip="Select the metric." verticalHuggingPriority="750" allowsEmptySelection="NO" id="116">
-                                                                    <rect key="frame" x="18" y="62" width="164" height="38"/>
+                                                                    <rect key="frame" x="18" y="46" width="164" height="38"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                     <size key="cellSize" width="164" height="18"/>
@@ -218,7 +199,7 @@
                                                                     </connections>
                                                                 </matrix>
                                                                 <button toolTip="Configure the selected metric." verticalHuggingPriority="750" id="127">
-                                                                    <rect key="frame" x="12" y="7" width="103" height="32"/>
+                                                                    <rect key="frame" x="49" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="128">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -286,14 +267,14 @@
                                             <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
                                         <box autoresizesSubviews="NO" title="Deformable Registration" borderType="line" id="243">
-                                            <rect key="frame" x="14" y="64" width="417" height="330"/>
+                                            <rect key="frame" x="14" y="64" width="417" height="348"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <view key="contentView">
-                                                <rect key="frame" x="1" y="1" width="415" height="314"/>
+                                                <rect key="frame" x="1" y="1" width="415" height="332"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <box autoresizesSubviews="NO" title="Optimizer" borderType="line" id="244">
-                                                        <rect key="frame" x="15" y="130" width="181" height="124"/>
+                                                        <rect key="frame" x="15" y="148" width="181" height="124"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
                                                             <rect key="frame" x="1" y="1" width="179" height="108"/>
@@ -346,7 +327,7 @@
                                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </box>
                                                     <box autoresizesSubviews="NO" title="Metric" borderType="line" id="256">
-                                                        <rect key="frame" x="198" y="130" width="202" height="124"/>
+                                                        <rect key="frame" x="198" y="148" width="202" height="124"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
                                                             <rect key="frame" x="1" y="1" width="200" height="108"/>
@@ -396,7 +377,7 @@
                                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </box>
                                                     <box autoresizesSubviews="NO" title="Enabled Box" borderType="line" titlePosition="noTitle" id="257">
-                                                        <rect key="frame" x="15" y="258" width="385" height="48"/>
+                                                        <rect key="frame" x="15" y="276" width="385" height="48"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
                                                             <rect key="frame" x="1" y="1" width="383" height="46"/>
@@ -454,34 +435,78 @@
                                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </box>
                                                     <box autoresizesSubviews="NO" title="Bspline Grid Size" borderType="line" id="403">
-                                                        <rect key="frame" x="19" y="10" width="177" height="115"/>
+                                                        <rect key="frame" x="19" y="10" width="169" height="134"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
-                                                            <rect key="frame" x="1" y="1" width="175" height="99"/>
+                                                            <rect key="frame" x="1" y="1" width="167" height="118"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <scrollView horizontalHuggingPriority="1000" verticalHuggingPriority="750" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="379">
-                                                                    <rect key="frame" x="18" y="11" width="139" height="78"/>
+                                                                    <rect key="frame" x="18" y="14" width="131" height="94"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <clipView key="contentView" id="BPe-4Y-LEM">
-                                                                        <rect key="frame" x="1" y="1" width="137" height="76"/>
+                                                                        <rect key="frame" x="1" y="17" width="129" height="76"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <tableView toolTip="Set the size of the grid of Bspline control points." verticalHuggingPriority="750" tag="8" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="380">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="137" height="76"/>
+                                                                            <tableView toolTip="Set the size of the grid of Bspline control points." verticalHuggingPriority="750" tag="8" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" headerView="M4c-p0-2AG" id="380">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="129" height="76"/>
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                                                <tableViewGridLines key="gridStyleMask" dashed="YES"/>
+                                                                                <tableViewGridLines key="gridStyleMask" vertical="YES" dashed="YES"/>
                                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                 <tableColumns>
-                                                                                    <tableColumn identifier="gridsize" width="134" minWidth="40" maxWidth="1000" id="384">
-                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Bspline Grid Size">
+                                                                                    <tableColumn identifier="x" width="40" minWidth="40" maxWidth="40" headerToolTip="Number of Bspline nodes in X direction." id="384">
+                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="X">
                                                                                             <font key="font" metaFont="smallSystem"/>
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                                                         </tableHeaderCell>
                                                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="387">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="fDA-Rf-V61">
+                                                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                                                <metadata>
+                                                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                                                </metadata>
+                                                                                            </numberFormatter>
+                                                                                            <font key="font" metaFont="system"/>
+                                                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                        </textFieldCell>
+                                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                    </tableColumn>
+                                                                                    <tableColumn identifier="y" width="40" minWidth="40" maxWidth="40" headerToolTip="Number of Bspline nodes in Y direction." id="UTq-HX-Wbq">
+                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Y">
+                                                                                            <font key="font" metaFont="smallSystem"/>
+                                                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                                        </tableHeaderCell>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="8xc-Ab-PKX">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="gzd-Zx-qt6">
+                                                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                                                <metadata>
+                                                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                                                </metadata>
+                                                                                            </numberFormatter>
+                                                                                            <font key="font" metaFont="system"/>
+                                                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                        </textFieldCell>
+                                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                    </tableColumn>
+                                                                                    <tableColumn identifier="z" width="40" minWidth="40" maxWidth="40" headerToolTip="Number of Bspline nodes in Z direction." id="JGc-80-xGO">
+                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Z">
+                                                                                            <font key="font" metaFont="smallSystem"/>
+                                                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                                        </tableHeaderCell>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="hRY-iN-zPB">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="cVk-vp-NAg">
+                                                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                                                <metadata>
+                                                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                                                </metadata>
+                                                                                            </numberFormatter>
                                                                                             <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -497,13 +522,17 @@
                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </clipView>
                                                                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="381">
-                                                                        <rect key="frame" x="-7" y="-14" width="0.0" height="15"/>
+                                                                        <rect key="frame" x="1" y="62" width="128" height="15"/>
                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                     </scroller>
                                                                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="383">
                                                                         <rect key="frame" x="-14" y="-7" width="15" height="0.0"/>
                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                     </scroller>
+                                                                    <tableHeaderView key="headerView" id="M4c-p0-2AG">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="129" height="17"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
+                                                                    </tableHeaderView>
                                                                 </scrollView>
                                                             </subviews>
                                                         </view>
@@ -557,7 +586,7 @@ DQ
                             </tabViewItem>
                             <tabViewItem label="Fitting" identifier="2" id="431">
                                 <view key="view" id="432">
-                                    <rect key="frame" x="10" y="33" width="445" height="741"/>
+                                    <rect key="frame" x="10" y="33" width="445" height="759"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
@@ -592,7 +621,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="691">
                                     <rect key="frame" x="18" y="14" width="361" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Rigid LBFGSB Optimizer" drawsBackground="YES" id="692">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="LBFGSB Optimizer" drawsBackground="YES" id="692">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -911,7 +940,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="974">
                                     <rect key="frame" x="18" y="14" width="413" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Rigid Gradient Descent Optimizer" drawsBackground="YES" id="979">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Regular Step Gradient Descent Optimizer" drawsBackground="YES" id="979">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -944,6 +973,27 @@ DQ
                                                 <tableViewGridLines key="gridStyleMask" vertical="YES" dashed="YES"/>
                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                 <tableColumns>
+                                                    <tableColumn identifier="initstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="The step size at the start of optimization." id="993">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Initial Step Size">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="997">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="998">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <integer key="minimum" value="0"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                    <real key="inspectorSampleValue" value="1234567.1234500001"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
                                                     <tableColumn identifier="minstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="Convergence is achieved when this gradient is reached. Typical value: 1.0e-5." id="994">
                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Min. Step Size">
                                                             <font key="font" metaFont="smallSystem"/>
@@ -957,27 +1007,6 @@ DQ
                                                                 <metadata>
                                                                     <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
-                                                                </metadata>
-                                                            </numberFormatter>
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    <tableColumn identifier="initstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="The step size at the start of optimization." id="993">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Max. Step Size">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="997">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="998">
-                                                                <real key="roundingIncrement" value="0.0"/>
-                                                                <integer key="minimum" value="0"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                    <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
@@ -1072,6 +1101,208 @@ DQ
                 </subviews>
             </view>
         </window>
+        <window title="RigidVersor3DOpt" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hidesOnDeactivate="YES" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="d0a-EX-YBo" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="272" y="172" width="586" height="247"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <view key="contentView" id="5rw-wk-9JZ">
+                <rect key="frame" x="0.0" y="0.0" width="586" height="247"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box autoresizesSubviews="NO" title="Box" borderType="line" titlePosition="noTitle" id="wuv-Ki-3a6">
+                        <rect key="frame" x="17" y="184" width="552" height="45"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="550" height="43"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5Dh-9O-B5Y">
+                                    <rect key="frame" x="18" y="14" width="514" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Versor 3D Optimizer" drawsBackground="YES" id="COH-7N-JRP">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <box autoresizesSubviews="NO" title="Box" borderType="line" titlePosition="noTitle" id="BTz-XW-dpI">
+                        <rect key="frame" x="17" y="19" width="552" height="163"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="550" height="161"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" id="Fsz-tg-Bz4">
+                                    <rect key="frame" x="18" y="55" width="514" height="94"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <clipView key="contentView" id="Hkx-Uj-Oh3">
+                                        <rect key="frame" x="1" y="17" width="512" height="76"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <tableView verticalHuggingPriority="750" tag="9" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" headerView="qmX-yv-yLK" id="QO2-CE-7zj">
+                                                <rect key="frame" x="0.0" y="0.0" width="515" height="76"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <size key="intercellSpacing" width="3" height="2"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <tableViewGridLines key="gridStyleMask" vertical="YES" dashed="YES"/>
+                                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                <tableColumns>
+                                                    <tableColumn identifier="initstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="The step size at the start of optimization." id="8vC-cD-ube">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Initial Step Size">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="vRa-A8-z7H">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="qh6-s8-efR">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <integer key="minimum" value="0"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                    <real key="inspectorSampleValue" value="0.001"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                    <tableColumn identifier="minstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="Convergence is achieved when this gradient is reached. Typical value: 1.0e-5." id="zN5-td-E6J">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Min. Step Size">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="HYt-C0-Vgq">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="fKX-6p-EQy">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <real key="minimum" value="0.0"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                    <real key="inspectorSampleValue" value="-0.000753456"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                    <tableColumn identifier="relaxation" width="100" minWidth="100" maxWidth="100" id="OxQ-8M-eVC">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Relaxation Factor">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="BZn-ZX-xvL">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1Ub-0c-MGZ">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <integer key="minimum" value="0"/>
+                                                                <integer key="maximum" value="1"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <string key="headerToolTip">Variable which controls the change in step size. Range 0 to1. Small values make the optimizer slower and more stable while larger ones make it faster but less stable.</string>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                    <tableColumn identifier="transscaling" width="100" minWidth="100" maxWidth="100" headerToolTip="Translation scaling factor. Range 1e-6 to 1e-2." id="q8U-Uc-VWa">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Trans. Scaling">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="A99-Pp-mcq">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="bCe-zB-Rcg">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <real key="minimum" value="9.9999999999999995e-07"/>
+                                                                <real key="maximum" value="0.10000000000000001"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                    <real key="inspectorSampleValue" value="0.001"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                    <tableColumn identifier="iterations" width="100" minWidth="100" maxWidth="100" headerToolTip="Maximum number of iterations before termination of optimization." id="tGZ-Qh-zTr">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Max. Iterations">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="ZwR-29-sxa">
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="cdf-es-Smu">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <real key="minimum" value="1"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                </tableColumns>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="-2" id="jnG-I1-MLf"/>
+                                                    <outlet property="delegate" destination="-2" id="4JK-Wd-cHR"/>
+                                                </connections>
+                                            </tableView>
+                                        </subviews>
+                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </clipView>
+                                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="QkX-Vc-VNH">
+                                        <rect key="frame" x="-100" y="-100" width="411" height="15"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="bFB-SG-9Gd">
+                                        <rect key="frame" x="-100" y="-100" width="15" height="0.0"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <tableHeaderView key="headerView" id="qmX-yv-yLK">
+                                        <rect key="frame" x="0.0" y="0.0" width="515" height="17"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </tableHeaderView>
+                                </scrollView>
+                                <button verticalHuggingPriority="750" id="Mha-fk-JNW">
+                                    <rect key="frame" x="238" y="7" width="75" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yjt-kG-nBq">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="rigidRegVersorConfigCloseButtonPressed:" target="-2" id="rPl-tR-DS0"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                </subviews>
+            </view>
+        </window>
         <window title="DeformLBFGSBOpt" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hidesOnDeactivate="YES" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="1008" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -1091,7 +1322,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1023">
                                     <rect key="frame" x="18" y="14" width="361" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Deformable LBFGSB Optimizer" drawsBackground="YES" id="1024">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="LBFGSB Optimizer" drawsBackground="YES" id="1024">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -1252,7 +1483,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1064">
                                     <rect key="frame" x="18" y="14" width="361" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Deformable LBFGS Optimizer" drawsBackground="YES" id="1069">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="LBFGS Optimizer" drawsBackground="YES" id="1069">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -1410,7 +1641,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1135">
                                     <rect key="frame" x="18" y="14" width="414" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Deformable Gradient Descent Optimizer" drawsBackground="YES" id="1136">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Regular Step Gradient Descent Optimizer" drawsBackground="YES" id="1136">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -1443,6 +1674,27 @@ DQ
                                                 <tableViewGridLines key="gridStyleMask" vertical="YES" dashed="YES"/>
                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                 <tableColumns>
+                                                    <tableColumn identifier="initstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="The step size at the start of optimization." id="1123">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Initial Step Size">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1127">
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1128">
+                                                                <real key="roundingIncrement" value="0.0"/>
+                                                                <integer key="minimum" value="0"/>
+                                                                <metadata>
+                                                                    <bool key="localizesFormat" value="YES"/>
+                                                                    <real key="inspectorSampleValue" value="1234567.1234500001"/>
+                                                                </metadata>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
                                                     <tableColumn identifier="minstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="Convergence is achieved when this gradient is reached. Typical value: 1.0e-5." id="1122">
                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Min. Step Size">
                                                             <font key="font" metaFont="smallSystem"/>
@@ -1456,27 +1708,6 @@ DQ
                                                                 <metadata>
                                                                     <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
-                                                                </metadata>
-                                                            </numberFormatter>
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                    </tableColumn>
-                                                    <tableColumn identifier="initstepsize" width="100" minWidth="100" maxWidth="100" headerToolTip="The step size at the start of optimization." id="1123">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Max. Step Size">
-                                                            <font key="font" metaFont="smallSystem"/>
-                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1127">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1128">
-                                                                <real key="roundingIncrement" value="0.0"/>
-                                                                <integer key="minimum" value="0"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                    <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
@@ -1695,7 +1926,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1194">
                                     <rect key="frame" x="15" y="9" width="246" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Rigid Mattes MI Metric" id="1195">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Mattes Mutual Information Metric" id="1195">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1833,7 +2064,7 @@ DQ
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1175">
                                     <rect key="frame" x="15" y="9" width="246" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Deformable Mattes MI Metric" id="1179">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Mattes Mutual Information Metric" id="1179">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

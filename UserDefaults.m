@@ -28,13 +28,17 @@ NSString* const RigidRegLBFGSDefaultStepSizeKey = @"RigidRegLBFGSDefaultStepSize
 NSString* const RigidRegRSGDMinStepSizeKey = @"RigidRegRSGDMinStepSizeKey";
 NSString* const RigidRegRSGDMaxStepSizeKey = @"RigidRegRSGDMaxStepSizeKey";
 NSString* const RigidRegRSGDRelaxationFactorKey = @"RigidRegRSGDRelaxationFactor";
+NSString* const RigidRegVersorOptTransScaleKey = @"RigidRegVersorOptTransScale";
+NSString* const RigidRegVersorOptMinStepSizeKey = @"RigidRegVersorOptMinStepSize";
+NSString* const RigidRegVersorOptMaxStepSizeKey = @"RigidRegVersorOptMaxStepSize";
+NSString* const RigidRegVersorOptRelaxationFactorKey = @"RigidRegVersorOptRelaxationFactor";
 NSString* const RigidRegMaxIterKey = @"RigidRegMaxIter";
 
 // deformable regitration parameters
 NSString* const DeformRegEnabledKey = @"DeformRegEnable";
 NSString* const DeformShowFieldKey = @"DeformShowField";
 NSString* const DeformRegMultiresLevelsKey = @"DeformRegMultiresLevels";
-NSString* const DeformRegGridSizeKey = @"DeformRegGridSize";
+NSString* const DeformRegGridSizeArrayKey = @"DeformRegGridSizeArray";
 NSString* const DeformRegMetricKey = @"DeformRegMetric";
 NSString* const DeformRegOptimizerKey = @"DeformRegOptimizer";
 NSString* const DeformRegMMIHistogramBinsKey = @"DeformRegMMIHistogramBins";
@@ -102,12 +106,17 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@1.0, @1.0, @1.0, @1.0, nil], RigidRegMMISampleRateKey,
      [NSArray arrayWithObjects:@1e9, @1e9, @1e9, @1e9, nil], RigidRegLBFGSBCostConvergenceKey,
      [NSArray arrayWithObjects:@0.0, @0.0, @0.0, @0.0, nil], RigidRegLBFGSBGradientToleranceKey,
-     [NSArray arrayWithObjects:@1e-5, @1e-5, @1e-5, @1e-5, nil],
-                               RigidRegLBFGSGradientConvergenceKey,
+     [NSArray arrayWithObjects:@1e-5, @1e-5, @1e-5, @1e-5, nil], RigidRegLBFGSGradientConvergenceKey,
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], RigidRegLBFGSDefaultStepSizeKey,
      [NSArray arrayWithObjects:@1e-6, @1e-5, @1e-4, @1e-4, nil], RigidRegRSGDMinStepSizeKey,
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], RigidRegRSGDMaxStepSizeKey,
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], RigidRegRSGDRelaxationFactorKey,
+
+     [NSArray arrayWithObjects:@1e-3, @1e-3, @1e-3, @1e-3, nil], RigidRegVersorOptTransScaleKey,
+     [NSArray arrayWithObjects:@1e-6, @1e-5, @1e-4, @1e-4, nil], RigidRegVersorOptMinStepSizeKey,
+     [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], RigidRegVersorOptMaxStepSizeKey,
+     [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], RigidRegVersorOptRelaxationFactorKey,
+
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], RigidRegMaxIterKey,
 
      [NSNumber numberWithBool:YES], DeformRegEnabledKey,
@@ -115,7 +124,10 @@ static UserDefaults* sharedInstance;
      [NSNumber numberWithUnsignedInt:3], DeformRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], DeformRegMetricKey,
      [NSNumber numberWithInt:LBFGSB], DeformRegOptimizerKey,
-     [NSArray arrayWithObjects:@21, @11, @7, @5, nil], DeformRegGridSizeKey,
+     [NSArray arrayWithObjects:[NSArray arrayWithObjects:@21, @21, @21, nil],
+                               [NSArray arrayWithObjects:@15, @15, @15, nil],
+                               [NSArray arrayWithObjects:@11, @11, @11, nil],
+                               [NSArray arrayWithObjects:@9, @9, @9, nil], nil], DeformRegGridSizeArrayKey,
      [NSArray arrayWithObjects:@50, @50, @50, @50, nil], DeformRegMMIHistogramBinsKey,
      [NSArray arrayWithObjects:@1.0, @1.0, @1.0, @1.0, nil], DeformRegMMISampleRateKey,
      [NSArray arrayWithObjects:@1e9, @1e9, @1e9, @1e9, nil], DeformRegLBFGSBCostConvergenceKey,
@@ -188,6 +200,16 @@ static UserDefaults* sharedInstance;
                      forKey:RigidRegRSGDMaxStepSizeKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegRSGDRelaxationFactor]
                      forKey:RigidRegRSGDRelaxationFactorKey];
+
+    [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegVersorOptTransScale]
+                     forKey:RigidRegVersorOptTransScaleKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegVersorOptMinStepSize]
+                     forKey:RigidRegVersorOptMinStepSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegVersorOptMaxStepSize]
+                     forKey:RigidRegVersorOptMaxStepSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegVersorOptRelaxationFactor]
+                     forKey:RigidRegVersorOptRelaxationFactorKey];
+
     [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegMaxIter]
                      forKey:RigidRegMaxIterKey];
 
@@ -201,8 +223,8 @@ static UserDefaults* sharedInstance;
                      forKey:DeformRegMetricKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.deformRegOptimizer]
                      forKey:DeformRegOptimizerKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegGridSize]
-                     forKey:DeformRegGridSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegGridSizeArray]
+                     forKey:DeformRegGridSizeArrayKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMMIHistogramBins]
                      forKey:DeformRegMMIHistogramBinsKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMMISampleRate]

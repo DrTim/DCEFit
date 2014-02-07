@@ -19,6 +19,7 @@
 #import "DCEFitFilter.h"
 #import "DialogController.h"
 #import "SeriesInfo.h"
+#import "LoadingImagesWindowController.h"
 
 @implementation DCEFitFilter
 
@@ -84,17 +85,22 @@
         return 1;
     }
 
-    //[self parseDataSet];  // show structure of data
-    [self extractSeriesInfo:seriesInfo];
+    //[self parseDataSet];  // show structure of data, debugging only
+
+    LoadingImagesWindowController* liwc = [[[LoadingImagesWindowController alloc]
+                                           initWithWindowNibName:@"LoadingImagesWindow"]
+                                           autorelease];
+    [liwc.window makeKeyAndOrderFront:self];
+    [self extractSeriesInfo:seriesInfo withProgressWindow:liwc];
+    [liwc close];
 
     LOG4M_DEBUG(logger_, @"seriesInfo: %@", seriesInfo);
 
     if (dialogController == nil)
     {
-        dialogController = [[DialogController alloc] init];
-        dialogController.parentFilter = self;
-        dialogController.viewerController1 = viewerController;
-        dialogController.seriesInfo = seriesInfo;
+        dialogController = [[DialogController alloc] initWithViewerController:viewerController
+                                                                       Filter:self
+                                                                   SeriesInfo:seriesInfo];
 
         [dialogController.window setFrameAutosaveName:@"DCEFitMainDialog"];
         [dialogController.window makeKeyAndOrderFront:nil];
@@ -109,7 +115,7 @@
 - (void)setupSystemLogger
 {
     // Now the Log4m logger
-    SetupLogger(LOGGER_NAME, LOG4M_LEVEL_DEBUG);
+    SetupLogger(LOGGER_NAME, LOG4M_LEVEL_TRACE);
 }
 
 - (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -192,8 +198,10 @@
 }
 
 - (void)extractSeriesInfo:(SeriesInfo*)info
+       withProgressWindow:(LoadingImagesWindowController*)progWindow
 {
     LOG4M_TRACE(logger_, @"Enter");
+
 
     BOOL keyFound = NO;  // used for finding first key image below
     unsigned numTimeImages = (unsigned)[viewerController maxMovieIndex];
@@ -212,7 +220,10 @@
         LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
               info.numTimeSamples, info.slicesPerImage);
     }
-    
+
+    // initialise the progress indicator
+    [progWindow setNumImages:info.numTimeSamples];
+
     NSArray* firstImage = [viewerController pixList:0];
     DCMPix* firstPix = [firstImage objectAtIndex:0];
 
@@ -225,6 +236,9 @@
     for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
     {
         LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+
+        // Bump the progress indicator
+        [progWindow incrementIndicator];
 
         // The ROIs for this image.
         NSArray* roiList = [viewerController roiList:timeIdx];
@@ -247,10 +261,7 @@
             if ((isKey) && (!keyFound))
             {
                 // Image may be displayed flipped. We need the real index.
-//                if (info.isFlipped)
-//                    info.keySliceIdx = sliceIdx - numSlices - 1;
-//                else
-                    info.keySliceIdx = sliceIdx;
+                info.keySliceIdx = sliceIdx;
 
                 info.keyImageIdx = timeIdx;
                 LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",

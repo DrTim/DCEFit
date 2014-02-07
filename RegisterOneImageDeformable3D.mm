@@ -34,8 +34,7 @@ RegisterOneImageDeformable3D::RegisterOneImageDeformable3D(
     }
 }
 
-Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
-                                Image3D::Pointer movingImage, ResultCode& code)
+Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
@@ -43,6 +42,8 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     code = SUCCESS;
     
     // Set the resolution schedule
+    // We use reduced resolution in the plane of the slices but not in the other dimension
+    // because it is small to begin with in DCE images.
     Registration3D::ScheduleType resolutionSchedule(itkParams_.deformLevels, Image3D::ImageDimension);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
                 double>(std::pow(2.0, static_cast<double>(itkParams_.deformLevels - 1)));
@@ -50,7 +51,10 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     {
         for (unsigned dim = 0; dim < resolutionSchedule.cols(); ++dim)
         {
-            resolutionSchedule[level][dim] = factor;
+            if (dim == 2)
+                resolutionSchedule[level][dim] = 1;
+            else
+                resolutionSchedule[level][dim] = factor;
             LOG4CPLUS_DEBUG(logger_, "    Resolution schedule: level " << level << ", dim "
                             << dim << " = " << factor);
         }
@@ -76,8 +80,11 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     // parameters needed.
     BSplineTransform3D::Pointer transform = BSplineTransform3D::New();
     BSplineTransform3D::MeshSizeType meshSize;
-    unsigned int numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
-    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
+    for (unsigned dim = 0; dim < Image3D::ImageDimension; ++dim)
+        meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
+
+    //    unsigned numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
+    //    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
 
     BSplineTransformInitializer3D::Pointer transformInitializer = BSplineTransformInitializer3D::New();
     transformInitializer->SetTransform(transform);
@@ -103,7 +110,7 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     {
         case MattesMutualInformation:
             mmiMetric = MMIImageToImageMetric3D::New();
-            mmiMetric->UseExplicitPDFDerivativesOff();
+            mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
             mmiMetric->SetNumberOfThreads(1);
@@ -160,7 +167,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     interpolator->SetSplineOrder(BSPLINE_ORDER);
     interpolator->SetNumberOfThreads(1);
 
-    //
     // The image pyramids
     // These will be set up by the registration object.
     ImagePyramid3D::Pointer fixedImagePyramid = ImagePyramid3D::New();
@@ -185,7 +191,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
     registration->SetFixedImagePyramid(fixedImagePyramid);
     registration->SetMovingImagePyramid(movingImagePyramid);
     registration->SetFixedImageRegion(regRegion);
-    //registration->SetFixedImageRegion(fixedImage_->GetBufferedRegion());
     registration->SetSchedules(resolutionSchedule, resolutionSchedule);
 
     //  We now pass the parameters of the current transform as the initial
@@ -207,7 +212,14 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(
         LOG4CPLUS_ERROR(logger_, "Severe error in registration. " << ParseITKException(err));
     }
 
-    std::string stopCondition = optimizer->GetStopConditionDescription();
+    std::string stopCondition;
+    if (observer->RegistrationWasCancelled())
+    {
+        stopCondition = "Registration cancelled by user.";
+        return movingImage;
+    }
+
+    stopCondition = optimizer->GetStopConditionDescription();
 
     LOG4CPLUS_INFO(logger_, "Optimizer stop condition = " << stopCondition);
     LOG4CPLUS_INFO(logger_, "Optimizer best metric = " << std::scientific

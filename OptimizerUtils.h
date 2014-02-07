@@ -53,9 +53,23 @@ LBFGSOptimizer::Pointer GetLBFGSOptimizer(double gradientConvergence, double def
  *
  * @return Smart pointer to an instance of the class.
  */
-RSGDOptimizer::Pointer GetRSGDOptimizer(double maximumStepLength,
-            double minimumStepLength, double relaxationFactor, double gradientTolerance,
-            unsigned maxIterations);
+RSGDOptimizer::Pointer GetRSGDOptimizer(double maximumStepLength, double minimumStepLength,
+                                        double relaxationFactor, double gradientTolerance,
+                                        unsigned maxIterations);
+
+/**
+ * Create an itk::VersorRigid3DTransformOptimizer instance
+ * @param maximumStepLength The maximum step length allowed.
+ * @param minimumStepLength Terminate when this minimum step length is reached.
+ * @param relaxationFactor Determines how much to decrease step length when the
+ * direction changes in parameter space. (0.6 to 1.0 for noisy data, 0.5 default)
+ * @param maxIterations Terminate after this many iterations.
+ *
+ * @return Smart pointer to an instance of the class.
+ */
+VersorOptimizer::Pointer GetVersorOptimizer(double maximumStepLength, double minimumStepLength,
+                                            double relaxationFactor, double gradientTolerance,
+                                            unsigned maxIterations);
 
 /**
  * Get the iteration from the optimizer. The virtual function GetCurrentIteration()

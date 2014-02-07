@@ -9,17 +9,13 @@
 #import "RegistrationObserver.h"
 #import "RegProgressValues.h"
 #import "ProgressWindowController.h"
+
 #include "OptimizerUtils.h"
 
 #include <itkCommand.h>
-#include <itkLBFGSOptimizer.h>
-#include <itkMultiResolutionImageRegistrationMethod.h>
 #include <itkBSplineTransform.h>
 #include <itkBSplineTransformParametersAdaptor.h>
-#include <itkEventObject.h>
-#include <itkMeanSquaresImageToImageMetric.h>
-#include <itkArray.h>
-#include <itkNumberToString.h>
+//#include <itkNumberToString.h>
 
 #include <log4cplus/loggingmacros.h>
 
@@ -47,6 +43,7 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
         LBFGSBOpt = dynamic_cast<LBFGSBOptimizer*>(multiResReg->GetOptimizer());
         LBFGSOpt = dynamic_cast<LBFGSOptimizer*>(multiResReg->GetOptimizer());
         RSGDOpt = dynamic_cast<RSGDOptimizer*>(multiResReg->GetOptimizer());
+        versorOpt = dynamic_cast<VersorOptimizer*>(multiResReg->GetOptimizer());
     }
 
     std::string eventName = event.GetEventName();
@@ -80,9 +77,9 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
             CalcMultiResRegistrationParameters(multiResReg);
 
             [progressWindowController performSelectorOnMainThread:@selector(setMaxIterations:)
-                        withObject:[NSNumber numberWithUnsignedInt:maxIterSchedule[level]]
-                        waitUntilDone:YES];
-
+                                                       withObject:[NSNumber numberWithUnsignedInt:maxIterSchedule[level]]
+                                                    waitUntilDone:YES];
+            
             [progressWindowController performSelectorOnMainThread:@selector(setCurLevel:)
                         withObject:[NSNumber numberWithUnsignedInt:level+1] waitUntilDone:YES];
         }
@@ -128,15 +125,44 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
                 iteration = curIteration;
                 double metricValue = RSGDOpt->GetValue();
                 [progressWindowController performSelectorOnMainThread:@selector(setCurMetric:)
-                            withObject:[NSNumber numberWithDouble:metricValue] waitUntilDone:YES];
+                                                           withObject:[NSNumber numberWithDouble:metricValue] waitUntilDone:YES];
                 double stepSize = RSGDOpt->GetCurrentStepLength();
                 [progressWindowController performSelectorOnMainThread:@selector(setCurStepSize:)
-                            withObject:[NSNumber numberWithDouble:stepSize] waitUntilDone:YES];
+                                                           withObject:[NSNumber numberWithDouble:stepSize] waitUntilDone:YES];
 
                 LOG4CPLUS_DEBUG(logger_, "** " << iteration
                                 << " [metric: " << std::fixed << metricValue
                                 << ", step: " << std::fixed << stepSize << "]");
-                
+
+                if (multiResReg->GetTransform()->GetNumberOfParameters() < 20)
+                    LOG4CPLUS_DEBUG(logger_, "Current position: " << std::fixed
+                                    << multiResReg->GetTransform()->GetParameters());
+            }
+        }
+        else if (versorOpt != 0) // the caller is the Versor optimizer
+        {
+            // Log the iteration
+            unsigned curIteration = GetOptimizerIteration(versorOpt);
+            if (iteration != curIteration)
+            {
+                if ((iteration != 0) && (gradientCalls != 0))
+                {
+                    LOG4CPLUS_DEBUG(logger_, "Gradient evaluations: " << gradientCalls);
+                    gradientCalls = 0;
+                }
+
+                iteration = curIteration;
+                double metricValue = versorOpt->GetValue();
+                [progressWindowController performSelectorOnMainThread:@selector(setCurMetric:)
+                                                           withObject:[NSNumber numberWithDouble:metricValue] waitUntilDone:YES];
+                double stepSize = versorOpt->GetCurrentStepLength();
+                [progressWindowController performSelectorOnMainThread:@selector(setCurStepSize:)
+                                                           withObject:[NSNumber numberWithDouble:stepSize] waitUntilDone:YES];
+
+                LOG4CPLUS_DEBUG(logger_, "** " << iteration
+                                << " [metric: " << std::fixed << metricValue
+                                << ", step: " << std::fixed << stepSize << "]");
+
                 if (multiResReg->GetTransform()->GetNumberOfParameters() < 20)
                     LOG4CPLUS_DEBUG(logger_, "Current position: " << std::fixed
                                     << multiResReg->GetTransform()->GetParameters());
@@ -151,10 +177,10 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
         ++gradientCalls;
         // GetValue and GetCachedValue seem always to return the same thing.
         // multiResReg->GetLastTransformParameters() does not return anything useful during optimisation.
-//        itk::NumberToString<double> makeStr;
-//        std::string valueStr = makeStr(GetOptimizerValue(multiResReg->GetOptimizer()));
-//        LOG4CPLUS_DEBUG(logger_, "Gradient call:" << gradientCalls << "\n"
-//                        << valueStr << " " << multiResReg->GetTransform()->GetParameters());
+        //        itk::NumberToString<double> makeStr;
+        //        std::string valueStr = makeStr(GetOptimizerValue(multiResReg->GetOptimizer()));
+        //        LOG4CPLUS_DEBUG(logger_, "Gradient call:" << gradientCalls << "\n"
+        //                        << valueStr << " " << multiResReg->GetTransform()->GetParameters());
         if (LBFGSOpt != 0) // the caller is the LBFGS optimizer
         {
             // Log the iteration
@@ -245,6 +271,37 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
                                                        withObject:stopCondDesc waitUntilDone:YES];
 
         }
+        else if (versorOpt != 0)
+        {
+            VersorOptimizer::StopConditionType stopCondEnum = versorOpt->GetStopCondition();
+            std::string stopConditionDesc =  "Stop flag: ";
+            switch (stopCondEnum)
+            {
+                case VersorOptimizer::GradientMagnitudeTolerance:
+                    stopConditionDesc += "GradientMagnitudeTolerance\n";
+                    break;
+                case VersorOptimizer::StepTooSmall:
+                    stopConditionDesc += "StepTooSmall\n";
+                    break;
+                case VersorOptimizer::ImageNotAvailable:
+                    stopConditionDesc += "ImageNotAvailable\n";
+                    break;
+                case VersorOptimizer::CostFunctionError:
+                    stopConditionDesc += "CostFunctionError\n";
+                    break;
+                case VersorOptimizer::MaximumNumberOfIterations:
+                    stopConditionDesc += "MaximumNumberOfIterations\n";
+                    break;
+                case VersorOptimizer::Unknown:
+                    stopConditionDesc += "Unknown\n";
+                    break;
+            }
+            stopConditionDesc += versorOpt->GetStopConditionDescription();
+            NSString* stopCondDesc = [NSString stringWithUTF8String:stopConditionDesc.c_str()];
+            [progressWindowController performSelectorOnMainThread:@selector(setStopCondition:)
+                                                       withObject:stopCondDesc waitUntilDone:YES];
+
+        }
         else
         {
             LOG4CPLUS_WARN(logger_, "Unexpected EndEvent. Caller: " << caller->GetNameOfClass());
@@ -298,10 +355,11 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
     {
         // Reset the transform based upon the grid size for this level.
         typename BSplineTransform::MeshSizeType meshSize;
-        unsigned numberOfGridNodesInOneDimension = gridSizeSchedule[level];
-        unsigned splineOrder = bsplineTransform->SplineOrder;
-        meshSize.Fill(numberOfGridNodesInOneDimension - splineOrder);
-        
+        unsigned dims = meshSize.GetSizeDimension();
+        unsigned order = bsplineTransform->SplineOrder;
+        for (unsigned dim = 0; dim < dims; ++dim)
+            meshSize[dim] = gridSizeSchedule(level, dim) - order;
+
         typedef itk::BSplineTransformParametersAdaptor<BSplineTransform> TransformAdaptorType;
         typename TransformAdaptorType::Pointer adaptor = TransformAdaptorType::New();
         adaptor->SetTransform(bsplineTransform);
@@ -371,6 +429,31 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
         LOG4CPLUS_DEBUG(logger_, "Max. iterations set to "
                         << RSGDOpt->GetNumberOfIterations());
     }
+    else if (versorOpt != 0)
+    {
+        versorOpt->SetMinimumStepLength(versorMinStepSizeSchedule[level]);
+        versorOpt->SetMaximumStepLength(versorMaxStepSizeSchedule[level]);
+        versorOpt->SetRelaxationFactor(versorRelaxationFactorSchedule[level]);
+
+        // here we change only the translation scaling
+        VersorOptimizer::ScalesType scales = versorOpt->GetScales();
+        scales[3] = scales[4] = scales[5] = versorScaleFactorSchedule[level];
+        versorOpt->SetScales(scales);
+
+        versorOpt->SetNumberOfIterations(maxIterSchedule[level]);
+        LOG4CPLUS_DEBUG(logger_, "Min. step size set to "
+                        << versorOpt->GetMinimumStepLength());
+        LOG4CPLUS_DEBUG(logger_, "Max. step size set to "
+                        << versorOpt->GetMaximumStepLength());
+        LOG4CPLUS_DEBUG(logger_, "Relaxation factor set to "
+                        << versorOpt->GetRelaxationFactor());
+        LOG4CPLUS_DEBUG(logger_, "Translation scale factors set to "
+                        << versorOpt->GetScales()[3] << ", "
+                        << versorOpt->GetScales()[4] << ", "
+                        << versorOpt->GetScales()[5]);
+        LOG4CPLUS_DEBUG(logger_, "Max. iterations set to "
+                        << versorOpt->GetNumberOfIterations());
+    }
 
     // Mattes et al eq 19 (sort of)
     // We need to calculate the number of pixels in the current registration
@@ -379,7 +462,8 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
     // that the fixed and moving images are the same size.
     if (mmiMetric != 0)
     {
-        typename RegistrationMethod::ScheduleType pyramidSchedule = multiResReg->GetFixedImagePyramidSchedule();
+        typename RegistrationMethod::ScheduleType pyramidSchedule =
+                                       multiResReg->GetFixedImagePyramidSchedule();
         unsigned numPixels = multiResReg->GetFixedImageRegion().GetNumberOfPixels();
         unsigned numSamples = numPixels;
         
@@ -417,19 +501,3 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
 //    stream << "==============================" << std::endl;
 //    LOG4CPLUS_TRACE(logger_, stream.str());
 }
-
-template <class TImage>
-void RegistrationObserver<TImage>::StopRegistration()
-{
-    stopReg = true;
-    LOG4CPLUS_DEBUG(logger_, "Registration stopped. Exiting.");
-    multiResReg->StopRegistration();
-
-    if (LBFGSBOpt != 0)
-        LBFGSBOpt->SetMaximumNumberOfIterations(1);
-    else if (LBFGSOpt != 0)
-        LBFGSOpt->SetMaximumNumberOfFunctionEvaluations(1);
-    else if (RSGDOpt != 0)
-        RSGDOpt->SetNumberOfIterations(1);
-}
-

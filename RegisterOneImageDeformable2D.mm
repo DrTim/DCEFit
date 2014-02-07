@@ -41,18 +41,6 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
 
     // Assume the best to start.
     code = SUCCESS;
-    
-    //    // typedefs for ITK classes
-    //    typedef itk::ResampleImageFilter<Image2D, Image2D> ResampleFilterType;
-    //    typedef itk::BSplineTransformInitializer<BSplineTransform, Image2D> TransformInitializerType;
-    //    typedef itk::BSplineInterpolateImageFunction<Image2D> InterpolatorType;
-    //    typedef itk::MultiResolutionImageRegistrationMethod<Image2D, Image2D>
-    //            MultiResRegistration;
-    //    typedef itk::MultiResolutionPyramidImageFilter<Image2D, Image2D> ImagePyramid;
-    //    typedef itk::ImageToImageMetric<Image2D, Image2D> ImageToImageMetric;
-    //    typedef itk::MattesMutualInformationImageToImageMetric<Image2D, Image2D>
-    //            MMIImageToImageMetric;
-    //    typedef itk::MeanSquaresImageToImageMetric<Image2D, Image2D> MSImageToImageMetric;
 
     // Set the resolution schedule
     Registration2D::ScheduleType resolutionSchedule(itkParams_.deformLevels, 2u);
@@ -88,8 +76,11 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     // parameters needed.
     BSplineTransform2D::Pointer transform = BSplineTransform2D::New();
     BSplineTransform2D::MeshSizeType meshSize;
-    unsigned int numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
-    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
+    for (unsigned dim = 0; dim < Image2D::GetImageDimension(); ++dim)
+        meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
+    
+    //    unsigned int numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
+    //    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
 
     BSplineTransformInitializer2D::Pointer transformInitializer = BSplineTransformInitializer2D::New();
     transformInitializer->SetTransform(transform);
@@ -116,7 +107,7 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     {
         case MattesMutualInformation:
             mmiMetric = MMIImageToImageMetric2D::New();
-            mmiMetric->UseExplicitPDFDerivativesOff();
+            mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
             mmiMetric->SetNumberOfThreads(1);
@@ -217,7 +208,14 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
         LOG4CPLUS_ERROR(logger_, "Severe error in registration. " << ParseITKException(err));
     }
 
-    std::string stopCondition = optimizer->GetStopConditionDescription();
+    std::string stopCondition;
+    if (observer->RegistrationWasCancelled())
+    {
+        stopCondition = "Registration cancelled by user.";
+        return movingImage;
+    }
+
+    stopCondition = optimizer->GetStopConditionDescription();
 
     LOG4CPLUS_INFO(logger_, "Optimizer stop condition = " << stopCondition);
     LOG4CPLUS_INFO(logger_, "Optimizer best metric = " << std::scientific

@@ -34,13 +34,17 @@
 @synthesize rigidRegRSGDMinStepSize;
 @synthesize rigidRegRSGDMaxStepSize;
 @synthesize rigidRegRSGDRelaxationFactor;
+@synthesize rigidRegVersorOptTransScale;
+@synthesize rigidRegVersorOptMinStepSize;
+@synthesize rigidRegVersorOptMaxStepSize;
+@synthesize rigidRegVersorOptRelaxationFactor;
 @synthesize rigidRegMaxIter;
 
 // deformable regitration parameters
 @synthesize deformRegEnabled;
 @synthesize deformShowField;
 @synthesize deformRegMultiresLevels;
-@synthesize deformRegGridSize;
+@synthesize deformRegGridSizeArray;
 @synthesize deformRegMetric;
 @synthesize deformRegOptimizer;
 @synthesize deformRegMMIHistogramBins;
@@ -85,8 +89,12 @@
     [rigidRegRSGDMinStepSize release];
     [rigidRegRSGDMaxStepSize release];
     [rigidRegRSGDRelaxationFactor release];
+    [rigidRegVersorOptMinStepSize release];
+    [rigidRegVersorOptMaxStepSize release];
+    [rigidRegVersorOptRelaxationFactor release];
+    [rigidRegVersorOptTransScale release];
     [rigidRegMaxIter release];
-    [deformRegGridSize release];
+    [deformRegGridSizeArray release];
     [deformRegMMIHistogramBins release];
     [deformRegMMISampleRate release];
 
@@ -148,19 +156,28 @@
     self.rigidRegRSGDMaxStepSize = [NSMutableArray arrayWithArray:
                                     [def objectForKey:RigidRegRSGDMaxStepSizeKey]];
     self.rigidRegRSGDRelaxationFactor= [NSMutableArray arrayWithArray:
-                                    [def objectForKey:RigidRegRSGDRelaxationFactorKey]];
+                                        [def objectForKey:RigidRegRSGDRelaxationFactorKey]];
+
+    self.rigidRegVersorOptMinStepSize = [NSMutableArray arrayWithArray:
+                                    [def objectForKey:RigidRegVersorOptMinStepSizeKey]];
+    self.rigidRegVersorOptMaxStepSize = [NSMutableArray arrayWithArray:
+                                    [def objectForKey:RigidRegVersorOptMaxStepSizeKey]];
+    self.rigidRegVersorOptRelaxationFactor= [NSMutableArray arrayWithArray:
+                                             [def objectForKey:RigidRegVersorOptRelaxationFactorKey]];
+    self.rigidRegVersorOptTransScale = [NSMutableArray arrayWithArray:
+                                             [def objectForKey:RigidRegVersorOptTransScaleKey]];
 
     self.rigidRegMaxIter = [NSMutableArray arrayWithArray:
                             [def objectForKey:RigidRegMaxIterKey]];
 
-    // Rigid registration parameters
+    // Deformable registration parameters
     self.deformRegEnabled = [def booleanForKey:DeformRegEnabledKey];
     self.deformShowField = [def booleanForKey:DeformShowFieldKey];
     self.deformRegMultiresLevels = [def unsignedIntegerForKey:DeformRegMultiresLevelsKey];
     self.deformRegMetric = [def integerForKey:DeformRegMetricKey];
     self.deformRegOptimizer = [def integerForKey:DeformRegOptimizerKey];
-    self.deformRegGridSize = [NSMutableArray arrayWithArray:
-                              [def objectForKey:DeformRegGridSizeKey]];
+    self.deformRegGridSizeArray = [NSMutableArray arrayWithArray:
+                              [def objectForKey:DeformRegGridSizeArrayKey]];
     self.deformRegMMIHistogramBins = [NSMutableArray arrayWithArray:
                                       [def objectForKey:DeformRegMMIHistogramBinsKey]];
     self.deformRegMMISampleRate = [NSMutableArray arrayWithArray:

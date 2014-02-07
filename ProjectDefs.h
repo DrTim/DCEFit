@@ -28,7 +28,8 @@ enum OptimizerType
 {
     LBFGSB = 0,
     LBFGS = 1,
-    RSGD = 2
+    RSGD = 2,
+    Versor = 3
 };
 
 /**

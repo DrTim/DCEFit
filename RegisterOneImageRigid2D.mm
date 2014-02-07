@@ -13,9 +13,6 @@
 
 #import "ProgressWindowController.h"
 
-#include <itkCenteredTransformInitializer.h>
-#include <itkLinearInterpolateImageFunction.h>
-
 #include <log4cplus/loggingmacros.h>
 
 RegisterOneImageRigid2D::RegisterOneImageRigid2D(
@@ -43,13 +40,6 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
     
     // Assume the best to start.
     code = SUCCESS;
-
-    // typedefs for ITK classes
-//    typedef itk::ResampleImageFilter<Image2D, Image2D> ResampleFilterType;
-//    typedef itk::CenteredTransformInitializer<CenteredRigid2DTransform, Image2D, Image2D>
-//            TransformInitializerType;
-//    typedef itk::BSplineInterpolateImageFunction<Image2D> BSplineInterpolatorType;
-//    typedef itk::LinearInterpolateImageFunction<Image2D> LinearInterpolatorType;
 
     // Set the resolution schedule
     Registration2D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image2D::ImageDimension);
@@ -126,8 +116,7 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
             MMImetric->SetUseCachingOfBSplineWeights(true); // default == true
             MMImetric->SetNumberOfThreads(1);
             MMImetric->ReinitializeSeed(8370276);
-            observer->SetMMISchedules(itkParams_.rigidMMINumBins,
-                                      itkParams_.rigidMMISampleRate);
+            observer->SetMMISchedules(itkParams_.rigidMMINumBins, itkParams_.rigidMMISampleRate);
             metric = MMImetric;
             break;
         case MeanSquares:
@@ -234,7 +223,14 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
         LOG4CPLUS_ERROR(logger_, "Severe error in registration. " << ParseITKException(err));
     }
 
-    std::string stopCondition = optimizer->GetStopConditionDescription();
+    std::string stopCondition;
+    if (observer->RegistrationWasCancelled())
+    {
+        stopCondition = "Registration cancelled by user.";
+        return movingImage;
+    }
+
+    stopCondition = optimizer->GetStopConditionDescription();
     LOG4CPLUS_INFO(logger_, "Optimizer stop condition = " << stopCondition);
 
     SingleValuedNonLinearOptimizer::ParametersType finalParameters =

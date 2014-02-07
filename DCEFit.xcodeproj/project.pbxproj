@@ -52,6 +52,9 @@
 		22B0AEBA174E6D2200D85184 /* RegProgressValues.h in Headers */ = {isa = PBXBuildFile; fileRef = 22B0AEB8174E6D2100D85184 /* RegProgressValues.h */; };
 		22B0AEBB174E6D2200D85184 /* RegProgressValues.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B0AEB9174E6D2100D85184 /* RegProgressValues.m */; };
 		22B48EBE18510540008C370A /* liblog4cplusS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B48EBD18510540008C370A /* liblog4cplusS.a */; };
+		22C3137F189D676E00ECDEE6 /* LoadingImagesWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */; };
+		22C31380189D676E00ECDEE6 /* LoadingImagesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */; };
+		22C31381189D676E00ECDEE6 /* LoadingImagesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22C3137E189D676E00ECDEE6 /* LoadingImagesWindow.xib */; };
 		22C326A21892B59A00E8A071 /* ViewerController+ExportTimeSeries.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */; };
 		22C326A31892B59A00E8A071 /* ViewerController+ExportTimeSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */; };
 		22C326A61892C0DB00E8A071 /* OsiriXAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */; };
@@ -210,6 +213,9 @@
 		22B0AEB8174E6D2100D85184 /* RegProgressValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegProgressValues.h; sourceTree = "<group>"; };
 		22B0AEB9174E6D2100D85184 /* RegProgressValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegProgressValues.m; sourceTree = "<group>"; };
 		22B48EBD18510540008C370A /* liblog4cplusS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4cplusS.a; path = ../../usr/local/lib/liblog4cplusS.a; sourceTree = "<group>"; };
+		22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadingImagesWindowController.h; sourceTree = "<group>"; };
+		22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadingImagesWindowController.m; sourceTree = "<group>"; };
+		22C3137E189D676E00ECDEE6 /* LoadingImagesWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingImagesWindow.xib; sourceTree = "<group>"; };
 		22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewerController+ExportTimeSeries.h"; sourceTree = "<group>"; };
 		22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewerController+ExportTimeSeries.m"; sourceTree = "<group>"; };
 		22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OsiriXAPI.framework; path = ../osirix/build/Development/OsiriXAPI.framework; sourceTree = "<group>"; };
@@ -431,6 +437,7 @@
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				22CAD0D618043E7F00351867 /* MainDialog.xib */,
 				22664EAD17294FC6008B7961 /* ProgressWindow.xib */,
+				22C3137E189D676E00ECDEE6 /* LoadingImagesWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -451,6 +458,8 @@
 				22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */,
 				22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */,
 				22664EB31729A73D008B7961 /* ItkTypedefs.h */,
+				22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */,
+				22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */,
 				22664EAF172959BA008B7961 /* ProgressWindowController.h */,
 				22664EB0172959BA008B7961 /* ProgressWindowController.mm */,
 				22F2DD8E172AA06800F75C06 /* ProjectDefs.h */,
@@ -656,6 +665,7 @@
 				ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */,
 				229367CC17204AEF00F1C1EF /* DialogController.h in Headers */,
 				22C326A21892B59A00E8A071 /* ViewerController+ExportTimeSeries.h in Headers */,
+				22C3137F189D676E00ECDEE6 /* LoadingImagesWindowController.h in Headers */,
 				225843181721931700F9346C /* RegistrationParams.h in Headers */,
 				22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */,
 				22664EB71729A864008B7961 /* CopyMetaDataDictionary.h in Headers */,
@@ -738,6 +748,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22C31381189D676E00ECDEE6 /* LoadingImagesWindow.xib in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
 				22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */,
 				22DC09F417D4C30F00814825 /* symbolList in Resources */,
@@ -782,6 +793,7 @@
 				22D6C5F61743AC9E002EA2AB /* UserDefaults.m in Sources */,
 				22B0AEBB174E6D2200D85184 /* RegProgressValues.m in Sources */,
 				22004547175E55BA001A8EF2 /* RegisterImageOp.mm in Sources */,
+				22C31380189D676E00ECDEE6 /* LoadingImagesWindowController.m in Sources */,
 				225F6FEF187F280A00558EF7 /* RegisterOneImageRigid3D.mm in Sources */,
 				2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */,
 				22ED12BE17847FC60047AF58 /* Region2D.m in Sources */,

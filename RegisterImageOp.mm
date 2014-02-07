@@ -125,6 +125,10 @@
     ResultCode resultCode = SUCCESS;
     waitingForAnswer_ = NO;
 
+    [progController performSelectorOnMainThread:@selector(setNumImages:)
+                                     withObject:[NSNumber numberWithUnsignedInt:numImages]
+                                  waitUntilDone:NO];
+
     // Extract the slice to be used as the fixed image
     unsigned fixedImageIdx = params->fixedImageNumber - 1;
     const Image2D::Pointer fixedImage = [manager slice:0 FromImage:fixedImageIdx];
@@ -143,7 +147,7 @@
         // No need to register the fixed image
         if (imageIdx == fixedImageIdx)
         {
-            NSString* msg = [NSString stringWithFormat:@"Skipping fixed slice %u.", imageNum];
+            NSString* msg = [NSString stringWithFormat:@"Skipping fixed image %u.", imageNum];
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
@@ -152,7 +156,7 @@
         }
         else
         {
-            NSString* msg = [NSString stringWithFormat:@"Registering slice %u.", imageNum];
+            NSString* msg = [NSString stringWithFormat:@"Registering image %u.", imageNum];
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
@@ -162,7 +166,7 @@
         if ([self isCancelled])
             break;
 
-        // Pull the 2D slice from the 3D volume.
+        // Pull the image from the 4D series.
         Image2D::Pointer movingImage = [manager slice:0 FromImage:imageIdx];
 
         // Do this so that the deformable registration will get the moving
@@ -214,6 +218,10 @@
     ResultCode resultCode = SUCCESS;
     waitingForAnswer_ = NO;
 
+    [progController performSelectorOnMainThread:@selector(setNumImages:)
+                                     withObject:[NSNumber numberWithUnsignedInt:numImages]
+                                  waitUntilDone:NO];
+
     // Extract the slice to be used as the fixed image
     unsigned fixedImageIdx = params->fixedImageNumber - 1;
     const Image3D::Pointer fixedImage = [manager imageAtIndex:fixedImageIdx];
@@ -232,20 +240,20 @@
         // No need to register the fixed image
         if (imageIdx == fixedImageIdx)
         {
-            NSString* msg = [NSString stringWithFormat:@"Skipping fixed slice %u.", imageNum];
+            NSString* msg = [NSString stringWithFormat:@"Skipping fixed image %u.", imageNum];
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, index);
+            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, imageIdx);
             continue;
         }
         else
         {
-            NSString* msg = [NSString stringWithFormat:@"Registering slice %u.", imageNum];
+            NSString* msg = [NSString stringWithFormat:@"Registering image %u.", imageNum];
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, index);
+            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, imageIdx);
         }
 
         if ([self isCancelled])

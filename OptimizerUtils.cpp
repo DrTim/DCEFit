@@ -77,8 +77,8 @@ LBFGSOptimizer::Pointer GetLBFGSOptimizer(double gradientConvergenceTolerance,
 }
 
 RSGDOptimizer::Pointer GetRSGDOptimizer(double maximumStepLength,
-            double minimumStepLength, double relaxationFactor, double gradientTolerance,
-            unsigned maxIterations)
+                                        double minimumStepLength, double relaxationFactor, double gradientTolerance,
+                                        unsigned maxIterations)
 {
     std::string loggerName = std::string(LOGGER_NAME) + ".GetRSGDOptimizer";
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Entry.");
@@ -89,7 +89,7 @@ RSGDOptimizer::Pointer GetRSGDOptimizer(double maximumStepLength,
     optimizer->SetMaximumStepLength(maximumStepLength);
     optimizer->SetMinimumStepLength(minimumStepLength);
     optimizer->SetNumberOfIterations(maxIterations);
-    
+
     LOG4CPLUS_DEBUG(log4cplus::Logger::getInstance(loggerName),
                     "RelaxationFactor = "
                     << std::setprecision(4) << std::scientific
@@ -99,7 +99,34 @@ RSGDOptimizer::Pointer GetRSGDOptimizer(double maximumStepLength,
                     << ", MaxStepLength = " << optimizer->GetMaximumStepLength()
                     << ", MinStepLength = " << optimizer->GetMinimumStepLength()
                     << ", MaxIterations = " << optimizer->GetNumberOfIterations());
+    
+    return optimizer;
+}
 
+VersorOptimizer::Pointer GetVersorOptimizer(double maximumStepLength,
+                                          double minimumStepLength, double relaxationFactor,
+                                          double gradientTolerance, unsigned maxIterations)
+{
+    std::string loggerName = std::string(LOGGER_NAME) + ".GetVersorOptimizer";
+    LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Entry.");
+
+    VersorOptimizer::Pointer optimizer = VersorOptimizer::New();
+    optimizer->SetRelaxationFactor(relaxationFactor);
+    optimizer->SetGradientMagnitudeTolerance(gradientTolerance);
+    optimizer->SetMaximumStepLength(maximumStepLength);
+    optimizer->SetMinimumStepLength(minimumStepLength);
+    optimizer->SetNumberOfIterations(maxIterations);
+
+    LOG4CPLUS_DEBUG(log4cplus::Logger::getInstance(loggerName),
+                    "RelaxationFactor = "
+                    << std::setprecision(4) << std::scientific
+                    << optimizer->GetRelaxationFactor()
+                    << ", GradientMagnitudeTolerance = "
+                    << optimizer->GetGradientMagnitudeTolerance()
+                    << ", MaxStepLength = " << optimizer->GetMaximumStepLength()
+                    << ", MinStepLength = " << optimizer->GetMinimumStepLength()
+                    << ", MaxIterations = " << optimizer->GetNumberOfIterations());
+    
     return optimizer;
 }
 
@@ -136,6 +163,10 @@ unsigned GetOptimizerIteration(SingleValuedNonLinearOptimizer::Pointer optimizer
     {
         retVal = dynamic_cast<GDOptimizer*>(optimizer.GetPointer())->GetCurrentIteration();
     }
+    else if (className == "VersorRigid3DTransformOptimizer")
+    {
+        retVal = dynamic_cast<VersorOptimizer*>(optimizer.GetPointer())->GetCurrentIteration();
+    }
     else
     {
         LOG4CPLUS_FATAL(log4cplus::Logger::getInstance(loggerName),
@@ -168,6 +199,10 @@ double GetOptimizerValue(SingleValuedNonLinearOptimizer::Pointer optimizer)
     else if (className == "RegularStepGradientDescentOptimizer")
     {
         retVal = dynamic_cast<RSGDOptimizer*>(optimizer.GetPointer())->GetValue();
+    }
+    else if (className == "VersorRigid3DTransformOptimizer")
+    {
+        retVal = dynamic_cast<VersorOptimizer*>(optimizer.GetPointer())->GetValue();
     }
     else
     {
