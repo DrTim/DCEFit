@@ -19,7 +19,8 @@
 
 const NSString* RegistrationStageRigid = @"Rigid";
 const NSString* RegistrationStageDeformable = @"Deformable";
-NSString* StopRegistrationNotification = @"StopRegistrationNotification";
+
+NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 
 
 @implementation ProgressWindowController
@@ -67,7 +68,6 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
                             stringByAppendingString:@".ProgressWindowController"];
     logger_ = [[Logger newInstance:loggerName] retain];
 }
-
 
 - (void)awakeFromNib
 {
@@ -200,16 +200,14 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
 {
     // Close after registration is done and save results
     [parentController_ registrationEnded:YES];
-    [self close];
-    [self autorelease];
+    [self closePanel];
 }
 
 - (IBAction)quitButtonPressed:(NSButton*)sender
 {
     // Close after registration is done but do not save results
     [parentController_ registrationEnded:NO];
-    [self close];
-    [self autorelease];
+    [self closePanel];
 }
 
 - (void)registrationEnded
@@ -234,11 +232,11 @@ NSString* StopRegistrationNotification = @"StopRegistrationNotification";
     return YES;
 }
 
-- (void)windowWillClose:(NSNotification *)notification
+- (void)closePanel
 {
-	LOG4M_TRACE(logger_, @"%@", [notification name]);
-	//[[NSNotificationCenter defaultCenter] removeObserver:self];
-	//[self autorelease];
+    [[NSNotificationCenter defaultCenter] postNotificationName:CloseProgressPanelNotification object:self];
+    [self close];
+    [self autorelease];
 }
 
 - (void)setProgressMinimum:(double)minVal andMaximum:(double)maxVal

@@ -110,6 +110,7 @@
 @property (assign) IBOutlet NSButton *deformRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *deformRegLevelsComboBox;
 @property (assign) IBOutlet NSTableView *deformRegGridSizeTableView;
+
 @property (assign) IBOutlet NSMatrix *deformRegMetricRadioMatrix;
 @property (assign) IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
 @property (assign) IBOutlet NSButton *deformShowFieldCheckBox;

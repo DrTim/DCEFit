@@ -56,7 +56,8 @@ LBFGSOptimizer::Pointer GetLBFGSOptimizer(double gradientConvergenceTolerance,
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Entry.");
 
     LBFGSOptimizer::Pointer optimizer = LBFGSOptimizer::New();
-    //optimizer->TraceOn();
+    
+    optimizer->TraceOn();
     optimizer->SetGradientConvergenceTolerance(gradientConvergenceTolerance);
     optimizer->SetMaximumNumberOfFunctionEvaluations(maxIterations);
     optimizer->SetLineSearchAccuracy(0.9); // max 1.0, default 0.9, min 1e-4

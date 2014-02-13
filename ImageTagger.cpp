@@ -26,9 +26,9 @@ void ImageTagger<Image2D>::operator()(Image2D& image)
         {
             index[1] = col;
             if (row % gridRows == 0)             // set all pixels in row
-                image.SetPixel(index, 127.0);
+                image.SetPixel(index, PIXEL_VALUE);
             else if (col % gridCols == 0)        // set only pixels in the grid columns
-                image.SetPixel(index, 127.0);
+                image.SetPixel(index, PIXEL_VALUE);
         }
     }
 }
@@ -53,9 +53,9 @@ void ImageTagger<Image3D>::operator()(Image3D& image)
             {
                 index[1] = col;
                 if (row % gridRows == 0)             // set all pixels in row
-                    image.SetPixel(index, 127.0);
+                    image.SetPixel(index, PIXEL_VALUE);
                 else if (col % gridCols == 0)        // set only pixels in the grid columns
-                    image.SetPixel(index, 127.0);
+                    image.SetPixel(index, PIXEL_VALUE);
             }
         }
     }

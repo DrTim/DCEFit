@@ -12,15 +12,14 @@
 #include "RegisterOneImageRigid3D.h"
 #include "RegisterOneImageDeformable2D.h"
 #include "RegisterOneImageDeformable3D.h"
-#include "itkImageRegionIteratorWithIndex.h"
-#include "itkImageRegionConstIteratorWithIndex.h"
 
-#import "OsiriXAPI/ViewerController.h"
-#import "ProgressWindowController.h"
 #import "SeriesInfo.h"
 
 #import <Log4m/Logger.h>
 #import <Log4m/LoggingMacros.h>
+
+// used in register2dSeries
+//static Image2D::Pointer reduceTo2D(Image3D::Pointer image3d);
 
 @implementation RegisterImageOp
 
@@ -28,6 +27,7 @@
    ProgressController:(ProgressWindowController *)controller
 {
     self = [super init];
+
     if (self)
     {
         NSString* loggerName = [[NSString stringWithUTF8String:LOGGER_NAME]
@@ -41,8 +41,8 @@
         manager = regManager;
         progController = controller;
         params = manager.itkParams;
-        //image = [manager getImage];
     }
+
     return self;
 }
 
@@ -151,7 +151,8 @@
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, index);
+            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, imageIdx);
+            [manager insertSliceIntoViewer:fixedImage ImageIndex:imageIdx SliceIndex:0];
             continue;
         }
         else
@@ -160,7 +161,7 @@
             [progController performSelectorOnMainThread:@selector(setStopCondition:)
                                              withObject:msg
                                           waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, index);
+            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, imageIdx);
         }
 
         if ([self isCancelled])
@@ -181,7 +182,7 @@
 
         if (resultCode == DISASTER)
         {
-            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
             while (waitingForAnswer_)
                 sleep(1);
         }
@@ -198,6 +199,8 @@
         if (resultCode == DISASTER)
         {
             [self queryContinue];
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
+
             while (waitingForAnswer_)
                 sleep(1);
         }
@@ -205,10 +208,7 @@
         if ([self isCancelled])
             break;
 
-        @synchronized(self)
-        {
-            [manager insertSliceIntoViewer:regImage ImageIndex:imageIdx SliceIndex:0];
-        }
+        [manager insertSliceIntoViewer:regImage ImageIndex:imageIdx SliceIndex:0];
     }
 }
 
@@ -290,7 +290,7 @@
 
         if (resultCode == DISASTER)
         {
-            [self queryContinue];
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
             while (waitingForAnswer_)
                 sleep(1);
         }
@@ -298,11 +298,7 @@
         if ([self isCancelled])
             break;
 
-
-        @synchronized(self)
-        {
-            [manager insertImageIntoViewer:regImage Index:imageIdx];
-        }
+        [manager insertImageIntoViewer:regImage Index:imageIdx];
     }
 
     [self willChangeValueForKey:@"isFinished"];
@@ -314,3 +310,4 @@
 }
 
 @end
+

@@ -15,7 +15,8 @@
 
 extern const NSString* RegistrationStageRigid;
 extern const NSString* RegistrationStageDeformable;
-extern NSString* StopRegistrationNotification;
+
+extern NSString* CloseProgressPanelNotification;
 
 @interface ProgressWindowController : NSWindowController <NSWindowDelegate>
 {

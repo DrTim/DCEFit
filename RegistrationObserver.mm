@@ -20,14 +20,14 @@
 #include <log4cplus/loggingmacros.h>
 
 
-template <class TImage>
-RegistrationObserver<TImage>::RegistrationObserver()
-: DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
-{
-    std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
-    logger_ = log4cplus::Logger::getInstance(name);
-    LOG4CPLUS_TRACE(logger_, "Enter");
-};
+//template <class TImage>
+//RegistrationObserver<TImage>::RegistrationObserver()
+//: DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
+//{
+//    std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
+//    logger_ = log4cplus::Logger::getInstance(name);
+//    LOG4CPLUS_TRACE(logger_, "Enter");
+//};
 
 template <class TImage>
 void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::EventObject& event)
@@ -183,6 +183,10 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
         //                        << valueStr << " " << multiResReg->GetTransform()->GetParameters());
         if (LBFGSOpt != 0) // the caller is the LBFGS optimizer
         {
+            //            vnl_lbfgs* vnlopt = LBFGSOpt->GetOptimizer();
+            //            vnlopt->set_trace(true);
+            //            vnlopt->set_verbose(true);
+
             // Log the iteration
             unsigned curIteration = LBFGSOpt->GetOptimizer()->get_num_iterations();
             if (iteration != curIteration)
@@ -371,7 +375,7 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
         
         // Update this since we have changed the transform
         numberOfParameters = bsplineTransform->GetNumberOfParameters();
-        
+
         // Start this level off where the last one ended
         multiResReg->SetInitialTransformParametersOfNextLevel(bsplineTransform->GetParameters());
     }
@@ -413,6 +417,12 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
                         << LBFGSOpt->GetDefaultStepLength());
         LOG4CPLUS_DEBUG(logger_, "Max. iterations set to "
                         << LBFGSOpt->GetMaximumNumberOfFunctionEvaluations());
+        if (bsplineTransform != 0)
+        {
+            LBFGSOptimizer::ScalesType scales(bsplineTransform->GetNumberOfParameters());
+            scales.Fill(1.0);
+            LBFGSOpt->SetScales(scales);
+        }
     }
     else if (RSGDOpt != 0)
     {
@@ -428,6 +438,12 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
                         << RSGDOpt->GetRelaxationFactor());
         LOG4CPLUS_DEBUG(logger_, "Max. iterations set to "
                         << RSGDOpt->GetNumberOfIterations());
+        if (bsplineTransform != 0)
+        {
+            RSGDOptimizer::ScalesType scales(bsplineTransform->GetNumberOfParameters());
+            scales.Fill(1.0);
+            RSGDOpt->SetScales(scales);
+        }
     }
     else if (versorOpt != 0)
     {

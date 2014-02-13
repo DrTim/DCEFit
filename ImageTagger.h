@@ -16,14 +16,15 @@ class ImageTagger
 {
 public:
     ImageTagger(unsigned gridSize)
+    : gridSize_(gridSize), PIXEL_VALUE(2048.0)
     {
-        gridSize_ = gridSize;
     }
 
     void operator()(TImage& image);
 
 private:
     unsigned gridSize_;
+    const float PIXEL_VALUE;
 };
 
 #endif /* defined(__DCEFit__ImageTagger__) */

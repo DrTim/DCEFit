@@ -68,17 +68,12 @@
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "NSZombieEnabled"
+            key = "NSZombieEnabledXXX"
             value = "YES"
             isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
-         <AdditionalOption
-            key = "NSZombieEnabled"
-            value = "YES"
-            isEnabled = "YES">
-         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction

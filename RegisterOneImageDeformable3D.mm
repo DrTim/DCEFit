@@ -79,12 +79,10 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     // method PreparePyramids expects to have a working transform so that it can know the number of
     // parameters needed.
     BSplineTransform3D::Pointer transform = BSplineTransform3D::New();
+
     BSplineTransform3D::MeshSizeType meshSize;
     for (unsigned dim = 0; dim < Image3D::ImageDimension; ++dim)
         meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
-
-    //    unsigned numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
-    //    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
 
     BSplineTransformInitializer3D::Pointer transformInitializer = BSplineTransformInitializer3D::New();
     transformInitializer->SetTransform(transform);
@@ -113,7 +111,7 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            mmiMetric->SetNumberOfThreads(1);
+            mmiMetric->SetNumberOfThreads(4);
             observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
             metric = mmiMetric;
             break;
@@ -156,6 +154,10 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
             break;
     }
 
+    SingleValuedNonLinearOptimizer::ScalesType optimizerScales(transform->GetNumberOfParameters());
+    optimizerScales.Fill(1.0);
+    optimizer->SetScales(optimizerScales);
+
     // We use the same observer object for both the registration object and the optimizer
     optimizer->AddObserver(itk::IterationEvent(), observer);
     optimizer->AddObserver(itk::EndEvent(), observer);
@@ -163,9 +165,10 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     //
     // Set up the interpolator
     // This does not change during registration
-    BSplineInterpolator3D::Pointer interpolator = BSplineInterpolator3D::New();
-    interpolator->SetSplineOrder(BSPLINE_ORDER);
-    interpolator->SetNumberOfThreads(1);
+    LinearInterpolator3D::Pointer interpolator = LinearInterpolator3D::New();
+    //BSplineInterpolator3D::Pointer interpolator = BSplineInterpolator3D::New();
+    //interpolator->SetSplineOrder(BSPLINE_ORDER);
+    //interpolator->SetNumberOfThreads(1);
 
     // The image pyramids
     // These will be set up by the registration object.

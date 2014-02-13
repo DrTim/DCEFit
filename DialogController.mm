@@ -10,6 +10,7 @@
 #import <OsiriXAPI/DCMPix.h>
 #import <OsiriXAPI/PluginFilter.h>
 #import <OsiriXAPI/DicomSeries.h>
+#import <OsiriXAPI/Notifications.h>
 
 #import <OsiriX/DCMObject.h>
 #import <OsiriX/DCMAttributeTag.h>
@@ -88,6 +89,7 @@ enum TableTags
 - (void)dealloc
 {
     [logger_ release];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     [super dealloc];
 }
@@ -109,9 +111,9 @@ enum TableTags
     // Catch the viewer closing event. We cannot continue without the viewer.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewerWillClose:)
-                                                 name:@"CloseViewerNotification"
+                                                 name:OsirixCloseViewerNotification
                                                object:viewerController1];
-    
+
     [self setupControlsFromParams];
 }
 
@@ -127,9 +129,17 @@ enum TableTags
     LOG4M_TRACE(logger_, @"Enter");
 
     // set things up based upon the image series information
+    regParams.slicesPerImage = seriesInfo.slicesPerImage;
     regParams.numImages = seriesInfo.numTimeSamples;
     regParams.rigidRegOptimizer = regParams.slicesPerImage == 1 ? RSGD : Versor;
     regParams.flippedData = [[viewerController1 imageView] flippedData];
+    if (regParams.slicesPerImage == 1)
+    {
+        NSArray* cols = [deformRegGridSizeTableView tableColumns];
+        NSInteger zColNum = [deformRegGridSizeTableView columnWithIdentifier:@"z"];
+        NSTableColumn* zCol = [cols objectAtIndex:zColNum];
+        [zCol setHidden:YES];
+    }
 
     // Find the first key image and assume that it is the desired fixed slice.
     if (seriesInfo.keyImageIdx == -1)
@@ -322,6 +332,14 @@ enum TableTags
     return (DicomSeries*)[firstPix seriesObj];
 }
 
+- (void) progressPanelWillClose:(NSNotification*)notification
+{
+    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
+                [notification name], NSStringFromClass([[notification object] class]));
+
+    progressWindowController = nil;
+}
+
 // Called in response to notifications from OsiriX
 - (void) viewerWillClose:(NSNotification*)notification
 {
@@ -374,12 +392,19 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
+    [[UserDefaults sharedInstance] save:regParams];
+
     [self disableControls];
 
     progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
     
     [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
     [progressWindowController showWindow:self];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(progressPanelWillClose:)
+                                                 name:CloseProgressPanelNotification
+                                               object:progressWindowController];
 
     // Copy the current dataset and viewer. We will work only with the new one.
  	viewerController2 = [parentFilter copyCurrent4DViewerWindow];
@@ -422,7 +447,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.rigidRegOptimizer)
     {
         case RSGD:
@@ -443,7 +467,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.deformRegOptimizer)
     {
         case LBFGSB:
@@ -467,7 +490,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.rigidRegMetric)
     {
         case MeanSquares:
@@ -485,7 +507,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.deformRegMetric)
     {
         case MeanSquares:
@@ -568,14 +589,14 @@ enum TableTags
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-    LOG4M_TRACE(logger_, @"sender = %@", [notification name]);
+    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
+                [notification name], NSStringFromClass([[notification object] class]));
     id window = [notification object];
     
     if (window == self)
     {
         LOG4M_DEBUG(logger_, @"Closing window: %@", [window autosaveName]);
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
         [[UserDefaults sharedInstance] save:regParams];
     }
 }
@@ -678,151 +699,87 @@ enum TableTags
     {
         case RigidLBFGSBOptimizerTag:  // rigid LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.rigidRegLBFGSBCostConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"gradient"])
-            {
                 retVal = [regParams.rigidRegLBFGSBGradientTolerance objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidLBFGSOptimizerTag:  // rigid LBFGS parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.rigidRegLBFGSGradientConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.rigidRegLBFGSDefaultStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidRSGDOptimizerTag:  // rigid RSGD parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
                 retVal = [regParams.rigidRegRSGDMinStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.rigidRegRSGDMaxStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
                 retVal = [regParams.rigidRegRSGDRelaxationFactor objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidVersorOptimizerTag:  // rigid Versor optim. parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
                 retVal = [regParams.rigidRegVersorOptMinStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.rigidRegVersorOptMaxStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
                 retVal = [regParams.rigidRegVersorOptRelaxationFactor objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"transscaling"])
-            {
                 retVal = [regParams.rigidRegVersorOptTransScale objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case DeformLBFGSBOptimizerTag:  // deformable LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.deformRegLBFGSBCostConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"gradient"])
-            {
                 retVal = [regParams.deformRegLBFGSBGradientTolerance objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case DeformLBFGSOptimizerTag:  // deformable LBFGS parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.deformRegLBFGSGradientConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.deformRegLBFGSDefaultStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case DeformRSGDOptimizerTag:  // deformable RSGD parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
                 retVal = [regParams.deformRegRSGDMinStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.deformRegRSGDMaxStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
                 retVal = [regParams.deformRegRSGDRelaxationFactor objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
                 retVal = [regParams.rigidRegMMIHistogramBins objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
                 retVal = [regParams.rigidRegMMISampleRate objectAtIndex:row];
-            }
             break;
         case DeformMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
                 retVal = [regParams.deformRegMMIHistogramBins objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
                 retVal = [regParams.deformRegMMISampleRate objectAtIndex:row];
-            }
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
             if ([colIdent isEqualToString:@"x"])
-            {
                 retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:0];
-            }
             else if ([colIdent isEqualToString:@"y"])
-            {
                 retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:1];
-            }
             else if ([colIdent isEqualToString:@"z"])
-            {
                 retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:2];
-            }
             break;
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in objectValueForTableColumn", (long)tag);
@@ -844,188 +801,100 @@ enum TableTags
     // This could be any of the tables so we again use their tags to select the data provided
     NSInteger tag = [tableView tag];
     NSString* colIdent = [tableColumn identifier];
-    NSMutableArray* array; // used below
 
     LOG4M_DEBUG(logger_, @"setObjectValue:forTableColumn tag = %ld, column ident = %@, object = %@",
                 (long)tag, colIdent, object);
     
     switch (tag)
     {
-         case RigidLBFGSBOptimizerTag:  // rigid Optimizer parameters
+        case RigidLBFGSBOptimizerTag:  // rigid Optimizer parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.rigidRegLBFGSBCostConvergence replaceObjectAtIndex:row
-                                                                   withObject:object];
-            }
+                [regParams.rigidRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"gradient"])
-            {
-                [regParams.rigidRegLBFGSBGradientTolerance replaceObjectAtIndex:row
-                                                                     withObject:object];
-            }
+                [regParams.rigidRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case RigidLBFGSOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.rigidRegLBFGSGradientConvergence replaceObjectAtIndex:row
-                                                                      withObject:object];
-            }
+                [regParams.rigidRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.rigidRegLBFGSDefaultStepSize replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.rigidRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case RigidRSGDOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
-                [regParams.rigidRegRSGDMinStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.rigidRegRSGDMaxStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
-                [regParams.rigidRegRSGDRelaxationFactor replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.rigidRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case RigidVersorOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
-                [regParams.rigidRegVersorOptMinStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegVersorOptMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.rigidRegVersorOptMaxStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegVersorOptMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
-                [regParams.rigidRegVersorOptRelaxationFactor replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.rigidRegVersorOptRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"transscaling"])
-            {
-                [regParams.rigidRegVersorOptTransScale replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.rigidRegVersorOptTransScale replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
 
             // deformable Optimizer parameters
         case DeformLBFGSBOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.deformRegLBFGSBCostConvergence replaceObjectAtIndex:row
-                                                                   withObject:object];
-            }
+                [regParams.deformRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"gradient"])
-            {
-                [regParams.deformRegLBFGSBGradientTolerance replaceObjectAtIndex:row
-                                                                     withObject:object];
-            }
+                [regParams.deformRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case DeformLBFGSOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.deformRegLBFGSGradientConvergence replaceObjectAtIndex:row
-                                                                      withObject:object];
-            }
+                [regParams.deformRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.deformRegLBFGSDefaultStepSize replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.deformRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case DeformRSGDOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
-                [regParams.deformRegRSGDMinStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.deformRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.deformRegRSGDMaxStepSize replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.deformRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
-                [regParams.deformRegRSGDRelaxationFactor replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.deformRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
-                [regParams.deformRegMaxIter replaceObjectAtIndex:row
-                                                      withObject:object];
-            }
+                [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
-                [regParams.rigidRegMMIHistogramBins replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.rigidRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
-                [regParams.rigidRegMMISampleRate replaceObjectAtIndex:row
-                                                           withObject:object];
-            }
+                [regParams.rigidRegMMISampleRate replaceObjectAtIndex:row withObject:object];
             break;
         case DeformMattesMIMetricTag:  // deformable MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
-                [regParams.deformRegMMIHistogramBins replaceObjectAtIndex:row
-                                                               withObject:object];
-            }
+                [regParams.deformRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
-                [regParams.deformRegMMISampleRate replaceObjectAtIndex:row
-                                                            withObject:object];
-            }
+                [regParams.deformRegMMISampleRate replaceObjectAtIndex:row withObject:object];
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
             if ([colIdent isEqualToString:@"x"])
-            {
-                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
-                [array replaceObjectAtIndex:0 withObject:object];
-            }
+                [[regParams.deformRegGridSizeArray objectAtIndex:row]replaceObjectAtIndex:0
+                                                                               withObject:object];
             else if ([colIdent isEqualToString:@"y"])
-            {
-                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
-                [array replaceObjectAtIndex:1 withObject:object];
-            }
+                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:1
+                                                                                withObject:object];
             if ([colIdent isEqualToString:@"z"])
-            {
-                array = [regParams.deformRegGridSizeArray objectAtIndex:row];
-                [array replaceObjectAtIndex:2 withObject:object];
-            }
+                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:2
+                                                                                withObject:object];
             break;
 
         default:
@@ -1329,7 +1198,6 @@ enum TableTags
             [deformRegMetricConfigButton setEnabled:NO];
         }
     }
-
 }
 
 - (void)registrationEnded:(BOOL)saveData

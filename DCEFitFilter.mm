@@ -115,7 +115,7 @@
 - (void)setupSystemLogger
 {
     // Now the Log4m logger
-    SetupLogger(LOGGER_NAME, LOG4M_LEVEL_TRACE);
+    SetupLogger(LOGGER_NAME, LOG4M_LEVEL_DEBUG);
 }
 
 - (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -201,7 +201,6 @@
        withProgressWindow:(LoadingImagesWindowController*)progWindow
 {
     LOG4M_TRACE(logger_, @"Enter");
-
 
     BOOL keyFound = NO;  // used for finding first key image below
     unsigned numTimeImages = (unsigned)[viewerController maxMovieIndex];

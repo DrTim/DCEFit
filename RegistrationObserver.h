@@ -234,7 +234,13 @@ protected:
     * Default constructor.
     * Constructor is not public to conform to ITK style.
     */
-    RegistrationObserver();
+    RegistrationObserver()
+    : DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
+    {
+        std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
+        logger_ = log4cplus::Logger::getInstance(name);
+        LOG4CPLUS_TRACE(logger_, "Enter");
+    }
 
 private:
     log4cplus::Logger logger_;
