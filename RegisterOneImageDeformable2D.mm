@@ -110,13 +110,13 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            mmiMetric->SetNumberOfThreads(1);
+            //mmiMetric->SetNumberOfThreads(1);
             observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
             metric = mmiMetric;
             break;
         case MeanSquares:
             msMetric = MSImageToImageMetric2D::New();
-            msMetric->SetNumberOfThreads(1);
+            //msMetric->SetNumberOfThreads(1);
             metric = msMetric;
             break;
         default:
@@ -162,7 +162,7 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     // This does not change during registration
     BSplineInterpolator2D::Pointer interpolator = BSplineInterpolator2D::New();
     interpolator->SetSplineOrder(BSPLINE_ORDER);
-    interpolator->SetNumberOfThreads(1);
+    //interpolator->SetNumberOfThreads(1);
 
     //
     // The image pyramids
@@ -176,7 +176,7 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     // Set up the registration
     Registration2D::Pointer registration = Registration2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    registration->SetNumberOfThreads(1);
+    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);

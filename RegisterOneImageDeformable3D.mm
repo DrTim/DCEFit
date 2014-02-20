@@ -24,7 +24,7 @@ RegisterOneImageDeformable3D::RegisterOneImageDeformable3D(
     std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDeformable3D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
-    
+
     // don't do anything if this is turned off
     if (itkParams_.deformLevels == 0)
     {
@@ -111,13 +111,13 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            mmiMetric->SetNumberOfThreads(4);
+            //mmiMetric->SetNumberOfThreads(4);
             observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
             metric = mmiMetric;
             break;
         case MeanSquares:
             msMetric = MSImageToImageMetric3D::New();
-            msMetric->SetNumberOfThreads(1);
+            //msMetric->SetNumberOfThreads(1);
             metric = msMetric;
             break;
         default:
@@ -184,7 +184,7 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
 
     Registration3D::Pointer registration = Registration3D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    registration->SetNumberOfThreads(1);
+    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);

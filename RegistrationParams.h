@@ -14,7 +14,11 @@
 @interface RegistrationParams : NSObject
 {
     Logger* logger_;
-    
+
+    // Plugin configuration parameters
+    int loggerLevel;
+    int numberOfThreads;
+
     // General registration parameters
     unsigned numImages;
     unsigned fixedImageNumber;
@@ -50,7 +54,6 @@
     NSMutableArray* rigidRegVersorOptMinStepSize;
     NSMutableArray* rigidRegVersorOptMaxStepSize;
     NSMutableArray* rigidRegVersorOptRelaxationFactor;
-
     NSMutableArray* rigidRegMaxIter;           // contains NSNumbers (unsigned)
 
     // deformable regitration parameters
@@ -71,6 +74,10 @@
     NSMutableArray* deformRegRSGDRelaxationFactor;
     NSMutableArray* deformRegMaxIter;           // contains NSNumbers (unsigned)
 }
+
+// Plugin configuration parameters
+@property (assign) int loggerLevel;
+@property (assign) int numberOfThreads;
 
 // General registration parameters
 @property (assign) unsigned numImages;          ///< The number of images (2D or 3D) in the series.
@@ -95,7 +102,7 @@
 @property (retain) NSMutableArray* rigidRegRSGDMinStepSize;       /**< RSGD termination criterion. */
 @property (retain) NSMutableArray* rigidRegRSGDMaxStepSize;       /**< RSGD initial step size. */
 @property (retain) NSMutableArray* rigidRegRSGDRelaxationFactor;  /**< RSGD tuning (~0.0 - 1.0). */
-@property (retain) NSMutableArray* rigidRegVersorOptTransScale;  /**< Scaling for translation params (~0.001). */
+@property (retain) NSMutableArray* rigidRegVersorOptTransScale;  /**< Scaling for translation params. */
 @property (retain) NSMutableArray* rigidRegVersorOptMinStepSize;  /**< VersorOpt termination criterion. */
 @property (retain) NSMutableArray* rigidRegVersorOptMaxStepSize;  /**< VersorOpt initial step size. */
 @property (retain) NSMutableArray* rigidRegVersorOptRelaxationFactor;/**< VersorOpt tuning (~0.0 - 1.0). */
@@ -108,8 +115,8 @@
 @property (assign) enum MetricType deformRegMetric;    /**< The metric to use. (enum value) */
 @property (assign) enum OptimizerType deformRegOptimizer; /**< The optimizer to use. (enum value) */
 @property (retain) NSMutableArray* deformRegGridSizeArray; /**< Num of Bspline nodes in each dimension. */
-@property (retain) NSMutableArray* deformRegMMIHistogramBins;   /**< Number of bins for MMI metric. */
-@property (retain) NSMutableArray* deformRegMMISampleRate;      /**< Fraction of voxels to sample for MMI. */
+@property (retain) NSMutableArray* deformRegMMIHistogramBins; /**< Number of bins for MMI metric. */
+@property (retain) NSMutableArray* deformRegMMISampleRate;    /**< Fraction of voxels to sample for MMI. */
 @property (retain) NSMutableArray* deformRegLBFGSBCostConvergence;   /**< LBFGSB termination criterion. */         
 @property (retain) NSMutableArray* deformRegLBFGSBGradientTolerance; /**< LBFGSB termination criterion. */         
 @property (retain) NSMutableArray* deformRegLBFGSGradientConvergence;/**< LBFGS termination criterion. */          

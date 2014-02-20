@@ -114,14 +114,14 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
             MMImetric = MMIImageToImageMetric2D::New();
             MMImetric->UseExplicitPDFDerivativesOff();
             MMImetric->SetUseCachingOfBSplineWeights(true); // default == true
-            MMImetric->SetNumberOfThreads(1);
+                                                            //MMImetric->SetNumberOfThreads(1);
             MMImetric->ReinitializeSeed(8370276);
             observer->SetMMISchedules(itkParams_.rigidMMINumBins, itkParams_.rigidMMISampleRate);
             metric = MMImetric;
             break;
         case MeanSquares:
             MSMetric = MSImageToImageMetric2D::New();
-            MSMetric->SetNumberOfThreads(1);
+            //MSMetric->SetNumberOfThreads(1);
             metric = MSMetric;
             break;
         default:
@@ -195,7 +195,7 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
     // Set up the registration
     Registration2D::Pointer registration = Registration2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    registration->SetNumberOfThreads(1);
+    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);

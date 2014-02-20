@@ -12,6 +12,10 @@
 /**
  * Keys for the dictionary holding the user defaults.
  */
+// General program defaults
+extern NSString* const DefaultLoggerLevelKey;
+extern NSString* const DefaultNumberOfThreadsKey;
+
 extern NSString* const FixedImageNumberKey;
 extern NSString* const SeriesDescriptionKey;
 
@@ -80,14 +84,20 @@ extern NSString* const DeformRegMaxIterKey;
  *
  * @returns The dictionary used to store default values.
  */
-- (NSMutableDictionary*)dictionary;
++ (NSMutableDictionary*)defaultsDictionary;
 
 
 /**
- * Saves the user defaults to disk, first updating the dictionary with the data.
+ * Saves the registration parameters to disk.
  * @param data An instance of RegistrationData.
  */
-- (void)save:(RegistrationParams*)data;
+- (void)saveRegParams:(RegistrationParams*)data;
+
+/**
+ * Saves the registration parameters to disk.
+ * @param data An instance of RegistrationData.
+ */
+- (void)saveDefaults:(NSMutableDictionary*)data;
 
 /**
  * Does the key exist in the defaults dictionary?

@@ -6,9 +6,15 @@
 //
 //
 
+#import <Log4m/LogLevel.h>
+
 #import "UserDefaults.h"
 #import "ProjectDefs.h"
 #import "RegistrationParams.h"
+
+// General program defaults
+NSString* const DefaultLoggerLevelKey = @"DefaultLoggerLevel";
+NSString* const DefaultNumberOfThreadsKey = @"DefaultNumberOfThreads";
 
 // general registration parameters
 NSString* const FixedImageNumberKey = @"FixedImageNumber";
@@ -95,6 +101,9 @@ static UserDefaults* sharedInstance;
 {
     NSDictionary* d =
     [NSDictionary dictionaryWithObjectsAndKeys:
+     [NSNumber numberWithInt:LOG4M_LEVEL_DEBUG], DefaultLoggerLevelKey,
+     [NSNumber numberWithUnsignedInt:1], DefaultNumberOfThreadsKey,
+     
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 
@@ -116,7 +125,6 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@1e-6, @1e-5, @1e-4, @1e-4, nil], RigidRegVersorOptMinStepSizeKey,
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], RigidRegVersorOptMaxStepSizeKey,
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], RigidRegVersorOptRelaxationFactorKey,
-
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], RigidRegMaxIterKey,
 
      [NSNumber numberWithBool:YES], DeformRegEnabledKey,
@@ -158,12 +166,12 @@ static UserDefaults* sharedInstance;
 }
 
 
-- (NSMutableDictionary*)dictionary
++ (NSMutableDictionary*)defaultsDictionary
 {
     return defaultsDict;
 }
 
-- (void)save:(RegistrationParams*)data
+- (void)saveRegParams:(RegistrationParams*)data
 {
     LOG4M_TRACE(logger_, @"Enter");
 
@@ -246,6 +254,18 @@ static UserDefaults* sharedInstance;
 
     [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMaxIter]
                      forKey:DeformRegMaxIterKey];
+
+    // Set the current values for for next time
+    [defaults setPersistentDomain: defaultsDict forName: bundleId];
+}
+
+- (void)saveDefaults:(NSMutableDictionary *)data
+{
+    LOG4M_TRACE(logger_, @"Enter");
+
+    // Set the values and keys that currently exist in the data.
+    // This needs to be kept synchronized with the +initialize method
+    [defaultsDict addEntriesFromDictionary:data];
 
     // Set the current values for for next time
     [defaults setPersistentDomain: defaultsDict forName: bundleId];
@@ -401,7 +421,6 @@ static UserDefaults* sharedInstance;
     LOG4M_TRACE(logger_, @"value = %@, key = %@", data, key);
     
 	[defaultsDict setValue:data forKey:key];
-	[self save:data];
 }
 
 @end

@@ -24,6 +24,8 @@
                 <outlet property="deformRegRSGDOptimizerTableView" destination="1118" id="1141"/>
                 <outlet property="deformShowFieldCheckBox" destination="1250" id="1285"/>
                 <outlet property="fixedImageComboBox" destination="40" id="598"/>
+                <outlet property="loggingLevelComboBox" destination="gfT-6A-vbw" id="f8w-Ef-pxD"/>
+                <outlet property="numberOfThreadsComboBox" destination="Sy5-9E-iFC" id="wOj-Bd-CZT"/>
                 <outlet property="regCloseButton" destination="427" id="609"/>
                 <outlet property="regParams" destination="630" id="664"/>
                 <outlet property="regStartButton" destination="422" id="608"/>
@@ -588,6 +590,104 @@ DQ
                                 <view key="view" id="432">
                                     <rect key="frame" x="10" y="33" width="445" height="759"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Yyo-wK-W4T">
+                                            <rect key="frame" x="14" y="618" width="417" height="80"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Fitting still under construction." id="vui-cG-LUb">
+                                                <font key="font" size="32" name="LucidaGrande"/>
+                                                <color key="textColor" name="controlShadowColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Configuration" identifier="3" id="cyZ-NI-mZI">
+                                <view key="view" id="8yD-ev-Q9I">
+                                    <rect key="frame" x="10" y="33" width="445" height="759"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <box autoresizesSubviews="NO" borderType="line" titlePosition="noTitle" id="YAZ-Qi-2QH">
+                                            <rect key="frame" x="6" y="687" width="433" height="74"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="1" y="1" width="431" height="72"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="m3j-Ya-otK">
+                                                        <rect key="frame" x="85" y="45" width="75" height="14"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Logging level" id="hrC-CO-8Y6">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <comboBox verticalHuggingPriority="750" tag="3" id="gfT-6A-vbw">
+                                                        <rect key="frame" x="165" y="38" width="99" height="26"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" tag="3" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="GY0-Mf-kOB">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </comboBoxCell>
+                                                        <connections>
+                                                            <outlet property="dataSource" destination="-2" id="ABk-y2-8Sh"/>
+                                                            <outlet property="delegate" destination="-2" id="0bl-hb-R93"/>
+                                                        </connections>
+                                                    </comboBox>
+                                                    <comboBox verticalHuggingPriority="750" tag="4" id="Sy5-9E-iFC">
+                                                        <rect key="frame" x="165" y="10" width="99" height="26"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="NUY-jZ-MMQ">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </comboBoxCell>
+                                                        <connections>
+                                                            <outlet property="dataSource" destination="-2" id="jhX-le-TIm"/>
+                                                            <outlet property="delegate" destination="-2" id="geX-0q-ogr"/>
+                                                        </connections>
+                                                    </comboBox>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KoC-zg-PG4">
+                                                        <rect key="frame" x="34" y="17" width="126" height="14"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Number of ITK threads" id="Jox-Zc-bCa">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </box>
+                                        <box autoresizesSubviews="NO" title="Bottom" borderType="line" titlePosition="noTitle" id="AXV-m1-x8g">
+                                            <rect key="frame" x="14" y="5" width="417" height="49"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="1" y="1" width="415" height="47"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button toolTip="Close DCEFit." verticalHuggingPriority="750" id="5Il-sD-xnG">
+                                                        <rect key="frame" x="328" y="7" width="75" height="32"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="U4T-cE-V03">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="regCloseButtonPressed:" target="-2" id="lKh-Af-B17"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </box>
+                                    </subviews>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>

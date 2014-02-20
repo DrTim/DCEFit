@@ -10,8 +10,6 @@
 #import <OsiriXAPI/PluginFilter.h>
 
 @class DialogController;
-@class SeriesInfo;
-@class Logger;
 
 /**
  * This is the class that OsiriX will load. It is this class which provides the link
@@ -20,8 +18,6 @@
 @interface DCEFitFilter : PluginFilter
 {
     DialogController* dialogController;
-    Logger* logger_;
-    SeriesInfo* seriesInfo;
 }
 
 
@@ -29,8 +25,6 @@
 	The main dialog for the plugin.
  */
 @property (assign) DialogController* dialogController;
-@property (assign, readonly) SeriesInfo* seriesInfo;
-
 
 /**
 	Default init method.

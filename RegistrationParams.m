@@ -6,10 +6,15 @@
 //
 //
 
+#import "ProjectDefs.h"
 #import "RegistrationParams.h"
 #import "UserDefaults.h"
 
 @implementation RegistrationParams
+
+// Plugin configuration parameters
+@synthesize loggerLevel;
+@synthesize numberOfThreads;
 
 // General registration parameters
 @synthesize numImages;

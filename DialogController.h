@@ -64,6 +64,8 @@
 
     // Bottom box buttons
     IBOutlet NSButton *regCloseButton;
+    NSComboBox *loggingLevelComboBox;
+    NSComboBox *numberOfThreadsComboBox;
     IBOutlet NSButton *regStartButton;
 
     // Optimizer and metric configuration sheets
@@ -118,6 +120,9 @@
 @property (assign) IBOutlet NSButton *regStartButton;
 @property (assign) IBOutlet NSButton *regCloseButton;
 
+// Program defaults
+@property (assign) IBOutlet NSComboBox *loggingLevelComboBox;
+@property (assign) IBOutlet NSComboBox *numberOfThreadsComboBox;
 
 // Actions
 //
@@ -156,8 +161,7 @@
  * @return The instance (self).
  */
 - (id)initWithViewerController:(ViewerController*)viewerController
-                        Filter:(DCEFitFilter*)filter
-                    SeriesInfo:(SeriesInfo*)info;
+                        Filter:(DCEFitFilter*)filter;
 
 - (void)registrationEnded:(BOOL)saveData;
 

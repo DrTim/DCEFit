@@ -142,7 +142,7 @@ Image3D::Pointer RegisterOneImageRigid3D::registerImage(Image3D::Pointer movingI
     optimizerScales[2] = 1.0;
     optimizerScales[3] = translationScaleFactor;
     optimizerScales[4] = translationScaleFactor;
-    optimizerScales[4] = translationScaleFactor;
+    optimizerScales[5] = translationScaleFactor;
     LOG4CPLUS_DEBUG(logger_, "  optimizerScales = "
                         << std::fixed << std::setprecision(4) << optimizerScales);
 
@@ -189,7 +189,7 @@ Image3D::Pointer RegisterOneImageRigid3D::registerImage(Image3D::Pointer movingI
 
     Registration3D::Pointer registration = Registration3D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    registration->SetNumberOfThreads(1);
+    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);

@@ -52,4 +52,7 @@ enum ResultCode
 // The name of the rolling file log that we place in ~/Library/Logs
 #define LOG_FILE_NAME LOGGER_NAME;
 
+// The most thhreads we will ever ask for.
+#define MAX_THREADS 8
+
 #endif

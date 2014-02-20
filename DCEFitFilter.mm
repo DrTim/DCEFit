@@ -5,26 +5,25 @@
 //  Copyright (c) 2013 Tim. All rights reserved.
 //
 
-#import <OsiriX/DCMObject.h>
-#import <OsiriX/DCMAttribute.h>
-#import <OsiriX/DCMAttributeTag.h>
-#import <OsiriX/DCMCalendarDate.h>
-#import <OsiriXAPI/DicomImage.h>
-#import <OsiriXAPI/ROI.h>
-
+//#import <OsiriX/DCMObject.h>
+//#import <OsiriX/DCMAttribute.h>
+//#import <OsiriX/DCMAttributeTag.h>
+//#import <OsiriX/DCMCalendarDate.h>
+//#import <OsiriXAPI/DicomImage.h>
+//#import <OsiriXAPI/ROI.h>
+#import <OsiriXAPI/ViewerController.h>
 #import "ViewerController+ExportTimeSeries.h"
-
-#import "ProjectDefs.h"
-#import "SetupLogger.h"
+//
+//#import "ProjectDefs.h"
 #import "DCEFitFilter.h"
 #import "DialogController.h"
-#import "SeriesInfo.h"
-#import "LoadingImagesWindowController.h"
+//#import "SeriesInfo.h"
+//#import "LoadingImagesWindowController.h"
+//#import "UserDefaults.h"
 
 @implementation DCEFitFilter
 
 @synthesize dialogController;
-@synthesize seriesInfo;
 
 - (id)init
 {
@@ -32,7 +31,7 @@
     self = [super init];
     if (self)
     {
-        seriesInfo = [[SeriesInfo alloc] init];
+        //seriesInfo = [[SeriesInfo alloc] init];
     }
 
     return self;
@@ -40,23 +39,12 @@
 
 - (void)dealloc
 {
-    [seriesInfo release];
-    [logger_ release];
     [super dealloc];
-}
-
-- (void) setupLogger
-{
-    NSString* loggerName = [[NSString stringWithUTF8String:LOGGER_NAME]
-                            stringByAppendingString:@".DCEFitFilter"];
-    logger_ = [[Logger newInstance:loggerName] retain];
 }
 
 - (void) initPlugin
 {
     NSLog(@"DCEFitFilter.initPlugin");
-    [self setupSystemLogger];
-    [self setupLogger];
 }
 
 - (long) filterImage:(NSString*) menuName
@@ -80,42 +68,22 @@
                          didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
                             contextInfo:nil];
 
-        LOG4M_ERROR(logger_, @"This is a time series of 2D or 3D images."
-                    " Please reopen the series in the 4D viewer.");
-        return 1;
+        NSLog(@"This is a time series of 2D or 3D images. Please reopen the series in the 4D viewer.");
+
+        // return 0 to suppress the OsiriX failure alert.
+        return 0;
     }
-
-    //[self parseDataSet];  // show structure of data, debugging only
-
-    LoadingImagesWindowController* liwc = [[[LoadingImagesWindowController alloc]
-                                           initWithWindowNibName:@"LoadingImagesWindow"]
-                                           autorelease];
-    [liwc.window makeKeyAndOrderFront:self];
-    [self extractSeriesInfo:seriesInfo withProgressWindow:liwc];
-    [liwc close];
-
-    LOG4M_DEBUG(logger_, @"seriesInfo: %@", seriesInfo);
 
     if (dialogController == nil)
     {
         dialogController = [[DialogController alloc] initWithViewerController:viewerController
-                                                                       Filter:self
-                                                                   SeriesInfo:seriesInfo];
+                                                                       Filter:self];
 
         [dialogController.window setFrameAutosaveName:@"DCEFitMainDialog"];
-        [dialogController.window makeKeyAndOrderFront:nil];
+        //[dialogController.window makeKeyAndOrderFront:nil];
     }
     
     return 0;
-}
-
-/**
-	Sets up the Log4m logger.
- */
-- (void)setupSystemLogger
-{
-    // Now the Log4m logger
-    SetupLogger(LOGGER_NAME, LOG4M_LEVEL_DEBUG);
 }
 
 - (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -129,7 +97,7 @@
  */
 - (ViewerController*)copyCurrent4DViewerWindow
 {
-    LOG4M_TRACE(logger_, @"Enter");
+    NSLog(@"Entering copyCurrent4DViewerWindow");
 
     // each pixel contains either a 32-bit float or a 32-bit ARGB value
     const int ELEMENT_SIZE = 4;
@@ -197,198 +165,5 @@
     return new4DViewer;
 }
 
-- (void)extractSeriesInfo:(SeriesInfo*)info
-       withProgressWindow:(LoadingImagesWindowController*)progWindow
-{
-    LOG4M_TRACE(logger_, @"Enter");
-
-    BOOL keyFound = NO;  // used for finding first key image below
-    unsigned numTimeImages = (unsigned)[viewerController maxMovieIndex];
-    NSTimeInterval firstTime = 0.0;
-
-    info.numTimeSamples = numTimeImages;
-    info.slicesPerImage = [[viewerController pixList] count];
-    info.isFlipped = [[viewerController imageView] flippedData];
-
-    if (numTimeImages == 1)  // we have a 2D viewer
-    {
-        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", info.slicesPerImage);
-    }
-    else // we have a 4D viewer
-    {
-        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
-              info.numTimeSamples, info.slicesPerImage);
-    }
-
-    // initialise the progress indicator
-    [progWindow setNumImages:info.numTimeSamples];
-
-    NSArray* firstImage = [viewerController pixList:0];
-    DCMPix* firstPix = [firstImage objectAtIndex:0];
-
-    info.sliceHeight = [firstPix pheight];
-    info.sliceWidth = [firstPix pwidth];
-
-    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
-          info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
-
-    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
-    {
-        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
-
-        // Bump the progress indicator
-        [progWindow incrementIndicator];
-
-        // The ROIs for this image.
-        NSArray* roiList = [viewerController roiList:timeIdx];
-
-        // The array of slices in the image.
-        NSArray* pixList = [viewerController pixList:timeIdx];
-
-        // The list of DicomImage instances corresponding to the slices.
-        NSArray* fileList = [viewerController fileList:timeIdx];
-
-        unsigned numSlices = info.slicesPerImage;
-        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
-        {
-            // DCMPix instance containing this slice
-            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
-
-            // The DicomImage instance containing this slice.
-            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
-            BOOL isKey = [[curSlice isKeyImage] boolValue];
-            if ((isKey) && (!keyFound))
-            {
-                // Image may be displayed flipped. We need the real index.
-                info.keySliceIdx = sliceIdx;
-
-                info.keyImageIdx = timeIdx;
-                LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",
-                            info.keyImageIdx, info.keySliceIdx);
-
-                // The list of ROIs in this slice. Pick out either the first one named "Reg"
-                // or the first one in the list
-                NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
-                if ((curRoiList != nil) && ([curRoiList count] > 0))
-                {
-                    ROI* roi = [curRoiList objectAtIndex:0];  // default
-                    BOOL found = NO;
-                    for (ROI* r in curRoiList)
-                    {
-                        if ((!found) && ([[r name] isEqualToString:@"Reg"]))
-                        {
-                            found = YES;
-                            roi = r;
-                        }
-                    }
-
-                    info.firstROI = roi;
-
-                    LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
-                                [info.firstROI name]);
-                    LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.firstROI points]);
-                }
-            }
-
-            NSString* filePath = [curPix sourceFile];
-            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
-
-            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
-            DCMAttribute* attr = [dcmObj attributeForTag:tag];
-            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
-            if ((timeIdx == 0) && (sliceIdx == 0))
-                firstTime = acqTime;
-
-            if (sliceIdx == 0) // do this once per time increment
-            {
-                NSTimeInterval normalisedTime = acqTime - firstTime;
-                [info addAcqTime:normalisedTime];
-                LOG4M_DEBUG(logger_, @"Normalised time of acquisition = %f", normalisedTime);
-            }
-        }
-    }
-}
-
-- (void)parseDataSet
-{
-    LOG4M_TRACE(logger_, @"Enter");
-
-    unsigned numTimeImages = (unsigned)[viewerController maxMovieIndex];
-    NSTimeInterval firstTime = 0.0;
-    unsigned slicesPerImage = [[viewerController pixList] count];
-
-    if (numTimeImages == 1)  // we have a 2D viewer
-    {
-        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", slicesPerImage);
-    }
-    else // we have a 4D viewer
-    {
-        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
-              numTimeImages, slicesPerImage);
-    }
-
-    NSArray* firstImage = [viewerController pixList:0];
-    DCMPix* firstPix = [firstImage objectAtIndex:0];
-    unsigned sliceHeight = [firstPix pheight];
-    unsigned sliceWidth = [firstPix pwidth];
-    unsigned sliceSize = sliceHeight * sliceWidth;
-    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
-          sliceHeight, sliceWidth, sliceSize);
-
-    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
-    {
-        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
-
-        float* imageBuff = [viewerController volumePtr:timeIdx];
-        LOG4M_DEBUG(logger_, @"******** volumePtr = %p. ***************", imageBuff);
-
-        NSArray* roiList = [viewerController roiList:timeIdx];
-        NSArray* pixList = [viewerController pixList:timeIdx];
-        NSArray* fileList = [viewerController fileList:timeIdx];
-
-        unsigned numSlices = [pixList count];
-        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
-        {
-            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
-            size_t offset = [curPix fImage] - imageBuff;
-            LOG4M_DEBUG(logger_, @"sliceIdx = %u, offset = %lu", sliceIdx, offset / sliceSize);
-            LOG4M_DEBUG(logger_, @"Source file: %@", [curPix sourceFile]);
-
-            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
-            BOOL isKey = [[curSlice isKeyImage] boolValue];
-            if (isKey)
-            {
-                LOG4M_DEBUG(logger_, @"Key image");
-            }
-
-            NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
-            if ((curRoiList != nil) && ([curRoiList count] > 0))
-            {
-                for (ROI* r in curRoiList)
-                    LOG4M_DEBUG(logger_, @"ROI named \"%@\" found.", [r name]);
-            }
-
-            NSString* file_path = [curPix sourceFile];
-            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:file_path decodingPixelData:NO];
-
-            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"ImagePositionPatient"];
-            DCMAttribute* attr = [dcmObj attributeForTag:tag];
-            NSArray* ippValues = [attr values];
-            LOG4M_DEBUG(logger_, @"IPP = %@", ippValues);
-
-            tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
-            attr = [dcmObj attributeForTag:tag];
-            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
-            if ((timeIdx == 0) && (sliceIdx == 0))
-                firstTime = acqTime;
-
-            if (sliceIdx == 0) // do this once per time increment
-            {
-                NSTimeInterval normalisedTime = acqTime - firstTime;
-                LOG4M_DEBUG(logger_, @"AcqTime = %f", normalisedTime);
-            }
-        }
-    }
-}
 
 @end

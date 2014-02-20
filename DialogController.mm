@@ -6,13 +6,19 @@
 //
 //
 
+#include <itkVersion.h>
+#include <itkMultiThreader.h>
+
 #import <OsiriXAPI/ViewerController.h>
+#import <OsiriXAPI/DicomImage.h>
 #import <OsiriXAPI/DCMPix.h>
-#import <OsiriXAPI/PluginFilter.h>
-#import <OsiriXAPI/DicomSeries.h>
+//#import <OsiriXAPI/PluginFilter.h>
+//#import <OsiriXAPI/DicomSeries.h>
 #import <OsiriXAPI/Notifications.h>
+#import <OsiriXAPI/ROI.h>
 
 #import <OsiriX/DCMObject.h>
+#import <OsiriX/DCMAttribute.h>
 #import <OsiriX/DCMAttributeTag.h>
 
 #import "ViewerController+ExportTimeSeries.h"
@@ -23,6 +29,9 @@
 #import "RegistrationManager.h"
 #import "UserDefaults.h"
 #import "SeriesInfo.h"
+#import "LoadingImagesWindowController.h"
+
+#import "LoggerUtils.h"
 
 
 @implementation DialogController;
@@ -48,6 +57,8 @@
 @synthesize deformRegOptimizerRadioMatrix;
 @synthesize deformShowFieldCheckBox;
 @synthesize regCloseButton;
+@synthesize loggingLevelComboBox;
+@synthesize numberOfThreadsComboBox;
 @synthesize regStartButton;
 
 /**
@@ -70,8 +81,7 @@ enum TableTags
 };
 
 - (id)initWithViewerController:(ViewerController *)viewerController
-                        Filter:(DCEFitFilter *)filter
-                    SeriesInfo:(SeriesInfo *)info
+                        Filter:(DCEFitFilter *)filter;
 {
     self = [super initWithWindowNibName:@"MainDialog"];
     if (self)
@@ -81,7 +91,7 @@ enum TableTags
         openSheet_ = nil;
         viewerController1 = viewerController;
         parentFilter = filter;
-        seriesInfo = info;
+        seriesInfo = [[SeriesInfo alloc] init];
     }
     return self;
 }
@@ -89,6 +99,8 @@ enum TableTags
 - (void)dealloc
 {
     [logger_ release];
+    [seriesInfo release];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     [super dealloc];
@@ -114,6 +126,16 @@ enum TableTags
                                                  name:OsirixCloseViewerNotification
                                                object:viewerController1];
 
+    [self setupSystemLogger];
+    [self setupProgramDefaults];
+
+    LoadingImagesWindowController* progressWindow =
+        [[LoadingImagesWindowController alloc] initWithWindowNibName:@"LoadingImagesWindow"];
+    [progressWindow.window makeKeyAndOrderFront:self];
+    [self extractSeriesInfo:seriesInfo withProgressWindow:progressWindow];
+    [progressWindow close];
+    [progressWindow release];
+
     [self setupControlsFromParams];
 }
 
@@ -124,9 +146,257 @@ enum TableTags
     logger_ = [[Logger newInstance:loggerName] retain];
 }
 
+/**
+ Sets up the Log4m logger.
+ */
+- (void)setupSystemLogger
+{
+    UserDefaults* defaults = [UserDefaults sharedInstance];;
+
+    regParams.loggerLevel = [defaults integerForKey:DefaultLoggerLevelKey];
+    SetupLogger(LOGGER_NAME, regParams.loggerLevel);
+}
+
+- (void)setupProgramDefaults
+{
+    LOG4M_INFO(logger_, @"ITK threads: default = %d, max = %d",
+               itk::MultiThreader::GetGlobalDefaultNumberOfThreads(),
+               itk::MultiThreader::GetGlobalMaximumNumberOfThreads());
+
+    UserDefaults* defaults = [UserDefaults sharedInstance];
+
+    // Threading
+    int numThreads = [defaults unsignedIntegerForKey:DefaultNumberOfThreadsKey];
+    itk::MultiThreader::SetGlobalMaximumNumberOfThreads(numThreads);
+
+    regParams.numberOfThreads = numThreads;
+
+    int maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
+
+    LOG4M_INFO(logger_, @"Using ITK version %d.%d.%d", itk::Version::GetITKMajorVersion(),
+               itk::Version::GetITKMinorVersion(), itk::Version::GetITKBuildVersion());
+
+    LOG4M_INFO(logger_, @"ITK Number of threads used = %d", maxThreads);
+}
+
+- (void)saveDefaults
+{
+    UserDefaults* defaults = [UserDefaults sharedInstance];
+    [defaults saveRegParams:regParams];
+}
+
+- (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
+{
+    LOG4M_TRACE(logger_, @"Enter");
+
+
+    BOOL keyFound = NO;  // used for finding first key image below
+    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
+    NSTimeInterval firstTime = 0.0;
+
+    info.numTimeSamples = numTimeImages;
+    info.slicesPerImage = [[viewerController1 pixList] count];
+    info.isFlipped = [[viewerController1
+                       imageView] flippedData];
+
+    if (numTimeImages == 1)  // we have a 2D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", info.slicesPerImage);
+    }
+    else // we have a 4D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
+                    info.numTimeSamples, info.slicesPerImage);
+    }
+
+    // initialise the progress indicator
+    [progWindow setNumImages:info.numTimeSamples];
+
+    NSArray* firstImage = [viewerController1 pixList:0];
+    DCMPix* firstPix = [firstImage objectAtIndex:0];
+
+    info.sliceHeight = [firstPix pheight];
+    info.sliceWidth = [firstPix pwidth];
+
+    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
+                info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
+
+    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
+    {
+        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+
+        // Bump the progress indicator
+        [progWindow incrementIndicator];
+
+        // The ROIs for this image.
+        NSArray* roiList = [viewerController1 roiList:timeIdx];
+
+        // The array of slices in the image.
+        NSArray* pixList = [viewerController1 pixList:timeIdx];
+
+        // The list of DicomImage instances corresponding to the slices.
+        NSArray* fileList = [viewerController1 fileList:timeIdx];
+
+        unsigned numSlices = info.slicesPerImage;
+        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
+        {
+            // DCMPix instance containing this slice
+            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
+
+            // The DicomImage instance containing this slice.
+            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+            BOOL isKey = [[curSlice isKeyImage] boolValue];
+            if ((isKey) && (!keyFound))
+            {
+                // Image may be displayed flipped. We need the real index.
+                info.keySliceIdx = sliceIdx;
+
+                info.keyImageIdx = timeIdx;
+                LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",
+                            info.keyImageIdx, info.keySliceIdx);
+
+                // The list of ROIs in this slice. Pick out either the first one named "Reg"
+                // or the first one in the list
+                NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+                if ((curRoiList != nil) && ([curRoiList count] > 0))
+                {
+                    ROI* roi = [curRoiList objectAtIndex:0];  // default
+                    BOOL found = NO;
+                    for (ROI* r in curRoiList)
+                    {
+                        if ((!found) && ([[r name] isEqualToString:@"Reg"]))
+                        {
+                            found = YES;
+                            roi = r;
+                        }
+                    }
+
+                    info.firstROI = roi;
+
+                    LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
+                                [info.firstROI name]);
+                    LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.firstROI points]);
+                }
+            }
+
+            NSString* filePath = [curPix sourceFile];
+            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
+
+            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+            DCMAttribute* attr = [dcmObj attributeForTag:tag];
+            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
+            if ((timeIdx == 0) && (sliceIdx == 0))
+                firstTime = acqTime;
+
+            if (sliceIdx == 0) // do this once per time increment
+            {
+                NSTimeInterval normalisedTime = acqTime - firstTime;
+                [info addAcqTime:normalisedTime];
+                LOG4M_DEBUG(logger_, @"Normalised time of acquisition = %f", normalisedTime);
+            }
+        }
+    }
+
+    [progWindow close];
+}
+
+- (void)parseDataSet
+{
+    LOG4M_TRACE(logger_, @"Enter");
+
+    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
+    NSTimeInterval firstTime = 0.0;
+    unsigned slicesPerImage = [[viewerController1 pixList] count];
+
+    if (numTimeImages == 1)  // we have a 2D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", slicesPerImage);
+    }
+    else // we have a 4D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
+                    numTimeImages, slicesPerImage);
+    }
+
+    NSArray* firstImage = [viewerController1 pixList:0];
+    DCMPix* firstPix = [firstImage objectAtIndex:0];
+    unsigned sliceHeight = [firstPix pheight];
+    unsigned sliceWidth = [firstPix pwidth];
+    unsigned sliceSize = sliceHeight * sliceWidth;
+    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
+                sliceHeight, sliceWidth, sliceSize);
+
+    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
+    {
+        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+
+        float* imageBuff = [viewerController1 volumePtr:timeIdx];
+        LOG4M_DEBUG(logger_, @"******** volumePtr = %p. ***************", imageBuff);
+
+        NSArray* roiList = [viewerController1 roiList:timeIdx];
+        NSArray* pixList = [viewerController1 pixList:timeIdx];
+        NSArray* fileList = [viewerController1 fileList:timeIdx];
+
+        unsigned numSlices = [pixList count];
+        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
+        {
+            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
+            size_t offset = [curPix fImage] - imageBuff;
+            LOG4M_DEBUG(logger_, @"sliceIdx = %u, offset = %lu", sliceIdx, offset / sliceSize);
+            LOG4M_DEBUG(logger_, @"Source file: %@", [curPix sourceFile]);
+
+            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+            BOOL isKey = [[curSlice isKeyImage] boolValue];
+            if (isKey)
+            {
+                LOG4M_DEBUG(logger_, @"Key image");
+            }
+
+            NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+            if ((curRoiList != nil) && ([curRoiList count] > 0))
+            {
+                for (ROI* r in curRoiList)
+                    LOG4M_DEBUG(logger_, @"ROI named \"%@\" found.", [r name]);
+            }
+
+            NSString* file_path = [curPix sourceFile];
+            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:file_path decodingPixelData:NO];
+
+            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"ImagePositionPatient"];
+            DCMAttribute* attr = [dcmObj attributeForTag:tag];
+            NSArray* ippValues = [attr values];
+            LOG4M_DEBUG(logger_, @"IPP = %@", ippValues);
+
+            tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+            attr = [dcmObj attributeForTag:tag];
+            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
+            if ((timeIdx == 0) && (sliceIdx == 0))
+                firstTime = acqTime;
+            
+            if (sliceIdx == 0) // do this once per time increment
+            {
+                NSTimeInterval normalisedTime = acqTime - firstTime;
+                LOG4M_DEBUG(logger_, @"AcqTime = %f", normalisedTime);
+            }
+        }
+    }
+}
+
 - (void)setupControlsFromParams
 {
     LOG4M_TRACE(logger_, @"Enter");
+
+    // First the program defaults
+    unsigned logIdx = regParams.loggerLevel / 10000;
+    [loggingLevelComboBox selectItemAtIndex:logIdx];
+    [loggingLevelComboBox setObjectValue:[self comboBox:loggingLevelComboBox
+                              objectValueForItemAtIndex:logIdx]];
+    [loggingLevelComboBox reloadData];
+
+    [numberOfThreadsComboBox selectItemAtIndex:regParams.numberOfThreads];
+    [numberOfThreadsComboBox setObjectValue:[self comboBox:numberOfThreadsComboBox
+                                 objectValueForItemAtIndex:regParams.numberOfThreads]];
+    [numberOfThreadsComboBox reloadData];
 
     // set things up based upon the image series information
     regParams.slicesPerImage = seriesInfo.slicesPerImage;
@@ -168,9 +438,9 @@ enum TableTags
 
     // Set up label to reflect number of dimensions in images
     if (regParams.slicesPerImage == 1)
-        [rigidRegOptimizerLabel setStringValue:@"Regular Step Gradient descent"];
+        [rigidRegOptimizerLabel setStringValue:@"Regular Step Gradient Descent"];
     else
-        [rigidRegOptimizerLabel setStringValue:@"Centred Versor 3D"];
+        [rigidRegOptimizerLabel setStringValue:@"Versor Rigid 3D"];
 
     // enable the controls based upon the parameters
     [self enableControls];
@@ -392,8 +662,7 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    [[UserDefaults sharedInstance] save:regParams];
-
+    [self saveDefaults];
     [self disableControls];
 
     progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
@@ -436,7 +705,7 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    [[UserDefaults sharedInstance] save:regParams];
+    [self saveDefaults];
 
     parentFilter.dialogController = nil;
     [self.window close];
@@ -596,8 +865,8 @@ enum TableTags
     if (window == self)
     {
         LOG4M_DEBUG(logger_, @"Closing window: %@", [window autosaveName]);
-        
-        [[UserDefaults sharedInstance] save:regParams];
+        [self saveDefaults];
+        //[[UserDefaults sharedInstance] save:regParams];
     }
 }
 
@@ -930,13 +1199,13 @@ enum TableTags
     LOG4M_TRACE(logger_, @"Enter: %@", [notification name]);
     NSComboBox* cb = (NSComboBox*)[notification object];
     long tag = [cb tag];
+    NSInteger idx = [cb indexOfSelectedItem];
+    id value = [self comboBox:cb objectValueForItemAtIndex:idx];
 
-    LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld", tag);
+    LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld, idx = %ld, value = %@", tag, idx, value);
     
     // Use the tag of the combo box to select the parameter to set
     // These tags are hard wired in the XIB file.
-    NSInteger idx = [cb indexOfSelectedItem];
-    NSNumber* value = [self comboBox:cb objectValueForItemAtIndex:idx];
     switch (tag)
     {
         case 0:
@@ -961,6 +1230,18 @@ enum TableTags
             [deformRegGridSizeTableView reloadData];
             break;
 
+        case 3:
+            // This depends upon the enum in ProjectDefs.h.
+            // value is a string, we need the index to set the level
+            regParams.loggerLevel = idx * 10000;
+            ResetLoggerLevel(LOGGER_NAME, regParams.loggerLevel);
+            break;
+
+        case 4:
+            regParams.numberOfThreads = [value intValue];
+            itk::MultiThreader::SetGlobalMaximumNumberOfThreads(regParams.numberOfThreads);
+            break;
+
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld.", (long)tag);
             [NSException raise:NSInternalInconsistencyException
@@ -977,7 +1258,6 @@ enum TableTags
     LOG4M_DEBUG(logger_, @"comboBox:objectValueForItemAtIndex tag = %ld, index = %ld", tag, index);
 
     id retVal;
-
     unsigned idx = (unsigned)index;
     
     switch (tag)
@@ -991,6 +1271,42 @@ enum TableTags
             break;
 
         case 2:  // deformable levels
+            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            break;
+
+        case 3: // Logging level
+            switch (idx)
+            {
+                case 0:
+                    retVal = @"Trace";
+                    break;
+                case 1:
+                    retVal = @"Debug";
+                    break;
+                case 2:
+                    retVal = @"Info";
+                    break;
+                case 3:
+                    retVal = @"Warn";
+                    break;
+                case 4:
+                    retVal = @"Error";
+                    break;
+                case 5:
+                    retVal = @"Fatal";
+                    break;
+                case 6:
+                    retVal = @"Off";
+                    break;
+                default:
+                    LOG4M_FATAL(logger_, @"Invalid tag %ld.", (long)tag);
+                    [NSException raise:NSInternalInconsistencyException
+                                format:@"Invalid tag %ld in comboBox:objectValueForItemAtIndex:", (long)tag];
+                    return nil;
+            }
+            break;
+
+        case 4:  // number of threads
             retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
@@ -1014,7 +1330,7 @@ enum TableTags
     LOG4M_DEBUG(logger_, @"numberOfItemsInComboBox tag = %ld", tag);
 
     NSInteger retVal;
-    
+
     switch (tag)
     {
         case 0:  // fixed image number
@@ -1027,6 +1343,14 @@ enum TableTags
 
         case 2:  // deformable levels
             retVal = (NSInteger)MAX_ARRAY_PARAMS;
+            break;
+
+        case 3:  // logging level
+            retVal = 7;
+            break;
+
+        case 4: // number of threads, decided by ITK (sort of)
+            retVal = MAX_THREADS;
             break;
 
          default:
