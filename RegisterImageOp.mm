@@ -8,13 +8,18 @@
 
 #import "RegisterImageOp.h"
 
-#include "RegisterOneImageMultiResRigid2D.h"
-#include "RegisterOneImageMultiResDeformable2D.h"
-#include "itkImageRegionIteratorWithIndex.h"
-#include "itkImageRegionConstIteratorWithIndex.h"
+#include "RegisterOneImageRigid2D.h"
+#include "RegisterOneImageRigid3D.h"
+#include "RegisterOneImageDeformable2D.h"
+#include "RegisterOneImageDeformable3D.h"
+
+#import "SeriesInfo.h"
 
 #import <Log4m/Logger.h>
 #import <Log4m/LoggingMacros.h>
+
+// used in register2dSeries
+//static Image2D::Pointer reduceTo2D(Image3D::Pointer image3d);
 
 @implementation RegisterImageOp
 
@@ -22,6 +27,7 @@
    ProgressController:(ProgressWindowController *)controller
 {
     self = [super init];
+
     if (self)
     {
         NSString* loggerName = [[NSString stringWithUTF8String:LOGGER_NAME]
@@ -35,8 +41,8 @@
         manager = regManager;
         progController = controller;
         params = manager.itkParams;
-        image = [manager getImage];
     }
+
     return self;
 }
 
@@ -72,91 +78,13 @@
     executing_ = YES;
     [self didChangeValueForKey:@"isExecuting"];
 
-    unsigned numImages = params->numImages;
-    RegisterOneImage2D::ResultCode resultCode = RegisterOneImage2D::SUCCESS;
-    waitingForAnswer_ = NO;
-    
-    // Extract the slice to be used as the fixed image
-    unsigned fixedImageIdx = params->imageNumberToIndex(params->fixedImageNumber);
-    const Image2DType::Pointer fixedImage = [manager getSliceFromImage:fixedImageIdx];
-
-   // We iterate over the image number that the user sees.
-    for (unsigned imageNum = 1; imageNum <= numImages; ++imageNum)
+    if (manager.seriesInfo.slicesPerImage == 1)
     {
-        resultCode = RegisterOneImage2D::SUCCESS;
-        unsigned index = params->imageNumberToIndex(imageNum);
-
-        // Set progress window to current slice.
-        [progController performSelectorOnMainThread:@selector(setCurSlice:)
-                                         withObject:[NSNumber numberWithUnsignedInt:imageNum]
-                                      waitUntilDone:YES];
-
-        // No need to register the fixed image
-        if (index == fixedImageIdx)
-        {
-            NSString* msg = [NSString stringWithFormat:@"Skipping fixed slice %u.", imageNum];
-            [progController performSelectorOnMainThread:@selector(setStopCondition:)
-                                             withObject:msg
-                                          waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, index);
-            continue;
-        }
-        else
-        {
-            NSString* msg = [NSString stringWithFormat:@"Registering slice %u.", imageNum];
-            [progController performSelectorOnMainThread:@selector(setStopCondition:)
-                                             withObject:msg
-                                          waitUntilDone:YES];
-            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, index);
-        }
-        
-        if ([self isCancelled])
-            break;
-
-        // Pull the 2D slice from the 3D volume.
-        Image2DType::Pointer movingImage = [manager getSliceFromImage:index];
-
-        // Do this so that the deformable registration will get the moving
-        // image even if rigid registration is disabled.
-        Image2DType::Pointer regImage = movingImage;
-
-        if (params->rigidRegEnabled)
-        {
-            RegisterOneImageMultiResRigid2D rigidReg(progController, fixedImage, *params);
-            regImage = rigidReg.registerImage(movingImage, resultCode);
-        }
-
-        if (resultCode == RegisterOneImage2D::DISASTER)
-        {
-            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:YES];
-            while (waitingForAnswer_)
-                sleep(1);
-        }
-
-        if ([self isCancelled])
-            break;
-
-        if (params->deformRegEnabled)
-        {
-            RegisterOneImageMultiResDeformable2D deformReg(progController, fixedImage, *params);
-            regImage = deformReg.registerImage(regImage, resultCode);
-        }
-
-        if (resultCode == RegisterOneImage2D::DISASTER)
-        {
-            [self queryContinue];
-            while (waitingForAnswer_)
-                sleep(1);
-        }
-
-        if ([self isCancelled])
-            break;
-
-
-        @synchronized(self)
-        {
-            [manager insertSliceIntoViewer:regImage SliceIndex:index];
-        }
+        [self register2dSeries];
+    }
+    else
+    {
+        [self register3dSeries];
     }
 
     [self willChangeValueForKey:@"isFinished"];
@@ -191,4 +119,195 @@
     waitingForAnswer_ = NO;
 }
 
+- (void)register2dSeries
+{
+    unsigned numImages = params->numImages;
+    ResultCode resultCode = SUCCESS;
+    waitingForAnswer_ = NO;
+
+    [progController performSelectorOnMainThread:@selector(setNumImages:)
+                                     withObject:[NSNumber numberWithUnsignedInt:numImages]
+                                  waitUntilDone:NO];
+
+    // Extract the slice to be used as the fixed image
+    unsigned fixedImageIdx = params->fixedImageNumber - 1;
+    const Image2D::Pointer fixedImage = [manager slice:0 FromImage:fixedImageIdx];
+
+    // We iterate over the image number that the user sees.
+    for (unsigned imageNum = 1; imageNum <= numImages; ++imageNum)
+    {
+        resultCode = SUCCESS;
+        unsigned imageIdx = imageNum - 1;
+
+        // Set progress window to current slice.
+        [progController performSelectorOnMainThread:@selector(setCurImage:)
+                                         withObject:[NSNumber numberWithUnsignedInt:imageNum]
+                                      waitUntilDone:YES];
+
+        // No need to register the fixed image
+        if (imageIdx == fixedImageIdx)
+        {
+            NSString* msg = [NSString stringWithFormat:@"Skipping fixed image %u.", imageNum];
+            [progController performSelectorOnMainThread:@selector(setStopCondition:)
+                                             withObject:msg
+                                          waitUntilDone:YES];
+            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, imageIdx);
+            [manager insertSliceIntoViewer:fixedImage ImageIndex:imageIdx SliceIndex:0];
+            continue;
+        }
+        else
+        {
+            NSString* msg = [NSString stringWithFormat:@"Registering image %u.", imageNum];
+            [progController performSelectorOnMainThread:@selector(setStopCondition:)
+                                             withObject:msg
+                                          waitUntilDone:YES];
+            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, imageIdx);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        // Pull the image from the 4D series.
+        Image2D::Pointer movingImage = [manager slice:0 FromImage:imageIdx];
+
+        // Do this so that the deformable registration will get the moving
+        // image even if rigid registration is disabled.
+        Image2D::Pointer regImage = movingImage;
+
+        if (params->rigidRegEnabled)
+        {
+            RegisterOneImageRigid2D rigidReg(progController, fixedImage, *params);
+            regImage = rigidReg.registerImage(movingImage, resultCode);
+        }
+
+        if (resultCode == DISASTER)
+        {
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
+            while (waitingForAnswer_)
+                sleep(1);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        if (params->deformRegEnabled)
+        {
+            RegisterOneImageDeformable2D deformReg(progController, fixedImage, *params);
+            regImage = deformReg.registerImage(regImage, resultCode);
+        }
+
+        if (resultCode == DISASTER)
+        {
+            [self queryContinue];
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
+
+            while (waitingForAnswer_)
+                sleep(1);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        [manager insertSliceIntoViewer:regImage ImageIndex:imageIdx SliceIndex:0];
+    }
+}
+
+- (void)register3dSeries
+{
+    unsigned numImages = params->numImages;
+    ResultCode resultCode = SUCCESS;
+    waitingForAnswer_ = NO;
+
+    [progController performSelectorOnMainThread:@selector(setNumImages:)
+                                     withObject:[NSNumber numberWithUnsignedInt:numImages]
+                                  waitUntilDone:NO];
+
+    // Extract the slice to be used as the fixed image
+    unsigned fixedImageIdx = params->fixedImageNumber - 1;
+    const Image3D::Pointer fixedImage = [manager imageAtIndex:fixedImageIdx];
+
+    // We iterate over the image number that the user sees.
+    for (unsigned imageNum = 1; imageNum <= numImages; ++imageNum)
+    {
+        resultCode = SUCCESS;
+        unsigned imageIdx = imageNum - 1;
+
+        // Set progress window to current slice.
+        [progController performSelectorOnMainThread:@selector(setCurImage:)
+                                         withObject:[NSNumber numberWithUnsignedInt:imageNum]
+                                      waitUntilDone:YES];
+
+        // No need to register the fixed image
+        if (imageIdx == fixedImageIdx)
+        {
+            NSString* msg = [NSString stringWithFormat:@"Skipping fixed image %u.", imageNum];
+            [progController performSelectorOnMainThread:@selector(setStopCondition:)
+                                             withObject:msg
+                                          waitUntilDone:YES];
+            LOG4M_INFO(logger_, @"Skipping fixed image: %u (index = %u)", imageNum, imageIdx);
+            continue;
+        }
+        else
+        {
+            NSString* msg = [NSString stringWithFormat:@"Registering image %u.", imageNum];
+            [progController performSelectorOnMainThread:@selector(setStopCondition:)
+                                             withObject:msg
+                                          waitUntilDone:YES];
+            LOG4M_INFO(logger_, @"Registering image %u (index = %u)", imageNum, imageIdx);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        // Pull the 3D volume from the time series.
+        Image3D::Pointer movingImage = [manager imageAtIndex:imageIdx];
+
+        // Do this so that the deformable registration will get the moving
+        // image even if rigid registration is disabled.
+        Image3D::Pointer regImage = movingImage;
+
+        if (params->rigidRegEnabled)
+        {
+            RegisterOneImageRigid3D rigidReg(progController, fixedImage, *params);
+            regImage = rigidReg.registerImage(movingImage, resultCode);
+        }
+
+        if (resultCode == DISASTER)
+        {
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:YES];
+            while (waitingForAnswer_)
+                sleep(1);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        if (params->deformRegEnabled)
+        {
+            RegisterOneImageDeformable3D deformReg(progController, fixedImage, *params);
+            regImage = deformReg.registerImage(regImage, resultCode);
+        }
+
+        if (resultCode == DISASTER)
+        {
+            [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
+            while (waitingForAnswer_)
+                sleep(1);
+        }
+
+        if ([self isCancelled])
+            break;
+
+        [manager insertImageIntoViewer:regImage Index:imageIdx];
+    }
+
+    [self willChangeValueForKey:@"isFinished"];
+    finished_ = YES;
+    [self didChangeValueForKey:@"isFinished"];
+    [self willChangeValueForKey:@"isExecuting"];
+    executing_ = NO;
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
 @end
+

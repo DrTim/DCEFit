@@ -17,7 +17,7 @@
  * @param sourceDict The existing dictionary that we copy from
  * @param toDict The dictionary that we copy to. It need not be empty to start.
  */
-void CopyMetaDataDictionary(const MetaDataDictionaryType& sourceDict, MetaDataDictionaryType& destDict);
+void CopyMetaDataDictionary(const MetaDataDictionary& sourceDict, MetaDataDictionary& destDict);
 
 /**
  * Copies the data from one dictionary array into another. Only string data are copied.
@@ -27,6 +27,6 @@ void CopyMetaDataDictionary(const MetaDataDictionaryType& sourceDict, MetaDataDi
  * @param sourceArray The existing dictionary array that we copy from
  * @param destArray The dictionary array that we copy to.
  */
-void CopyMetaDataDictionaryArray(const MetaDataDictionaryArrayType* sourceArray, MetaDataDictionaryArrayType*& destArray);
+void CopyMetaDataDictionaryArray(const MetaDataDictionaryArray* sourceArray, MetaDataDictionaryArray*& destArray);
 
 #endif /* defined(__DCEFit__CopyMetaDataDictionary__) */

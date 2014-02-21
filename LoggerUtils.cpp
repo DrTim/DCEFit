@@ -1,12 +1,12 @@
 //
-//  SetupLogger.mm
+//  SetupLogger.cpp
 //  TestLib
 //
 //  Created by Tim Allman on 2013-11-04.
 //  Copyright (c) 2013 Tim Allman. All rights reserved.
 //
 
-#include "SetupLogger.h"
+#include "LoggerUtils.h"
 
 #include <log4cplus/loglevel.h>
 #include <log4cplus/logger.h>
@@ -14,9 +14,11 @@
 #include <log4cplus/fileappender.h>
 #include <log4cplus/loggingmacros.h>
 
-int SetupLogger(const char* name, int level)
+std::string LogLevelToString(int level);
+
+void SetupLogger(const char* name, int level)
 {
-    std::string loggerName(name);
+    std::string loggerName = name;
 
     // The logger is set to log all messages. We use the appenders to restrict the output(s).
     log4cplus::Logger logger = log4cplus::Logger::getInstance(loggerName);
@@ -48,7 +50,50 @@ int SetupLogger(const char* name, int level)
     logFileApp->setThreshold(log4cplus::TRACE_LOG_LEVEL);
     logger.addAppender(logFileApp);
 
-    LOG4CPLUS_INFO(logger, "Logging to file: " << logFilePath);
+    // Force this to the console.
+    LOG4CPLUS_INFO(logger, "Logging to file: " << logFilePath << ", Level: " << LogLevelToString(level));
+}
 
-    return 0;
+void ResetLoggerLevel(const char* name, int level)
+{
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
+    logger.setLogLevel(level);
+}
+
+std::string LogLevelToString(int level)
+{
+    std::string retVal;
+
+    switch (level)
+    {
+        case log4cplus::OFF_LOG_LEVEL:
+            retVal = "OFF";
+            break;
+        case log4cplus::FATAL_LOG_LEVEL:
+            retVal = "FATAL";
+            break;
+        case log4cplus::ERROR_LOG_LEVEL:
+            retVal = "ERROR";
+            break;
+        case log4cplus::WARN_LOG_LEVEL:
+            retVal = "WARN";
+            break;
+        case log4cplus::INFO_LOG_LEVEL:
+            retVal = "INFO";
+            break;
+        case log4cplus::DEBUG_LOG_LEVEL:
+            retVal = "DEBUG";
+            break;
+        case log4cplus::TRACE_LOG_LEVEL:
+            retVal = "TRACE";
+            break;
+        case log4cplus::NOT_SET_LOG_LEVEL:
+            retVal = "NOT SET";
+            break;
+        default:
+            retVal = "Unknown";
+            break;
+    }
+
+    return retVal;
 }

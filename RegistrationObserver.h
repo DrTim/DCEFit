@@ -9,12 +9,20 @@
 #ifndef __DCEFit__RegistrationObserver__
 #define __DCEFit__RegistrationObserver__
 
+#include "ItkRegistrationParams.h"
+
+#include <itkCommand.h>
+
 #include <log4cplus/logger.h>
 
-#import "ProgressWindowController.h"
+class MultiResRegistration;
 
-#include "ItkTypedefs.h"
-#include "ItkRegistrationParams.h"
+#ifdef __OBJC__
+@class ProgressWindowController;
+typedef ProgressWindowController* ProgressWindowControllerPtr;
+#else
+typedef void* ProgressWindowControllerPtr;
+#endif
 
 /**
  * Observer class for deformable registrations.
@@ -26,6 +34,7 @@
  * During multiresolution registrations it updates the registration parameters
  * at each resolution change.
  */
+template <class TImage>
 class RegistrationObserver: public itk::Command
 {
 public:
@@ -35,6 +44,8 @@ public:
     itkNewMacro(Self);
     
     typedef double CoordinateRepType;
+    typedef TImage ImageType;
+    typedef itk::MultiResolutionImageRegistrationMethod<TImage, TImage> RegistrationMethod;
     
     /**
      * Called by the registration or optimisation object after each iteration.
@@ -70,10 +81,11 @@ public:
      * as the number of levels in the registration object.
      * @param schedule The list of grid sizes to use.
      */
-    void SetGridSizeSchedule(const ParamVector<unsigned>& schedule)
+    void SetGridSizeSchedule(const ParamMatrix<unsigned>& schedule)
     {
         for (unsigned idx = 0; idx < numLevels; ++idx)
-            gridSizeSchedule[numLevels - idx - 1] = schedule[idx];
+            for (unsigned dim = 0; dim < 3; ++dim)
+                gridSizeSchedule(numLevels - idx - 1, dim) = schedule(idx, dim);
     }
     
     /**
@@ -82,7 +94,7 @@ public:
      * @param sampleRate The fraction of the image to sample. 0 < sampleRate <= 1.
      */
     void SetMMISchedules(const ParamVector<unsigned>& bins,
-                         const ParamVector<unsigned>& sampleRate)
+                         const ParamVector<float>& sampleRate)
     {
         for (unsigned idx = 0; idx < numLevels; ++idx)
         {
@@ -149,16 +161,64 @@ public:
     }
 
     /**
+     * Set the multilevel schedules for the Versor optimizer.
+     * @param minStepSize The metric convergence schedule.
+     * @param maxStepSize The gradient tolerance schedule.
+     * @param relaxationFactor The relaxation factor schedule.
+     * @param scaleFactor The translation scale factor.
+     * @param iterations The maximum number of iterations schedule.
+     */
+    void SetVersorSchedules(const ParamVector<float>& minStepSize,
+                          const ParamVector<float>& maxStepSize,
+                            const ParamVector<float>& relaxationFactor,
+                            const ParamVector<float>& scaleFactor,
+                          const ParamVector<unsigned>& iterations)
+    {
+        for (unsigned idx = 0; idx < numLevels; ++idx)
+        {
+            versorMinStepSizeSchedule[numLevels - idx - 1] = minStepSize[idx];
+            versorMaxStepSizeSchedule[numLevels - idx - 1] = maxStepSize[idx];
+            versorRelaxationFactorSchedule[numLevels - idx - 1] = relaxationFactor[idx];
+            versorScaleFactorSchedule[numLevels - idx - 1] = scaleFactor[idx];
+            maxIterSchedule[numLevels - idx - 1] = iterations[idx];
+        }
+    }
+
+    /**
      *	Terminates the registration.
      */
-    void StopRegistration();
+    void StopRegistration()
+    {
+        stopReg = true;
+        LOG4CPLUS_DEBUG(logger_, "Registration stopped. Exiting.");
+        multiResReg->StopRegistration();
+
+        if (LBFGSBOpt != 0)
+            LBFGSBOpt->SetMaximumNumberOfIterations(1);
+        else if (LBFGSOpt != 0)
+            LBFGSOpt->SetMaximumNumberOfFunctionEvaluations(1);
+        else if (RSGDOpt != 0)
+            RSGDOpt->SetNumberOfIterations(1);
+        else if (versorOpt != 0)
+            versorOpt->SetNumberOfIterations(1);
+    }
+
+    /**
+     * Use this to query whether the registration was cancelled.
+     * @return true if the registration was cancelled, false otherwise.
+     */
+    bool RegistrationWasCancelled()
+    {
+        return stopReg;
+    }
         
     /**
      * Recalculates the registration parameters at each level of a
      * multi-resolution registration.
-     * @param multiReg The multi-resolution registration object.
+     * @param multiResReg The multi-resolution registration object.
      */
-    void CalcMultiResRegistrationParameters(MultiResRegistration* multiReg);
+    void CalcMultiResRegistrationParameters(
+                        itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg);
 
     /**
      * Sets the pointer to the progress window controller.
@@ -174,22 +234,31 @@ protected:
     * Default constructor.
     * Constructor is not public to conform to ITK style.
     */
-    RegistrationObserver();
+    RegistrationObserver()
+    : DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
+    {
+        std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
+        logger_ = log4cplus::Logger::getInstance(name);
+        LOG4CPLUS_TRACE(logger_, "Enter");
+    }
 
 private:
     log4cplus::Logger logger_;
 
+    const unsigned DIMS;
+    
     /// Stops the registration when set.
     bool stopReg;
 
     /// The registration method object
-    MultiResRegistration* multiResReg;
+    itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg;
 
     /// The optimizers. Only one will be set but we need this to terminate
     /// a registration early
     LBFGSBOptimizer* LBFGSBOpt;
     LBFGSOptimizer* LBFGSOpt;
     RSGDOptimizer* RSGDOpt;
+    VersorOptimizer* versorOpt;
 
     /// current iteration. The optimizer classes don't do this very well
     unsigned iteration;
@@ -201,7 +270,7 @@ private:
     unsigned numLevels;
     
     /// schedule for multiresolution grid size
-    ParamVector<unsigned> gridSizeSchedule;
+    ParamMatrix<unsigned> gridSizeSchedule;
     
     /// schedule for multiresolution number of bins for
     /// Mattes mutual information metric
@@ -224,12 +293,25 @@ private:
     ParamVector<float> rsgdMaxStepSizeSchedule;
     ParamVector<float> rsgdRelaxationFactorSchedule;
 
+    /// schedules for Versor optimization
+    ParamVector<float> versorMinStepSizeSchedule;
+    ParamVector<float> versorMaxStepSizeSchedule;
+    ParamVector<float> versorRelaxationFactorSchedule;
+    ParamVector<float> versorScaleFactorSchedule;
+
     /// schedule for multiresolution maximum number of iterations for
     /// Mattes mutual information metric
     ParamVector<unsigned> maxIterSchedule;
 
     // Used for displaying progress in GUI
-    ProgressWindowController* progressWindowController;
+    ProgressWindowControllerPtr progressWindowController;
 };
+
+// Explictly instantiate these classes
+template class RegistrationObserver<Image2D>;
+template class RegistrationObserver<Image3D>;
+
+typedef RegistrationObserver<Image2D> RegistrationObserver2D;
+typedef RegistrationObserver<Image3D> RegistrationObserver3D;
 
 #endif /* defined(__DCEFit__RegistrationObserver__) */

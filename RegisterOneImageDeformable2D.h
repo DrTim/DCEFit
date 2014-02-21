@@ -1,19 +1,19 @@
 /*
- * File:   RegisterOneImageMultiResDeformable2D.h
+ * File:   RegisterOneImageDeformable2D.h
  * Author: tim
  *
  * Created on January 25, 2013, 9:13 AM
  */
 
-#ifndef REGISTERONEIMAGEMULTIRESDEFORMABLE2D_H
-#define	REGISTERONEIMAGEMULTIRESDEFORMABLE2D_H
+#ifndef REGISTERONEIMAGEDEFORMABLE2D_H
+#define	REGISTERONEIMAGEDEFORMABLE2D_H
 
-#include "RegisterOneImage2D.h"
+#include "RegisterOneImage.h"
 
 /**
  * Performs a multiresolution deformable registration of one image
  */
-class RegisterOneImageMultiResDeformable2D : public RegisterOneImage2D
+class RegisterOneImageDeformable2D : public RegisterOneImage<Image2D>
 {
 public:
     /**
@@ -22,15 +22,15 @@ public:
      * @param fixedImage The fixed image.
      * @param params The registration parameters.
      */
-    RegisterOneImageMultiResDeformable2D(ProgressWindowController* progressController,
-                Image2DType::Pointer fixedImage, const ItkRegistrationParams& params);
+    RegisterOneImageDeformable2D(ProgressWindowController* progressController,
+                Image2D::Pointer fixedImage, const ItkRegistrationParams& params);
 
     /**
      * Do the registration.
      * @param movingImage The moving image to be registered.
      * @return The registered moving image.
      */
-    virtual Image2DType::Pointer registerImage(Image2DType::Pointer movingImage, ResultCode& code);
+    virtual Image2D::Pointer registerImage(Image2D::Pointer movingImage, ResultCode& code);
 };
 
 #endif	/* REGISTERONEIMAGEMULTIRESDEFORMABLE2D_H */

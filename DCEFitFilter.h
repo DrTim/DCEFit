@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "OsiriXAPI/PluginFilter.h"
+#import <OsiriXAPI/PluginFilter.h>
 
 @class DialogController;
 
@@ -25,7 +25,6 @@
 	The main dialog for the plugin.
  */
 @property (assign) DialogController* dialogController;
-
 
 /**
 	Default init method.
@@ -47,5 +46,6 @@
  */
 - (void)initPlugin;
 
+- (ViewerController *)copyCurrent4DViewerWindow;
 
 @end

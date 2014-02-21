@@ -24,7 +24,7 @@
     RegistrationManager* manager;
     ItkRegistrationParams* params;
     ProgressWindowController* progController;
-    Image3DType::Pointer image;
+    //Image3D::Pointer image;
 
     Logger* logger_;
 }

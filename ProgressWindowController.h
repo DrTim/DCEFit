@@ -13,15 +13,16 @@
 @class RegistrationManager;
 @class Logger;
 
-class RegistrationObserver;
-
 extern const NSString* RegistrationStageRigid;
 extern const NSString* RegistrationStageDeformable;
-extern NSString* StopRegistrationNotification;
+
+extern NSString* CloseProgressPanelNotification;
 
 @interface ProgressWindowController : NSWindowController <NSWindowDelegate>
 {
     Logger* logger_;
+    void* observer_;
+    unsigned observerDims_;
 
     BOOL registrationCancelled;
     BOOL registrationFinished;
@@ -30,33 +31,35 @@ extern NSString* StopRegistrationNotification;
     RegistrationManager* regManager;
 
     NSProgressIndicator *progressIndicator;
-    NSTextField *sliceTextField;
+    NSTextField *imageTextField;
     NSTextField *stageTextField;
     NSTextField *levelTextField;
     NSTextField *iterationTextField;
     NSTextField *metricTextField;
     NSTextField *stepSizeTextField;
     NSTextField *stepSizeLabel;
+    NSTextField *numImagesLabel;
+    NSTextField *statusTextField;
     NSTextField *maxIterLabel;
     NSButton *stopButton;
     NSButton *saveButton;
     NSButton *quitButton;
     NSTextView *stopConditionTextView;
-
-    RegistrationObserver* observer;
-    NSTextField *statusTextField;
 }
 
 @property (assign) IBOutlet NSProgressIndicator *progressIndicator;
-@property (assign) IBOutlet NSTextField *sliceTextField;
+@property (assign) IBOutlet NSTextField *imageTextField;
 @property (assign) IBOutlet NSTextField *stageTextField;
 @property (assign) IBOutlet NSTextField *levelTextField;
 @property (assign) IBOutlet NSTextField *iterationTextField;
 @property (assign) IBOutlet NSTextField *metricTextField;
 @property (assign) IBOutlet NSTextField *stepSizeTextField;
 @property (assign) IBOutlet NSTextField *stepSizeLabel;
+@property (assign) IBOutlet NSTextField *numImagesLabel;
+@property (assign) IBOutlet NSTextField *statusTextField;
 
 @property (assign) IBOutlet NSTextField *maxIterLabel;
+
 @property (assign) IBOutlet NSButton *stopButton;
 @property (assign) IBOutlet NSButton *saveButton;
 @property (assign) IBOutlet NSButton *quitButton;
@@ -65,8 +68,6 @@ extern NSString* StopRegistrationNotification;
 @property (assign) IBOutlet NSTextView *stopConditionTextView;
 
 @property (readonly) IBOutlet RegProgressValues* progressValues;
-
-@property (assign) RegistrationObserver* observer;
 
 - (id)initWithDialogController:(DialogController*)parent;
 
@@ -80,9 +81,9 @@ extern NSString* StopRegistrationNotification;
 
 - (void)setProgressMinimum:(double)minVal andMaximum:(double)maxVal;
 
-- (void)setCurSlice:(NSNumber*)slice;
+- (void)setCurImage:(NSNumber*)imageIdx;
 
-- (void)incrCurSlice;
+- (void)incrCurImage;
 
 - (void)setCurLevel:(NSNumber*)level;
 
@@ -96,10 +97,14 @@ extern NSString* StopRegistrationNotification;
 
 - (void)setMaxIterations:(NSNumber*)iterations;
 
+- (void)setNumImages:(NSNumber*)images;
+
 - (void)setStopCondition:(NSString*)stopCondition;
 
 - (void)setManager:(RegistrationManager*)manager;
 
-- (void)setObserver:(RegistrationObserver*)observer;
+- (void)setObserver:(void*)observer;
+
+- (void)stopRegistration;
 
 @end

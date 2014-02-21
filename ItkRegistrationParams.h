@@ -23,6 +23,9 @@
 template <typename TValueType>
 using ParamVector = itk::FixedArray<TValueType, MAX_ARRAY_PARAMS>;
 
+template <typename TValueType>
+using ParamMatrix = itk::Matrix<TValueType, MAX_ARRAY_PARAMS, 3>;
+
 /**
  * This is a class that provides a way of passing the Obj-C based parameters
  * to ITK as C++ parameters.
@@ -37,56 +40,64 @@ public:
     virtual ~ItkRegistrationParams();
     
     std::string Print() const;
-    unsigned imageNumberToIndex(unsigned number);
-    unsigned indexToImageNumber(unsigned index);
+    unsigned sliceNumberToIndex(unsigned number);
+    unsigned indexToSliceNumber(unsigned index);
 
 public:
-    unsigned numImages;
-    unsigned fixedImageNumber;
-    bool flippedData;
-    std::string seriesName;
-    Image2DType::RegionType fixedImageRegion;
-    Mask2DType::Pointer fixedImageMask;
+    unsigned numImages;                      ///< Number of images (time samples) in series, 2D or 3D.
+    unsigned slicesPerImage;                 ///< Number of slices (2D) per time sample.
+    unsigned fixedImageNumber;               ///< Number of fixed image, 1 based as in OsiriX.
+    bool flippedData;                        ///< OsiriX flag. If true, slice #1 is last slice.
+    std::string seriesName;                  ///< Series description to save data with.
+    Image2D::RegionType fixedImageRegion;    ///< Region to register.
+    SpatialMask2D::Pointer fixedImageMask;   ///< Spatial mask for registration.
 
-    bool rigidRegEnabled;
-    unsigned rigidLevels;
-    MetricType rigidRegMetric;
-    OptimizerType rigidRegOptimiser;
+    bool rigidRegEnabled;                    ///< Do rigid step first if  true.
+    unsigned rigidLevels;                    ///< Number of multi-res levels to use (max 4).
+    MetricType rigidRegMetric;               ///< Type of metric to use.
+    OptimizerType rigidRegOptimiser;         ///< Optimiser to use.
 
-    ParamVector<unsigned> rigidMMINumBins;
-    ParamVector<float> rigidMMISampleRate;
-    ParamVector<float> rigidLBFGSBCostConvergence;
-    ParamVector<float> rigidLBFGSBGradientTolerance;
-    ParamVector<float> rigidLBFGSGradientConvergence;
-    ParamVector<float> rigidLBFGSDefaultStepSize;
-    ParamVector<float> rigidRSGDMinStepSize;
-    ParamVector<float> rigidRSGDMaxStepSize;
-    ParamVector<float> rigidRSGDRelaxationFactor;
-    ParamVector<unsigned> rigidMaxIter;
+    ParamVector<unsigned> rigidMMINumBins;            ///< MMI bins. See ITK docs.
+    ParamVector<float> rigidMMISampleRate;            ///< Fraction of image for MMI metric to sample.
+    ParamVector<float> rigidLBFGSBCostConvergence;    ///< Stop criterion. See ITK docs.
+    ParamVector<float> rigidLBFGSBGradientTolerance;  ///< Stop criterion. See ITK docs.
+    ParamVector<float> rigidLBFGSGradientConvergence; ///< Stop criterion. See ITK docs.
+    ParamVector<float> rigidLBFGSDefaultStepSize;     ///< Initial step size. See ITK docs.
+    ParamVector<float> rigidRSGDMinStepSize;          ///< Stop criterion. See ITK docs.
+    ParamVector<float> rigidRSGDMaxStepSize;          ///< Initial step size. See ITK docs.
+    ParamVector<float> rigidRSGDRelaxationFactor;     ///< RSGD tuning. See ITK docs.
 
-    bool deformRegEnabled;
-    bool deformShowField;
-    unsigned deformLevels;
-    MetricType deformRegMetric;
-    OptimizerType deformRegOptimiser;
-    ParamVector<unsigned> deformGridSizes;
-    ParamVector<unsigned> deformMMINumBins;
-    ParamVector<float> deformMMISampleRate;
-    ParamVector<float> deformLBFGSBCostConvergence;
-    ParamVector<float> deformLBFGSBGradientTolerance;
-    ParamVector<float> deformLBFGSGradientConvergence;
-    ParamVector<float> deformLBFGSDefaultStepSize;
-    ParamVector<float> deformRSGDMinStepSize;
-    ParamVector<float> deformRSGDMaxStepSize;
-    ParamVector<float> deformRSGDRelaxationFactor;
-    ParamVector<unsigned> deformMaxIter;
+    ParamVector<float> rigidVersorOptTransScale;   ///< Versor optim translation scale factor.
+    ParamVector<float> rigidVersorOptMinStepSize;  ///< Stop criterion. See ITK docs.
+    ParamVector<float> rigidVersorOptMaxStepSize;  ///< Initial step size. See ITK docs.
+    ParamVector<float> rigidVersorOptRelaxationFactor; ///< RSGD tuning. See ITK docs.
 
-    void createFixedImageMask(Image2DType::Pointer image);
+    ParamVector<unsigned> rigidMaxIter;          ///< Stop at this number of iterations if no convergence.
+
+    bool deformRegEnabled;                  ///< Do deformable reg if true.
+    bool deformShowField;                   ///< Show displacement field on image if true.
+    unsigned deformLevels;                  ///< Number of multi-res levels to use (max 4).
+    MetricType deformRegMetric;             ///< Type of metric to use.
+    OptimizerType deformRegOptimiser;       ///< Optimiser to use.
+    ParamMatrix<unsigned> deformGridSizes;
+    //ParamVector<unsigned> deformGridSizes;    ///< Sizes of BSpline grids to use.
+    ParamVector<unsigned> deformMMINumBins;   ///< MMI bins. See ITK docs.
+    ParamVector<float> deformMMISampleRate;   ///< Fraction of image for MMI metric to sample.
+    ParamVector<float> deformLBFGSBCostConvergence;    ///< Stop criterion. See ITK docs.
+    ParamVector<float> deformLBFGSBGradientTolerance;  ///< Stop criterion. See ITK docs.
+    ParamVector<float> deformLBFGSGradientConvergence; ///< Stop criterion. See ITK docs.
+    ParamVector<float> deformLBFGSDefaultStepSize;     ///< Initial step size. See ITK docs.
+    ParamVector<float> deformRSGDMinStepSize;          ///< Stop criterion. See ITK docs.
+    ParamVector<float> deformRSGDMaxStepSize;          ///< Initial step size. See ITK docs.
+    ParamVector<float> deformRSGDRelaxationFactor;     ///< RSGD tuning. See ITK docs.
+    ParamVector<unsigned> deformMaxIter; ///< Stop at this number of iterations if no convergence.
+
+    void createFixedImageMask(Image2D::Pointer image); ///< Create spatial object mask.
 
 private:
-    log4cplus::Logger logger_;
-    void setRegion(const Region* reg);
-    const RegistrationParams* ocParams;
+    log4cplus::Logger logger_;             ///< The instance logger.
+    void setRegion(const Region2D* reg);   ///< Make ITK region from Obj-C region.
+    const RegistrationParams* objcParams;  ///< Obj-C params we construct from.
 };
 
 

@@ -6,20 +6,33 @@
 //
 //
 
+#include <itkVersion.h>
+#include <itkMultiThreader.h>
+
+#import <OsiriXAPI/ViewerController.h>
+#import <OsiriXAPI/DicomImage.h>
+#import <OsiriXAPI/DCMPix.h>
+//#import <OsiriXAPI/PluginFilter.h>
+//#import <OsiriXAPI/DicomSeries.h>
+#import <OsiriXAPI/Notifications.h>
+#import <OsiriXAPI/ROI.h>
+
+#import <OsiriX/DCMObject.h>
+#import <OsiriX/DCMAttribute.h>
+#import <OsiriX/DCMAttributeTag.h>
+
+#import "ViewerController+ExportTimeSeries.h"
 #import "DialogController.h"
 #import "DCEFitFilter.h"
 #import "ProgressWindowController.h"
 #import "RegistrationParams.h"
 #import "RegistrationManager.h"
 #import "UserDefaults.h"
+#import "SeriesInfo.h"
+#import "LoadingImagesWindowController.h"
 
-#import "OsiriXAPI/ViewerController.h"
-#import "OsiriXAPI/DCMPix.h"
-#import "OsiriXAPI/PluginFilter.h"
-#import "OsiriXAPI/DicomSeries.h"
+#import "LoggerUtils.h"
 
-#import "OsiriX/DCMObject.h"
-#import "OsiriX/DCMAttributeTag.h"
 
 @implementation DialogController;
 
@@ -28,6 +41,7 @@
 @synthesize parentFilter;
 @synthesize viewerController1;
 @synthesize viewerController2;
+@synthesize seriesInfo;
 
 @synthesize fixedImageComboBox;
 @synthesize seriesDescriptionTextField;
@@ -35,7 +49,7 @@
 @synthesize rigidRegEnableCheckBox;
 @synthesize rigidRegLevelsComboBox;
 @synthesize rigidRegMetricRadioMatrix;
-@synthesize rigidRegOptimizerRadioMatrix;
+@synthesize rigidRegOptimizerLabel;
 @synthesize deformRegEnableCheckBox;
 @synthesize deformRegLevelsComboBox;
 @synthesize deformRegGridSizeTableView;
@@ -43,10 +57,9 @@
 @synthesize deformRegOptimizerRadioMatrix;
 @synthesize deformShowFieldCheckBox;
 @synthesize regCloseButton;
-
+@synthesize loggingLevelComboBox;
+@synthesize numberOfThreadsComboBox;
 @synthesize regStartButton;
-@synthesize numSlices;
-@synthesize keyIdx;
 
 /**
  * Tags for the tables in the parameter panels.
@@ -64,9 +77,11 @@ enum TableTags
     RigidMattesMIMetricTag = 6,
     DeformMattesMIMetricTag = 7,
     DeformBsplineGridSizeTag = 8,
+	RigidVersorOptimizerTag = 9
 };
 
-- (id)init
+- (id)initWithViewerController:(ViewerController *)viewerController
+                        Filter:(DCEFitFilter *)filter;
 {
     self = [super initWithWindowNibName:@"MainDialog"];
     if (self)
@@ -74,6 +89,9 @@ enum TableTags
         [self setupLogger];
         LOG4M_TRACE(logger_, @"");
         openSheet_ = nil;
+        viewerController1 = viewerController;
+        parentFilter = filter;
+        seriesInfo = [[SeriesInfo alloc] init];
     }
     return self;
 }
@@ -81,6 +99,9 @@ enum TableTags
 - (void)dealloc
 {
     [logger_ release];
+    [seriesInfo release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     [super dealloc];
 }
@@ -88,22 +109,6 @@ enum TableTags
 - (void)awakeFromNib
 {
     LOG4M_TRACE(logger_, @"Enter");
-
- //    for(int y = 0; y < [viewerController1 maxMovieIndex]; y++)
-//    {
-//        NSArray* pixList = [viewerController1 pixList];
-//        for(int x = 0; x < [pixList[y] count]; x++)
-//        {
-//            for(int i = 0; i < [[roiList[y] objectAtIndex: x] count]; i++)
-//            {
-//                ROI *curROI = [[roiList[y] objectAtIndex: x] objectAtIndex:i];
-//
-//                [curROI setName: [roiRenameName stringValue]];
-//
-//                [[NSNotificationCenter defaultCenter] postNotificationName: OsirixROIChangeNotification object:curROI userInfo: nil];
-//            }
-//        }
-//    }
 
     // Get the version from the bundle that contains this class
     NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
@@ -118,11 +123,19 @@ enum TableTags
     // Catch the viewer closing event. We cannot continue without the viewer.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewerWillClose:)
-                                                 name:@"CloseViewerNotification"
+                                                 name:OsirixCloseViewerNotification
                                                object:viewerController1];
-    
 
-    [self connectToViewer:viewerController1];
+    [self setupSystemLogger];
+    [self setupProgramDefaults];
+
+    LoadingImagesWindowController* progressWindow =
+        [[LoadingImagesWindowController alloc] initWithWindowNibName:@"LoadingImagesWindow"];
+    [progressWindow.window makeKeyAndOrderFront:self];
+    [self extractSeriesInfo:seriesInfo withProgressWindow:progressWindow];
+    [progressWindow close];
+    [progressWindow release];
+
     [self setupControlsFromParams];
 }
 
@@ -133,34 +146,273 @@ enum TableTags
     logger_ = [[Logger newInstance:loggerName] retain];
 }
 
-- (void)connectToViewer:(ViewerController *)viewer 
+/**
+ Sets up the Log4m logger.
+ */
+- (void)setupSystemLogger
 {
-    viewerController1 = viewer;
-    keyIdx = -1;  // -1 flags that key image is not found
-    regParams.flippedData = [[viewerController1 imageView] flippedData];
+    UserDefaults* defaults = [UserDefaults sharedInstance];;
+
+    regParams.loggerLevel = [defaults integerForKey:DefaultLoggerLevelKey];
+    SetupLogger(LOGGER_NAME, regParams.loggerLevel);
+}
+
+- (void)setupProgramDefaults
+{
+    LOG4M_INFO(logger_, @"ITK threads: default = %d, max = %d",
+               itk::MultiThreader::GetGlobalDefaultNumberOfThreads(),
+               itk::MultiThreader::GetGlobalMaximumNumberOfThreads());
+
+    UserDefaults* defaults = [UserDefaults sharedInstance];
+
+    // Threading
+    int numThreads = [defaults unsignedIntegerForKey:DefaultNumberOfThreadsKey];
+    itk::MultiThreader::SetGlobalMaximumNumberOfThreads(numThreads);
+
+    regParams.numberOfThreads = numThreads;
+
+    int maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
+
+    LOG4M_INFO(logger_, @"Using ITK version %d.%d.%d", itk::Version::GetITKMajorVersion(),
+               itk::Version::GetITKMinorVersion(), itk::Version::GetITKBuildVersion());
+
+    LOG4M_INFO(logger_, @"ITK Number of threads used = %d", maxThreads);
+}
+
+- (void)saveDefaults
+{
+    UserDefaults* defaults = [UserDefaults sharedInstance];
+    [defaults saveRegParams:regParams];
+}
+
+- (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
+{
+    LOG4M_TRACE(logger_, @"Enter");
+
+
+    BOOL keyFound = NO;  // used for finding first key image below
+    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
+    NSTimeInterval firstTime = 0.0;
+
+    info.numTimeSamples = numTimeImages;
+    info.slicesPerImage = [[viewerController1 pixList] count];
+    info.isFlipped = [[viewerController1
+                       imageView] flippedData];
+
+    if (numTimeImages == 1)  // we have a 2D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", info.slicesPerImage);
+    }
+    else // we have a 4D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
+                    info.numTimeSamples, info.slicesPerImage);
+    }
+
+    // initialise the progress indicator
+    [progWindow setNumImages:info.numTimeSamples];
+
+    NSArray* firstImage = [viewerController1 pixList:0];
+    DCMPix* firstPix = [firstImage objectAtIndex:0];
+
+    info.sliceHeight = [firstPix pheight];
+    info.sliceWidth = [firstPix pwidth];
+
+    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
+                info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
+
+    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
+    {
+        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+
+        // Bump the progress indicator
+        [progWindow incrementIndicator];
+
+        // The ROIs for this image.
+        NSArray* roiList = [viewerController1 roiList:timeIdx];
+
+        // The array of slices in the image.
+        NSArray* pixList = [viewerController1 pixList:timeIdx];
+
+        // The list of DicomImage instances corresponding to the slices.
+        NSArray* fileList = [viewerController1 fileList:timeIdx];
+
+        unsigned numSlices = info.slicesPerImage;
+        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
+        {
+            // DCMPix instance containing this slice
+            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
+
+            // The DicomImage instance containing this slice.
+            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+            BOOL isKey = [[curSlice isKeyImage] boolValue];
+            if ((isKey) && (!keyFound))
+            {
+                // Image may be displayed flipped. We need the real index.
+                info.keySliceIdx = sliceIdx;
+
+                info.keyImageIdx = timeIdx;
+                LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",
+                            info.keyImageIdx, info.keySliceIdx);
+
+                // The list of ROIs in this slice. Pick out either the first one named "Reg"
+                // or the first one in the list
+                NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+                if ((curRoiList != nil) && ([curRoiList count] > 0))
+                {
+                    ROI* roi = [curRoiList objectAtIndex:0];  // default
+                    BOOL found = NO;
+                    for (ROI* r in curRoiList)
+                    {
+                        if ((!found) && ([[r name] isEqualToString:@"Reg"]))
+                        {
+                            found = YES;
+                            roi = r;
+                        }
+                    }
+
+                    info.firstROI = roi;
+
+                    LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
+                                [info.firstROI name]);
+                    LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.firstROI points]);
+                }
+            }
+
+            NSString* filePath = [curPix sourceFile];
+            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
+
+            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+            DCMAttribute* attr = [dcmObj attributeForTag:tag];
+            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
+            if ((timeIdx == 0) && (sliceIdx == 0))
+                firstTime = acqTime;
+
+            if (sliceIdx == 0) // do this once per time increment
+            {
+                NSTimeInterval normalisedTime = acqTime - firstTime;
+                [info addAcqTime:normalisedTime];
+                LOG4M_DEBUG(logger_, @"Normalised time of acquisition = %f", normalisedTime);
+            }
+        }
+    }
+
+    [progWindow close];
+}
+
+- (void)parseDataSet
+{
+    LOG4M_TRACE(logger_, @"Enter");
+
+    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
+    NSTimeInterval firstTime = 0.0;
+    unsigned slicesPerImage = [[viewerController1 pixList] count];
+
+    if (numTimeImages == 1)  // we have a 2D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", slicesPerImage);
+    }
+    else // we have a 4D viewer
+    {
+        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
+                    numTimeImages, slicesPerImage);
+    }
+
+    NSArray* firstImage = [viewerController1 pixList:0];
+    DCMPix* firstPix = [firstImage objectAtIndex:0];
+    unsigned sliceHeight = [firstPix pheight];
+    unsigned sliceWidth = [firstPix pwidth];
+    unsigned sliceSize = sliceHeight * sliceWidth;
+    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
+                sliceHeight, sliceWidth, sliceSize);
+
+    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
+    {
+        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+
+        float* imageBuff = [viewerController1 volumePtr:timeIdx];
+        LOG4M_DEBUG(logger_, @"******** volumePtr = %p. ***************", imageBuff);
+
+        NSArray* roiList = [viewerController1 roiList:timeIdx];
+        NSArray* pixList = [viewerController1 pixList:timeIdx];
+        NSArray* fileList = [viewerController1 fileList:timeIdx];
+
+        unsigned numSlices = [pixList count];
+        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
+        {
+            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
+            size_t offset = [curPix fImage] - imageBuff;
+            LOG4M_DEBUG(logger_, @"sliceIdx = %u, offset = %lu", sliceIdx, offset / sliceSize);
+            LOG4M_DEBUG(logger_, @"Source file: %@", [curPix sourceFile]);
+
+            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+            BOOL isKey = [[curSlice isKeyImage] boolValue];
+            if (isKey)
+            {
+                LOG4M_DEBUG(logger_, @"Key image");
+            }
+
+            NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+            if ((curRoiList != nil) && ([curRoiList count] > 0))
+            {
+                for (ROI* r in curRoiList)
+                    LOG4M_DEBUG(logger_, @"ROI named \"%@\" found.", [r name]);
+            }
+
+            NSString* file_path = [curPix sourceFile];
+            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:file_path decodingPixelData:NO];
+
+            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"ImagePositionPatient"];
+            DCMAttribute* attr = [dcmObj attributeForTag:tag];
+            NSArray* ippValues = [attr values];
+            LOG4M_DEBUG(logger_, @"IPP = %@", ippValues);
+
+            tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+            attr = [dcmObj attributeForTag:tag];
+            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
+            if ((timeIdx == 0) && (sliceIdx == 0))
+                firstTime = acqTime;
+            
+            if (sliceIdx == 0) // do this once per time increment
+            {
+                NSTimeInterval normalisedTime = acqTime - firstTime;
+                LOG4M_DEBUG(logger_, @"AcqTime = %f", normalisedTime);
+            }
+        }
+    }
 }
 
 - (void)setupControlsFromParams
 {
     LOG4M_TRACE(logger_, @"Enter");
 
-    // set things up based upon the OsiriX viewer controller
-    NSArray* pixList = [viewerController1 pixList];
-    self.numSlices = [pixList count];
-    regParams.numImages = self.numSlices;
-    
-    // Find the first key image and assume that it is the desired fixed slice.
-    keyIdx = -1;
-    for (unsigned idx = 0; idx < self.numSlices; ++idx)
+    // First the program defaults
+    unsigned logIdx = regParams.loggerLevel / 10000;
+    [loggingLevelComboBox selectItemAtIndex:logIdx];
+    [loggingLevelComboBox setObjectValue:[self comboBox:loggingLevelComboBox
+                              objectValueForItemAtIndex:logIdx]];
+    [loggingLevelComboBox reloadData];
+
+    [numberOfThreadsComboBox selectItemAtIndex:regParams.numberOfThreads];
+    [numberOfThreadsComboBox setObjectValue:[self comboBox:numberOfThreadsComboBox
+                                 objectValueForItemAtIndex:regParams.numberOfThreads]];
+    [numberOfThreadsComboBox reloadData];
+
+    // set things up based upon the image series information
+    regParams.slicesPerImage = seriesInfo.slicesPerImage;
+    regParams.numImages = seriesInfo.numTimeSamples;
+    regParams.rigidRegOptimizer = regParams.slicesPerImage == 1 ? RSGD : Versor;
+    regParams.flippedData = [[viewerController1 imageView] flippedData];
+    if (regParams.slicesPerImage == 1)
     {
-        if ([viewerController1 isKeyImage:idx])
-        {
-            keyIdx = idx;
-            break;
-        }
+        NSArray* cols = [deformRegGridSizeTableView tableColumns];
+        NSInteger zColNum = [deformRegGridSizeTableView columnWithIdentifier:@"z"];
+        NSTableColumn* zCol = [cols objectAtIndex:zColNum];
+        [zCol setHidden:YES];
     }
 
-    if (keyIdx == -1)
+    // Find the first key image and assume that it is the desired fixed slice.
+    if (seriesInfo.keyImageIdx == -1)
     {
         regParams.fixedImageNumber = 1;
         LOG4M_INFO(logger_, @"No key image found. ");
@@ -168,19 +420,28 @@ enum TableTags
     }
     else
     {
-        regParams.fixedImageNumber = [regParams indexToImageNumber:keyIdx];
+        regParams.fixedImageNumber = seriesInfo.keyImageIdx + 1;
         LOG4M_INFO(logger_, @"Fixed image set to key image: %d", regParams.fixedImageNumber);
     }
 
     [self setupRegionFromFixedImage];
-    [self setupMaskFromFixedImage];
-    
+
+    // This function needs to be rewritten before using.
+    //[self setupMaskFromFixedImage];
+
+    // Set up combobox to reflect number of images in series
     NSInteger index = regParams.fixedImageNumber - 1;
     [fixedImageComboBox selectItemAtIndex:index];
     [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
                             objectValueForItemAtIndex:index]];
     [fixedImageComboBox reloadData];
-    
+
+    // Set up label to reflect number of dimensions in images
+    if (regParams.slicesPerImage == 1)
+        [rigidRegOptimizerLabel setStringValue:@"Regular Step Gradient Descent"];
+    else
+        [rigidRegOptimizerLabel setStringValue:@"Versor Rigid 3D"];
+
     // enable the controls based upon the parameters
     [self enableControls];
 }
@@ -218,39 +479,19 @@ enum TableTags
 
 - (void)setupRegionFromFixedImage
 {
-    // If there is a key image we will use it as the fixed image. We will also look for
-    // a region of interest (ROI). If there are more than one ROI we pick the one named "Reg".
-    // If none is named "Reg" we take the first one on the list.
-    // look for entry named "Reg"
-    ROI* regRoi = nil;      // ROI which defines our itk::ImageRegion
-
-    // Now see if there is a ROI associated with this image
-    // This is a list of NSMutableArrays one for each image. The array element
-    // corresponding to the image is the array of ROIs.
-    NSArray* roiList = [viewerController1 roiList];
-
-    // Array of ROIs for key image
-    unsigned index = [regParams imageNumberToIndex:regParams.fixedImageNumber];
-
-    NSMutableArray* rois = [roiList objectAtIndex:index];
-    if ([rois count] != 0)
-    {
-        // Take the first one
-        regRoi = [rois objectAtIndex:0];
-        LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key image as registration region.",
-                    [regRoi name]);
-        if ([rois count] > 1)
-            LOG4M_WARN(logger_, @"More than one ROI on key image. Using ROI named \'%@\'.",
-                       [regRoi name]);
-    }
+    // ROI which defines our itk::ImageRegion
+    ROI* regRoi = seriesInfo.firstROI;
 
     if (regRoi != nil)
     {
+        LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key slice as registration region.", [regRoi name]);
+
         // we create the rectangle which just encloses the ROI
-        CGFloat xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
+        float xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
 
         // MyPoint is a wrapper class for NSRect defined in OsiriX.
-        for (MyPoint* point in [regRoi points])
+        NSArray* roiPoints = [regRoi points];
+        for (MyPoint* point in roiPoints)
         {
             if (point.x < xmin)
                 xmin = point.x;
@@ -262,12 +503,12 @@ enum TableTags
                 ymax = point.y;
         }
 
-        regParams.fixedImageRegion = [[[Region alloc]
+        regParams.fixedImageRegion = [[[Region2D alloc]
                              initWithX:(unsigned)round(xmin) Y:(unsigned)round(ymin)
                              W:(unsigned)round(xmax - xmin) H:(unsigned)round(ymax - ymin)]
                             autorelease];
 
-        LOG4M_INFO(logger_, @"Registration region set to [x:%ld y:%ld w:%ld h:%ld]",
+        LOG4M_INFO(logger_, @"Registration region set to [x:%u y:%u w:%u h:%u]",
                    regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,
                    regParams.fixedImageRegion.width, regParams.fixedImageRegion.height);
     }
@@ -281,9 +522,10 @@ enum TableTags
         regParams.fixedImageRegion.width = [firstPix pwidth];
         regParams.fixedImageRegion.height = [firstPix pheight];
 
-        LOG4M_INFO(logger_, @"Registration region set to full image: [x:%ld y:%ld w:%ld h:%ld]",
-                   regParams.fixedImageRegion.x, regParams.fixedImageRegion.y, regParams.fixedImageRegion.width,
-                   regParams.fixedImageRegion.height);
+        LOG4M_INFO(logger_,
+                   @"Registration region set to full image: [x:%u y:%u w:%u h:%u]",
+                   regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,
+                   regParams.fixedImageRegion.width, regParams.fixedImageRegion.height);
     }
 }
 
@@ -301,7 +543,7 @@ enum TableTags
     NSArray* roiList = [viewerController1 roiList];
 
     // Array of ROIs for key image
-    unsigned index = [regParams imageNumberToIndex:regParams.fixedImageNumber];
+    unsigned index = regParams.fixedImageNumber - 1;
 
     NSMutableArray* rois = [roiList objectAtIndex:index];
     if ([rois count] != 0)
@@ -360,6 +602,14 @@ enum TableTags
     return (DicomSeries*)[firstPix seriesObj];
 }
 
+- (void) progressPanelWillClose:(NSNotification*)notification
+{
+    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
+                [notification name], NSStringFromClass([[notification object] class]));
+
+    progressWindowController = nil;
+}
+
 // Called in response to notifications from OsiriX
 - (void) viewerWillClose:(NSNotification*)notification
 {
@@ -377,6 +627,10 @@ enum TableTags
         [[NSNotificationCenter defaultCenter] removeObserver:self];
 
         parentFilter.dialogController = nil;
+
+        [progressWindowController close];
+        [progressWindowController autorelease];
+        progressWindowController = nil;
 
         [self close];
         [self autorelease];
@@ -408,25 +662,26 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    //[self setupRegionFromKeyImage];
+    [self saveDefaults];
     [self disableControls];
 
     progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
     
-    [progressWindowController setProgressMinimum:0.0 andMaximum:numSlices + 1];
+    [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
     [progressWindowController showWindow:self];
 
-    // Show the panel as a sheet.
-    // It is closed in ProgressWindowController -(IBAction)stopButtonPressed:(NSButton*)sender
-    //[NSApp beginSheet:progressWindowController.window modalForWindow:self.window modalDelegate:nil
-    //   didEndSelector:nil contextInfo:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(progressPanelWillClose:)
+                                                 name:CloseProgressPanelNotification
+                                               object:progressWindowController];
 
     // Copy the current dataset and viewer. We will work only with the new one.
- 	viewerController2 = [parentFilter duplicateCurrent2DViewerWindow];
+ 	viewerController2 = [parentFilter copyCurrent4DViewerWindow];
+
     if (viewerController2 == nil)
     {
-        LOG4M_ERROR(logger_, @"Failed to duplicate current 2D viewer.");
-        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 2D viewer.",
+        LOG4M_ERROR(logger_, @"Failed to duplicate current 4D viewer.");
+        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 4D viewer.",
                                 @"Close", nil, nil);
         return;
     }
@@ -434,12 +689,14 @@ enum TableTags
     [viewerController2 setPostprocessed:TRUE];
 
     // We want the flippedData flag to be the same in each viewer.
-    if ([viewerController2 imageView].flippedData != [viewerController1 imageView].flippedData)
+    if ([viewerController2 imageView].flippedData !=
+        [viewerController1 imageView].flippedData)
         [viewerController2 flipDataSeries:nil];
 
     registrationManager = [[RegistrationManager alloc]
                            initWithViewer:viewerController2 Params:regParams
-                           ProgressWindow:progressWindowController];
+                           ProgressWindow:progressWindowController
+                           SeriesInfo:seriesInfo];
 
     [registrationManager doRegistration];
 }
@@ -448,7 +705,7 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    [[UserDefaults sharedInstance] save:regParams];
+    [self saveDefaults];
 
     parentFilter.dialogController = nil;
     [self.window close];
@@ -459,17 +716,15 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.rigidRegOptimizer)
     {
-        case LBFGSB:
-            openSheet_ = rigidRegLBFGSBOptimizerConfigPanel;
-            break;
-        case LBFGS:
-            openSheet_ = rigidRegLBFGSOptimizerConfigPanel;
-            break;
         case RSGD:
             openSheet_ = rigidRegRSGDOptimizerConfigPanel;
+            break;
+        case Versor:
+            openSheet_ = rigidVersorOptimizerConfigPanel;
+            break;
+        default:
             break;
     }
 
@@ -481,7 +736,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.deformRegOptimizer)
     {
         case LBFGSB:
@@ -493,6 +747,8 @@ enum TableTags
         case RSGD:
             openSheet_ = deformRegRSGDOptimizerConfigPanel;
             break;
+        default:
+            break;
     }
 
     [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
@@ -503,7 +759,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.rigidRegMetric)
     {
         case MeanSquares:
@@ -521,7 +776,6 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    //[self enableConfigButtons:NO];
     switch (regParams.deformRegMetric)
     {
         case MeanSquares:
@@ -546,54 +800,51 @@ enum TableTags
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender
 {
     [self closeSheet];
-    //[self enableConfigButtons:YES];
+}
+
+- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
 }
 
 - (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 - (IBAction)deformRegMMIConfigCloseButtonPressed:(NSButton *)sender
 {
     [self closeSheet];
-    //[self enableConfigButtons:YES];
 }
 
 // NSWindowDelegate methods
@@ -607,15 +858,15 @@ enum TableTags
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-    LOG4M_TRACE(logger_, @"sender = %@", [notification name]);
+    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
+                [notification name], NSStringFromClass([[notification object] class]));
     id window = [notification object];
     
     if (window == self)
     {
         LOG4M_DEBUG(logger_, @"Closing window: %@", [window autosaveName]);
-        
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-        [[UserDefaults sharedInstance] save:regParams];
+        [self saveDefaults];
+        //[[UserDefaults sharedInstance] save:regParams];
     }
 }
 
@@ -676,6 +927,7 @@ enum TableTags
         case RigidLBFGSOptimizerTag:
         case RigidRSGDOptimizerTag:
         case RigidMattesMIMetricTag:
+        case RigidVersorOptimizerTag:
             retVal = regParams.rigidRegMultiresLevels;
             break;
         case DeformLBFGSBOptimizerTag:
@@ -716,119 +968,87 @@ enum TableTags
     {
         case RigidLBFGSBOptimizerTag:  // rigid LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.rigidRegLBFGSBCostConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"gradient"])
-            {
                 retVal = [regParams.rigidRegLBFGSBGradientTolerance objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidLBFGSOptimizerTag:  // rigid LBFGS parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.rigidRegLBFGSGradientConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.rigidRegLBFGSDefaultStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidRSGDOptimizerTag:  // rigid RSGD parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
                 retVal = [regParams.rigidRegRSGDMinStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.rigidRegRSGDMaxStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
                 retVal = [regParams.rigidRegRSGDRelaxationFactor objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
-            }
+            break;
+        case RigidVersorOptimizerTag:  // rigid Versor optim. parameters
+            if ([colIdent isEqualToString:@"minstepsize"])
+                retVal = [regParams.rigidRegVersorOptMinStepSize objectAtIndex:row];
+            else if ([colIdent isEqualToString:@"initstepsize"])
+                retVal = [regParams.rigidRegVersorOptMaxStepSize objectAtIndex:row];
+            else if ([colIdent isEqualToString:@"relaxation"])
+                retVal = [regParams.rigidRegVersorOptRelaxationFactor objectAtIndex:row];
+            else if ([colIdent isEqualToString:@"transscaling"])
+                retVal = [regParams.rigidRegVersorOptTransScale objectAtIndex:row];
+            else if ([colIdent isEqualToString:@"iterations"])
+                retVal = [regParams.rigidRegMaxIter objectAtIndex:row];
             break;
         case DeformLBFGSBOptimizerTag:  // deformable LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.deformRegLBFGSBCostConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"gradient"])
-            {
                 retVal = [regParams.deformRegLBFGSBGradientTolerance objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case DeformLBFGSOptimizerTag:  // deformable LBFGS parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
                 retVal = [regParams.deformRegLBFGSGradientConvergence objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.deformRegLBFGSDefaultStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case DeformRSGDOptimizerTag:  // deformable RSGD parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
                 retVal = [regParams.deformRegRSGDMinStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
                 retVal = [regParams.deformRegRSGDMaxStepSize objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
                 retVal = [regParams.deformRegRSGDRelaxationFactor objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 retVal = [regParams.deformRegMaxIter objectAtIndex:row];
-            }
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
                 retVal = [regParams.rigidRegMMIHistogramBins objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
                 retVal = [regParams.rigidRegMMISampleRate objectAtIndex:row];
-            }
             break;
         case DeformMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
                 retVal = [regParams.deformRegMMIHistogramBins objectAtIndex:row];
-            }
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
                 retVal = [regParams.deformRegMMISampleRate objectAtIndex:row];
-            }
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
-            if ([colIdent isEqualToString:@"gridsize"])
-                retVal = [regParams.deformRegGridSize objectAtIndex:row];
+            if ([colIdent isEqualToString:@"x"])
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:0];
+            else if ([colIdent isEqualToString:@"y"])
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:1];
+            else if ([colIdent isEqualToString:@"z"])
+                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:2];
             break;
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in objectValueForTableColumn", (long)tag);
@@ -856,142 +1076,96 @@ enum TableTags
     
     switch (tag)
     {
-         case RigidLBFGSBOptimizerTag:  // rigid Optimizer parameters
+        case RigidLBFGSBOptimizerTag:  // rigid Optimizer parameters
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.rigidRegLBFGSBCostConvergence replaceObjectAtIndex:row
-                                                                   withObject:object];
-            }
+                [regParams.rigidRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"gradient"])
-            {
-                [regParams.rigidRegLBFGSBGradientTolerance replaceObjectAtIndex:row
-                                                                     withObject:object];
-            }
+                [regParams.rigidRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case RigidLBFGSOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.rigidRegLBFGSGradientConvergence replaceObjectAtIndex:row
-                                                                      withObject:object];
-            }
+                [regParams.rigidRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.rigidRegLBFGSDefaultStepSize replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.rigidRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case RigidRSGDOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
-                [regParams.rigidRegRSGDMinStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.rigidRegRSGDMaxStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.rigidRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
-                [regParams.rigidRegRSGDRelaxationFactor replaceObjectAtIndex:row
-                                                                   withObject:object];
-            }
+                [regParams.rigidRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
+            break;
+        case RigidVersorOptimizerTag:
+            if ([colIdent isEqualToString:@"minstepsize"])
+                [regParams.rigidRegVersorOptMinStepSize replaceObjectAtIndex:row withObject:object];
+            else if ([colIdent isEqualToString:@"initstepsize"])
+                [regParams.rigidRegVersorOptMaxStepSize replaceObjectAtIndex:row withObject:object];
+            else if ([colIdent isEqualToString:@"relaxation"])
+                [regParams.rigidRegVersorOptRelaxationFactor replaceObjectAtIndex:row withObject:object];
+            else if ([colIdent isEqualToString:@"transscaling"])
+                [regParams.rigidRegVersorOptTransScale replaceObjectAtIndex:row withObject:object];
+            else if ([colIdent isEqualToString:@"iterations"])
+                [regParams.rigidRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
 
             // deformable Optimizer parameters
         case DeformLBFGSBOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.deformRegLBFGSBCostConvergence replaceObjectAtIndex:row
-                                                                   withObject:object];
-            }
+                [regParams.deformRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"gradient"])
-            {
-                [regParams.deformRegLBFGSBGradientTolerance replaceObjectAtIndex:row
-                                                                     withObject:object];
-            }
+                [regParams.deformRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case DeformLBFGSOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-            {
-                [regParams.deformRegLBFGSGradientConvergence replaceObjectAtIndex:row
-                                                                      withObject:object];
-            }
+                [regParams.deformRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.deformRegLBFGSDefaultStepSize replaceObjectAtIndex:row
-                                                                  withObject:object];
-            }
+                [regParams.deformRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
                 [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
-            }
             break;
         case DeformRSGDOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-            {
-                [regParams.deformRegRSGDMinStepSize replaceObjectAtIndex:row
-                                                             withObject:object];
-            }
+                [regParams.deformRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-            {
-                [regParams.deformRegRSGDMaxStepSize replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.deformRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-            {
-                [regParams.deformRegRSGDRelaxationFactor replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.deformRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-            {
-                [regParams.deformRegMaxIter replaceObjectAtIndex:row
-                                                      withObject:object];
-            }
+                [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
-                [regParams.rigidRegMMIHistogramBins replaceObjectAtIndex:row
-                                                              withObject:object];
-            }
+                [regParams.rigidRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
-                [regParams.rigidRegMMISampleRate replaceObjectAtIndex:row
-                                                           withObject:object];
-            }
+                [regParams.rigidRegMMISampleRate replaceObjectAtIndex:row withObject:object];
             break;
         case DeformMattesMIMetricTag:  // deformable MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-            {
-                [regParams.deformRegMMIHistogramBins replaceObjectAtIndex:row
-                                                               withObject:object];
-            }
+                [regParams.deformRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"samplerate"])
-            {
-                [regParams.deformRegMMISampleRate replaceObjectAtIndex:row
-                                                            withObject:object];
-            }
+                [regParams.deformRegMMISampleRate replaceObjectAtIndex:row withObject:object];
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
-            [regParams.deformRegGridSize replaceObjectAtIndex:row withObject:object];
+            if ([colIdent isEqualToString:@"x"])
+                [[regParams.deformRegGridSizeArray objectAtIndex:row]replaceObjectAtIndex:0
+                                                                               withObject:object];
+            else if ([colIdent isEqualToString:@"y"])
+                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:1
+                                                                                withObject:object];
+            if ([colIdent isEqualToString:@"z"])
+                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:2
+                                                                                withObject:object];
             break;
+
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in tableView:setObjectValue:forTableColumn:row", (long)tag);
             [NSException raise:NSInternalInconsistencyException
@@ -1010,6 +1184,7 @@ enum TableTags
     [rigidRegLBFGSBOptimizerTableView reloadData];
     [rigidRegLBFGSOptimizerTableView reloadData];
     [rigidRegRSGDOptOptimizerTableView reloadData];
+    [rigidRegVersorOptimizerTableView reloadData];
     [rigidRegMMIMetricTableView reloadData];
     [deformRegLBFGSBOptimizerTableView reloadData];
     [deformRegLBFGSOptimizerTableView reloadData];
@@ -1024,13 +1199,13 @@ enum TableTags
     LOG4M_TRACE(logger_, @"Enter: %@", [notification name]);
     NSComboBox* cb = (NSComboBox*)[notification object];
     long tag = [cb tag];
+    NSInteger idx = [cb indexOfSelectedItem];
+    id value = [self comboBox:cb objectValueForItemAtIndex:idx];
 
-    LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld", tag);
+    LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld, idx = %ld, value = %@", tag, idx, value);
     
     // Use the tag of the combo box to select the parameter to set
     // These tags are hard wired in the XIB file.
-    NSInteger idx = [cb indexOfSelectedItem];
-    NSNumber* value = [self comboBox:cb objectValueForItemAtIndex:idx];
     switch (tag)
     {
         case 0:
@@ -1042,6 +1217,7 @@ enum TableTags
             [rigidRegLBFGSBOptimizerTableView reloadData];
             [rigidRegLBFGSOptimizerTableView reloadData];
             [rigidRegRSGDOptOptimizerTableView reloadData];
+            [rigidRegVersorOptimizerTableView reloadData];
             [rigidRegMMIMetricTableView reloadData];
             break;
 
@@ -1052,6 +1228,18 @@ enum TableTags
             [deformRegRSGDOptimizerTableView reloadData];
             [deformRegMMIMetricTableView reloadData];
             [deformRegGridSizeTableView reloadData];
+            break;
+
+        case 3:
+            // This depends upon the enum in ProjectDefs.h.
+            // value is a string, we need the index to set the level
+            regParams.loggerLevel = idx * 10000;
+            ResetLoggerLevel(LOGGER_NAME, regParams.loggerLevel);
+            break;
+
+        case 4:
+            regParams.numberOfThreads = [value intValue];
+            itk::MultiThreader::SetGlobalMaximumNumberOfThreads(regParams.numberOfThreads);
             break;
 
         default:
@@ -1070,7 +1258,6 @@ enum TableTags
     LOG4M_DEBUG(logger_, @"comboBox:objectValueForItemAtIndex tag = %ld, index = %ld", tag, index);
 
     id retVal;
-
     unsigned idx = (unsigned)index;
     
     switch (tag)
@@ -1084,6 +1271,42 @@ enum TableTags
             break;
 
         case 2:  // deformable levels
+            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            break;
+
+        case 3: // Logging level
+            switch (idx)
+            {
+                case 0:
+                    retVal = @"Trace";
+                    break;
+                case 1:
+                    retVal = @"Debug";
+                    break;
+                case 2:
+                    retVal = @"Info";
+                    break;
+                case 3:
+                    retVal = @"Warn";
+                    break;
+                case 4:
+                    retVal = @"Error";
+                    break;
+                case 5:
+                    retVal = @"Fatal";
+                    break;
+                case 6:
+                    retVal = @"Off";
+                    break;
+                default:
+                    LOG4M_FATAL(logger_, @"Invalid tag %ld.", (long)tag);
+                    [NSException raise:NSInternalInconsistencyException
+                                format:@"Invalid tag %ld in comboBox:objectValueForItemAtIndex:", (long)tag];
+                    return nil;
+            }
+            break;
+
+        case 4:  // number of threads
             retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
@@ -1107,11 +1330,11 @@ enum TableTags
     LOG4M_DEBUG(logger_, @"numberOfItemsInComboBox tag = %ld", tag);
 
     NSInteger retVal;
-    
+
     switch (tag)
     {
         case 0:  // fixed image number
-            retVal = (NSInteger)regParams.numImages;
+            retVal = (NSInteger)seriesInfo.numTimeSamples;
             break;
 
         case 1:  // rigid levels
@@ -1120,6 +1343,14 @@ enum TableTags
 
         case 2:  // deformable levels
             retVal = (NSInteger)MAX_ARRAY_PARAMS;
+            break;
+
+        case 3:  // logging level
+            retVal = 7;
+            break;
+
+        case 4: // number of threads, decided by ITK (sort of)
+            retVal = MAX_THREADS;
             break;
 
          default:
@@ -1142,7 +1373,7 @@ enum TableTags
     [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricRadioMatrix setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricConfigButton setEnabled:regParams.rigidRegEnabled];
-    [rigidRegOptimizerRadioMatrix setEnabled:regParams.rigidRegEnabled];
+    [rigidRegOptimizerLabel setEnabled:regParams.rigidRegEnabled];
     [rigidRegOptimizerConfigButton setEnabled:regParams.rigidRegEnabled];
 
     if (regParams.rigidRegEnabled)
@@ -1223,7 +1454,7 @@ enum TableTags
 
     [rigidRegEnableCheckBox setEnabled:NO];
     [rigidRegLevelsComboBox setEnabled:NO];
-    [rigidRegOptimizerRadioMatrix setEnabled:NO];
+    [rigidRegOptimizerLabel setEnabled:NO];
     [rigidRegOptimizerConfigButton setEnabled:NO];
     [rigidRegMetricRadioMatrix setEnabled:NO];
     [rigidRegMetricConfigButton setEnabled:NO];
@@ -1259,7 +1490,7 @@ enum TableTags
     [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricRadioMatrix setEnabled:regParams.rigidRegEnabled];
     [rigidRegOptimizerConfigButton setEnabled:regParams.rigidRegEnabled];
-    [rigidRegOptimizerRadioMatrix setEnabled:regParams.rigidRegEnabled];
+    [rigidRegOptimizerLabel setEnabled:regParams.rigidRegEnabled];
     [rigidRegMetricConfigButton setEnabled:regParams.rigidRegEnabled];
     if (regParams.rigidRegEnabled)
     {
@@ -1291,7 +1522,6 @@ enum TableTags
             [deformRegMetricConfigButton setEnabled:NO];
         }
     }
-
 }
 
 - (void)registrationEnded:(BOOL)saveData
@@ -1302,7 +1532,7 @@ enum TableTags
     {
         NSString* seriesName = [self makeSeriesName];
         LOG4M_DEBUG(logger_, @"Exporting series description: %@", seriesName);
-        [viewerController2 exportAllImages:seriesName];
+        [viewerController2 exportAllImages4D:seriesName];
     }
     else
         LOG4M_DEBUG(logger_, @"Closing without saving.");

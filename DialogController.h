@@ -8,15 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class SeriesInfo;
+@class Logger;
 @class RegistrationParams;
 @class RegistrationManager;
 @class ProgressWindowController;
 @class LBFGSBConfigWindowController;
-@class ViewerController;  // OsiriX 2D viewer
 @class DCEFitFilter;
 @class DCMObject;
+@class ViewerController;  // OsiriX 2D viewer
 @class DicomSeries;
-@class Logger;
 
 @interface DialogController : NSWindowController
     <NSWindowDelegate, NSTabViewDelegate, NSTextFieldDelegate, NSComboBoxDelegate,
@@ -26,8 +27,6 @@
 
     NSWindow* openSheet_; // scratch variable for sheet management
 
-    unsigned numSlices;
-    int keyIdx;
     DCEFitFilter* parentFilter;
 
     IBOutlet RegistrationParams *regParams;
@@ -37,6 +36,7 @@
     ViewerController* viewerController2;      // copy for registered image
 
     RegistrationManager* registrationManager; // The object which does the registration
+    SeriesInfo* seriesInfo;
 
     // Main dialog
     //
@@ -47,7 +47,7 @@
     // Rigid registration box
     IBOutlet NSButton *rigidRegEnableCheckBox;
     IBOutlet NSComboBox *rigidRegLevelsComboBox;
-    IBOutlet NSMatrix *rigidRegOptimizerRadioMatrix;
+    IBOutlet NSTextField *rigidRegOptimizerLabel;
     IBOutlet NSButton *rigidRegOptimizerConfigButton;
     IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
     IBOutlet NSButton *rigidRegMetricConfigButton;
@@ -57,7 +57,6 @@
     IBOutlet NSButton *deformShowFieldCheckBox;
     IBOutlet NSComboBox *deformRegLevelsComboBox;
     IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
-    NSButton *showDeformationFieldCheckBox;
     IBOutlet NSButton *deformRegOptimizerConfigButton;
     IBOutlet NSMatrix *deformRegMetricRadioMatrix;
     IBOutlet NSButton *deformRegMetricConfigButton;
@@ -65,6 +64,8 @@
 
     // Bottom box buttons
     IBOutlet NSButton *regCloseButton;
+    NSComboBox *loggingLevelComboBox;
+    NSComboBox *numberOfThreadsComboBox;
     IBOutlet NSButton *regStartButton;
 
     // Optimizer and metric configuration sheets
@@ -72,6 +73,7 @@
     IBOutlet NSPanel *rigidRegLBFGSBOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegLBFGSOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegRSGDOptimizerConfigPanel;
+    IBOutlet NSPanel *rigidVersorOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegMMIMetricConfigPanel;
     IBOutlet NSPanel *deformRegLBFGSBOptimizerConfigPanel;
     IBOutlet NSPanel *deformRegLBFGSOptimizerConfigPanel;
@@ -82,6 +84,7 @@
     IBOutlet NSTableView *rigidRegLBFGSBOptimizerTableView;
     IBOutlet NSTableView *rigidRegLBFGSOptimizerTableView;
     IBOutlet NSTableView *rigidRegRSGDOptOptimizerTableView;
+    IBOutlet NSTableView *rigidRegVersorOptimizerTableView;
     IBOutlet NSTableView *rigidRegMMIMetricTableView;
     IBOutlet NSTableView *deformRegLBFGSBOptimizerTableView;
     IBOutlet NSTableView *deformRegLBFGSOptimizerTableView;
@@ -90,13 +93,12 @@
 }
 
 // properties associated with non-outlet members
-@property (assign) unsigned numSlices;
-@property (assign) int keyIdx;
 @property (assign) DCEFitFilter* parentFilter;
 @property (assign) ViewerController* viewerController1;
 @property (assign) ViewerController* viewerController2;
 @property (assign) ProgressWindowController* progressWindowController;
 @property (readonly) RegistrationParams* regParams;
+@property (assign) SeriesInfo* seriesInfo;
 
 // properties associated with outlet members
 @property (assign) IBOutlet NSComboBox *fixedImageComboBox;
@@ -104,12 +106,13 @@
 
 @property (assign) IBOutlet NSButton *rigidRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *rigidRegLevelsComboBox;
+@property (assign) IBOutlet NSTextField* rigidRegOptimizerLabel;
 @property (assign) IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
-@property (assign) IBOutlet NSMatrix *rigidRegOptimizerRadioMatrix;
 
 @property (assign) IBOutlet NSButton *deformRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *deformRegLevelsComboBox;
 @property (assign) IBOutlet NSTableView *deformRegGridSizeTableView;
+
 @property (assign) IBOutlet NSMatrix *deformRegMetricRadioMatrix;
 @property (assign) IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
 @property (assign) IBOutlet NSButton *deformShowFieldCheckBox;
@@ -117,6 +120,9 @@
 @property (assign) IBOutlet NSButton *regStartButton;
 @property (assign) IBOutlet NSButton *regCloseButton;
 
+// Program defaults
+@property (assign) IBOutlet NSComboBox *loggingLevelComboBox;
+@property (assign) IBOutlet NSComboBox *numberOfThreadsComboBox;
 
 // Actions
 //
@@ -139,7 +145,9 @@
 - (IBAction)rigidRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton*)sender;
 - (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender;
+
 - (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
@@ -152,7 +160,8 @@
  * @param filter The class derived from OsiriX's PluginFilter.
  * @return The instance (self).
  */
-//- (id)initWithViewerController:(ViewerController*)viewerController Filter:(DCEFitFilter*)filter;
+- (id)initWithViewerController:(ViewerController*)viewerController
+                        Filter:(DCEFitFilter*)filter;
 
 - (void)registrationEnded:(BOOL)saveData;
 

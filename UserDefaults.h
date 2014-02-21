@@ -7,11 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Region.h"
+#import "Region2D.h"
 
 /**
- * These are the keys for the dictionary holding the user defaults.
+ * Keys for the dictionary holding the user defaults.
  */
+// General program defaults
+extern NSString* const DefaultLoggerLevelKey;
+extern NSString* const DefaultNumberOfThreadsKey;
+
 extern NSString* const FixedImageNumberKey;
 extern NSString* const SeriesDescriptionKey;
 
@@ -29,13 +33,17 @@ extern NSString* const RigidRegLBFGSDefaultStepSizeKey;
 extern NSString* const RigidRegRSGDMinStepSizeKey;
 extern NSString* const RigidRegRSGDMaxStepSizeKey;
 extern NSString* const RigidRegRSGDRelaxationFactorKey;
+extern NSString* const RigidRegVersorOptTransScaleKey;
+extern NSString* const RigidRegVersorOptMinStepSizeKey;
+extern NSString* const RigidRegVersorOptMaxStepSizeKey;
+extern NSString* const RigidRegVersorOptRelaxationFactorKey;
 extern NSString* const RigidRegMaxIterKey;
 
 // deformable regitration parameters
 extern NSString* const DeformRegEnabledKey;
 extern NSString* const DeformShowFieldKey;
 extern NSString* const DeformRegMultiresLevelsKey;
-extern NSString* const DeformRegGridSizeKey;
+extern NSString* const DeformRegGridSizeArrayKey;
 extern NSString* const DeformRegMetricKey;
 extern NSString* const DeformRegOptimizerKey;
 extern NSString* const DeformRegMMIHistogramBinsKey;
@@ -57,7 +65,6 @@ extern NSString* const DeformRegMaxIterKey;
  *
  * The class is implemented as a singleton and the single application
  * wide instance is accessed with the +(UserDefaults*)instance method.
- *
  */
 
 @interface UserDefaults : NSObject
@@ -77,14 +84,20 @@ extern NSString* const DeformRegMaxIterKey;
  *
  * @returns The dictionary used to store default values.
  */
-- (NSMutableDictionary*)dictionary;
++ (NSMutableDictionary*)defaultsDictionary;
 
 
 /**
- * Saves the user defaults to disk, first updating the dictionary with the data.
+ * Saves the registration parameters to disk.
  * @param data An instance of RegistrationData.
  */
-- (void)save:(RegistrationParams*)data;
+- (void)saveRegParams:(RegistrationParams*)data;
+
+/**
+ * Saves the registration parameters to disk.
+ * @param data An instance of RegistrationData.
+ */
+- (void)saveDefaults:(NSMutableDictionary*)data;
 
 /**
  * Does the key exist in the defaults dictionary?
@@ -219,7 +232,7 @@ extern NSString* const DeformRegMaxIterKey;
  * @param key The key used to store the value.
  * @returns The value corresponding to the key.
  */
-- (Region*)regionForKey:(NSString*)key;
+- (Region2D*)regionForKey:(NSString*)key;
 
 /**
  * Set the NSObject corresponding to key. If the key exists, the value will be
@@ -227,7 +240,7 @@ extern NSString* const DeformRegMaxIterKey;
  * @param region The value we wish to store.
  * @param key The key with which we wish to use to store the value.
  */
-- (void)setRegion:(Region*)region forKey:(NSString*)key;
+- (void)setRegion:(Region2D*)region forKey:(NSString*)key;
 
 /**
  * Get an NSObject corresponding to the key.

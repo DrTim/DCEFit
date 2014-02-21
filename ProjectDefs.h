@@ -28,7 +28,18 @@ enum OptimizerType
 {
     LBFGSB = 0,
     LBFGS = 1,
-    RSGD = 2
+    RSGD = 2,
+    Versor = 3
+};
+
+/**
+ * Values to use to return the results of the registration.
+ */
+enum ResultCode
+{
+    SUCCESS = 0,   /// All went well.
+    FAILURE = 1,   /// Registration was suboptimal but we can continue.
+    DISASTER = 2   /// Complete failure resulting in an exception being thrown by ITK.
 };
 
 // The size of the arrays containing registration pyramid parameters.
@@ -40,5 +51,8 @@ enum OptimizerType
 
 // The name of the rolling file log that we place in ~/Library/Logs
 #define LOG_FILE_NAME LOGGER_NAME;
+
+// The most thhreads we will ever ask for.
+#define MAX_THREADS 8
 
 #endif

@@ -12,15 +12,15 @@
 
 #include <itkGDCMImageIO.h>
 
-void CopyMetaDataDictionary(const MetaDataDictionaryType &sourceDict,
-                            MetaDataDictionaryType &destDict)
+void CopyMetaDataDictionary(const MetaDataDictionary &sourceDict,
+                            MetaDataDictionary &destDict)
 {
     std::string loggerName = std::string(LOGGER_NAME) + ".CopyMetaDataDictionary";
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Function entry.");
 
     typedef itk::MetaDataObject<std::string> MetaDataStringType;
     
-    for (MetaDataDictionaryType::ConstIterator iter = sourceDict.Begin();
+    for (MetaDataDictionary::ConstIterator iter = sourceDict.Begin();
          iter != sourceDict.End(); ++iter)
     {
         itk::MetaDataObjectBase::Pointer entry = iter->second;
@@ -40,21 +40,21 @@ void CopyMetaDataDictionary(const MetaDataDictionaryType &sourceDict,
     }
 }
 
-void CopyMetaDataDictionaryArray(const MetaDataDictionaryArrayType* sourceArray,
-                                 MetaDataDictionaryArrayType*& destArray)
+void CopyMetaDataDictionaryArray(const MetaDataDictionaryArray* sourceArray,
+                                 MetaDataDictionaryArray*& destArray)
 {
     std::string loggerName = std::string(LOGGER_NAME) + ".CopyMetaDataDictionaryArray";
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Function entry.");
     
     // Create the new dictionary
-    destArray = new MetaDataDictionaryArrayType;
+    destArray = new MetaDataDictionaryArray;
     
     // Iterate through the source array and add new copies of the dictionaries
     // to the destination array.
-    for (MetaDataDictionaryArrayType::const_iterator iter = sourceArray->begin();
+    for (MetaDataDictionaryArray::const_iterator iter = sourceArray->begin();
          iter != sourceArray->end(); ++iter)
     {
-        MetaDataDictionaryType* dict = new MetaDataDictionaryType;
+        MetaDataDictionary* dict = new MetaDataDictionary;
         CopyMetaDataDictionary(**iter, *dict);
         destArray->push_back(dict);
     }

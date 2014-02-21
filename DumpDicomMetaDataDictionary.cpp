@@ -13,7 +13,7 @@
 
 #include <itkGDCMImageIO.h>
 
-std::string DumpDicomMetaDataDictionary(const MetaDataDictionaryType* dict)
+std::string DumpDicomMetaDataDictionary(const itk::MetaDataDictionary* dict)
 {
     std::string loggerName = std::string(LOGGER_NAME) + ".CopyMetaDataDictionary";
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Function entry.");
@@ -54,7 +54,7 @@ std::string DumpDicomMetaDataDictionary(const MetaDataDictionaryType* dict)
     return stream.str();
 }
 
-std::string DumpDicomMetaDataDictionaryArray(const MetaDataDictionaryArrayType* dict)
+std::string DumpDicomMetaDataDictionaryArray(const MetaDataDictionaryArray* dict)
 {
     std::string loggerName = std::string(LOGGER_NAME) + ".CopyMetaDataDictionaryArray";
     LOG4CPLUS_TRACE(log4cplus::Logger::getInstance(loggerName), "Function entry.");
@@ -68,7 +68,7 @@ std::string DumpDicomMetaDataDictionaryArray(const MetaDataDictionaryArrayType* 
         stream << std::endl << "****** MetaDataDictionary " << idx << " *******" << std::endl;
         retVal += stream.str();
 
-        const SeriesReaderType::DictionaryRawPointer pDict = (*dict)[idx];
+        const SeriesReader::DictionaryRawPointer pDict = (*dict)[idx];
         retVal += DumpDicomMetaDataDictionary(pDict);
         std::cout << retVal;
     }
