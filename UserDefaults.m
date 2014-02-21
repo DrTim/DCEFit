@@ -106,7 +106,7 @@ static UserDefaults* sharedInstance;
     NSDictionary* d =
     [NSDictionary dictionaryWithObjectsAndKeys:
      [NSNumber numberWithInt:LOG4M_LEVEL_DEBUG], DefaultLoggerLevelKey,
-     [NSNumber numberWithUnsignedInt:1], DefaultNumberOfThreadsKey,
+     [NSNumber numberWithInt:1], DefaultNumberOfThreadsKey,
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 

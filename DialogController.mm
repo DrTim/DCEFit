@@ -108,8 +108,6 @@ enum TableTags
 
 - (void)awakeFromNib
 {
-    LOG4M_TRACE(logger_, @"Enter");
-
     // Get the version from the bundle that contains this class
     NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
     NSDictionary* infoDict = [bundle infoDictionary];
