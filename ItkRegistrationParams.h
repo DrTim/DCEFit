@@ -79,8 +79,7 @@ public:
     unsigned deformLevels;                  ///< Number of multi-res levels to use (max 4).
     MetricType deformRegMetric;             ///< Type of metric to use.
     OptimizerType deformRegOptimiser;       ///< Optimiser to use.
-    ParamMatrix<unsigned> deformGridSizes;
-    //ParamVector<unsigned> deformGridSizes;    ///< Sizes of BSpline grids to use.
+    ParamMatrix<unsigned> deformGridSizes;    ///< Sizes of BSpline grids to use.
     ParamVector<unsigned> deformMMINumBins;   ///< MMI bins. See ITK docs.
     ParamVector<float> deformMMISampleRate;   ///< Fraction of image for MMI metric to sample.
     ParamVector<float> deformLBFGSBCostConvergence;    ///< Stop criterion. See ITK docs.

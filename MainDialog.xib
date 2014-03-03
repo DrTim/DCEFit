@@ -87,7 +87,11 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
-                                                            <binding destination="630" name="value" keyPath="self.seriesDescription" id="632"/>
+                                                            <binding destination="630" name="value" keyPath="self.seriesDescription" id="Fs3-nD-HxK">
+                                                                <dictionary key="options">
+                                                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                                </dictionary>
+                                                            </binding>
                                                         </connections>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" id="29">
@@ -100,7 +104,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <comboBox toolTip="The image in the series which will be the fixed image." verticalHuggingPriority="750" id="40">
-                                                        <rect key="frame" x="97" y="10" width="75" height="26"/>
+                                                        <rect key="frame" x="97" y="10" width="132" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="41">
                                                             <font key="font" metaFont="system"/>
@@ -108,7 +112,6 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </comboBoxCell>
                                                         <connections>
-                                                            <binding destination="630" name="value" keyPath="self.fixedImageNumber" id="635"/>
                                                             <outlet property="dataSource" destination="-2" id="665"/>
                                                             <outlet property="delegate" destination="-2" id="666"/>
                                                         </connections>
@@ -142,7 +145,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button toolTip="Configure the selected optimizer." verticalHuggingPriority="750" id="123">
-                                                                    <rect key="frame" x="38" y="7" width="103" height="32"/>
+                                                                    <rect key="frame" x="17" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="124">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -153,7 +156,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="F8Y-ig-lek">
-                                                                    <rect key="frame" x="20" y="43" width="144" height="43"/>
+                                                                    <rect key="frame" x="20" y="43" width="144" height="30"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" placeholderString="Optimiser" id="iaU-IZ-eWT">
                                                                         <font key="font" metaFont="smallSystem"/>
@@ -201,7 +204,7 @@
                                                                     </connections>
                                                                 </matrix>
                                                                 <button toolTip="Configure the selected metric." verticalHuggingPriority="750" id="127">
-                                                                    <rect key="frame" x="49" y="7" width="103" height="32"/>
+                                                                    <rect key="frame" x="12" y="7" width="103" height="32"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="push" title="Configure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="128">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -232,7 +235,6 @@
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </comboBoxCell>
                                                                     <connections>
-                                                                        <binding destination="630" name="value" keyPath="self.rigidRegMultiresLevels" id="642"/>
                                                                         <outlet property="dataSource" destination="-2" id="669"/>
                                                                         <outlet property="delegate" destination="-2" id="670"/>
                                                                     </connections>
@@ -294,15 +296,15 @@
                                                                     </buttonCell>
                                                                     <cells>
                                                                         <column>
-                                                                            <buttonCell type="radio" title="LBFGSB" imagePosition="left" alignment="left" state="on" tag="1" inset="2" id="294">
+                                                                            <buttonCell type="radio" title="LBFGSB" imagePosition="left" alignment="left" state="on" toolTip="Select the LBFGSB optimizer." tag="1" inset="2" id="294">
                                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                             </buttonCell>
-                                                                            <buttonCell type="radio" title="LBFGS" imagePosition="left" alignment="left" inset="2" id="293">
+                                                                            <buttonCell type="radio" title="LBFGS" imagePosition="left" alignment="left" toolTip="Select the LBFGS optimizer." inset="2" id="293">
                                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                             </buttonCell>
-                                                                            <buttonCell type="radio" title="Gradient Descent" imagePosition="left" alignment="left" inset="2" id="292">
+                                                                            <buttonCell type="radio" title="RSGD" imagePosition="left" alignment="left" toolTip="Select the Regular Step Gradient Descent optimizer." inset="2" id="292">
                                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                             </buttonCell>
@@ -394,7 +396,6 @@
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </comboBoxCell>
                                                                     <connections>
-                                                                        <binding destination="630" name="value" keyPath="self.deformRegMultiresLevels" id="655"/>
                                                                         <outlet property="dataSource" destination="-2" id="667"/>
                                                                         <outlet property="delegate" destination="-2" id="668"/>
                                                                     </connections>
@@ -436,7 +437,7 @@
                                                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </box>
-                                                    <box autoresizesSubviews="NO" title="Bspline Grid Size" borderType="line" id="403">
+                                                    <box autoresizesSubviews="NO" title="B-spline Grid Size" borderType="line" id="403">
                                                         <rect key="frame" x="19" y="10" width="169" height="134"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView">
@@ -627,7 +628,7 @@ DQ
                                                     <comboBox verticalHuggingPriority="750" tag="3" id="gfT-6A-vbw">
                                                         <rect key="frame" x="165" y="38" width="99" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" tag="3" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="GY0-Mf-kOB">
+                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" tag="3" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="GY0-Mf-kOB">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -640,7 +641,7 @@ DQ
                                                     <comboBox verticalHuggingPriority="750" tag="4" id="Sy5-9E-iFC">
                                                         <rect key="frame" x="165" y="10" width="99" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="NUY-jZ-MMQ">
+                                                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="5" id="NUY-jZ-MMQ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1066,7 +1067,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView verticalHuggingPriority="750" tag="2" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" headerView="989" id="991">
-                                                <rect key="frame" x="0.0" y="0.0" width="412" height="76"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="412" height="77"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1767,7 +1768,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView verticalHuggingPriority="750" tag="5" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" headerView="1120" id="1118">
-                                                <rect key="frame" x="0.0" y="0.0" width="412" height="76"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="412" height="77"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -2178,5 +2179,6 @@ DQ
                 </subviews>
             </view>
         </window>
+        <userDefaultsController representsSharedInstance="YES" id="c9x-Fe-5my"/>
     </objects>
 </document>

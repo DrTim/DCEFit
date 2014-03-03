@@ -8,5 +8,6 @@
 
 #import <Log4m/Logger.h>
 #import <Log4m/LoggingMacros.h>
+#import "ProjectDefs.h"
 
 #endif

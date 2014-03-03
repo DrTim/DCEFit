@@ -13,8 +13,8 @@
  * Keys for the dictionary holding the user defaults.
  */
 // General program defaults
-extern NSString* const DefaultLoggerLevelKey;
-extern NSString* const DefaultNumberOfThreadsKey;
+extern NSString* const LoggerLevelKey;
+extern NSString* const NumberOfThreadsKey;
 
 extern NSString* const FixedImageNumberKey;
 extern NSString* const SeriesDescriptionKey;

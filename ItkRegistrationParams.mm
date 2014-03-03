@@ -84,8 +84,6 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
             deformGridSizes(level, dim) = [num unsignedIntValue];
         }
 
-//        num = [params.deformRegGridSizeArray objectAtIndex:level] ;
-//        deformGridSizes[level] = [num unsignedIntValue];
         num = [params.deformRegMMIHistogramBins objectAtIndex:level];
         deformMMINumBins[level] = [num unsignedIntValue];
         num = [params.deformRegMMISampleRate objectAtIndex:level];

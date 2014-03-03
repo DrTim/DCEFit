@@ -79,9 +79,6 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     for (unsigned dim = 0; dim < Image2D::GetImageDimension(); ++dim)
         meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
     
-    //    unsigned int numberOfGridNodesInOneDimension = itkParams_.deformGridSizes[0];
-    //    meshSize.Fill(numberOfGridNodesInOneDimension - BSPLINE_ORDER);
-
     BSplineTransformInitializer2D::Pointer transformInitializer = BSplineTransformInitializer2D::New();
     transformInitializer->SetTransform(transform);
     transformInitializer->SetImage(fixedImage_);

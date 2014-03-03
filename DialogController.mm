@@ -12,14 +12,13 @@
 #import <OsiriXAPI/ViewerController.h>
 #import <OsiriXAPI/DicomImage.h>
 #import <OsiriXAPI/DCMPix.h>
-//#import <OsiriXAPI/PluginFilter.h>
-//#import <OsiriXAPI/DicomSeries.h>
 #import <OsiriXAPI/Notifications.h>
 #import <OsiriXAPI/ROI.h>
 
 #import <OsiriX/DCMObject.h>
 #import <OsiriX/DCMAttribute.h>
 #import <OsiriX/DCMAttributeTag.h>
+#import <OsiriX/DCMCalendarDate.h>
 
 #import "ViewerController+ExportTimeSeries.h"
 #import "DialogController.h"
@@ -151,7 +150,7 @@ enum TableTags
 {
     UserDefaults* defaults = [UserDefaults sharedInstance];;
 
-    regParams.loggerLevel = [defaults integerForKey:DefaultLoggerLevelKey];
+    regParams.loggerLevel = [defaults integerForKey:LoggerLevelKey];
     SetupLogger(LOGGER_NAME, regParams.loggerLevel);
 }
 
@@ -164,7 +163,9 @@ enum TableTags
     UserDefaults* defaults = [UserDefaults sharedInstance];
 
     // Threading
-    int numThreads = [defaults unsignedIntegerForKey:DefaultNumberOfThreadsKey];
+    int numThreads = [defaults unsignedIntegerForKey:NumberOfThreadsKey];
+    if (numThreads > MAX_THREADS)
+        numThreads = MAX_THREADS;
     itk::MultiThreader::SetGlobalMaximumNumberOfThreads(numThreads);
 
     regParams.numberOfThreads = numThreads;
@@ -262,7 +263,9 @@ enum TableTags
                     BOOL found = NO;
                     for (ROI* r in curRoiList)
                     {
-                        if ((!found) && ([[r name] isEqualToString:@"Reg"]))
+                        NSString* name = r.name;
+                        if ((!found) &&
+                            ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
                         {
                             found = YES;
                             roi = r;
@@ -282,15 +285,23 @@ enum TableTags
 
             DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
             DCMAttribute* attr = [dcmObj attributeForTag:tag];
-            NSTimeInterval acqTime = [[attr value] timeIntervalSinceReferenceDate];
+            DCMCalendarDate* dcmDate = attr.value;
+            NSTimeInterval acqTime = [dcmDate timeIntervalSinceReferenceDate];
+
+             // do this once per series
             if ((timeIdx == 0) && (sliceIdx == 0))
                 firstTime = acqTime;
 
-            if (sliceIdx == 0) // do this once per time increment
+             // do this once per time increment
+            if (sliceIdx == 0)
             {
+                NSString* dateStr = [dcmDate descriptionWithCalendarFormat:@"%H:%M:%S"];
+                [info addAcqTimeString:dateStr];
+                LOG4M_DEBUG(logger_, @"Acquisition time = %@", dateStr);
+
                 NSTimeInterval normalisedTime = acqTime - firstTime;
                 [info addAcqTime:normalisedTime];
-                LOG4M_DEBUG(logger_, @"Normalised time of acquisition = %f", normalisedTime);
+                LOG4M_DEBUG(logger_, @"Normalised acquisition time = %fs", normalisedTime);
             }
         }
     }
@@ -385,15 +396,16 @@ enum TableTags
     LOG4M_TRACE(logger_, @"Enter");
 
     // First the program defaults
-    unsigned logIdx = regParams.loggerLevel / 10000;
+    NSInteger logIdx = regParams.loggerLevel / 10000;
     [loggingLevelComboBox selectItemAtIndex:logIdx];
     [loggingLevelComboBox setObjectValue:[self comboBox:loggingLevelComboBox
                               objectValueForItemAtIndex:logIdx]];
     [loggingLevelComboBox reloadData];
 
-    [numberOfThreadsComboBox selectItemAtIndex:regParams.numberOfThreads];
+    NSInteger threadIdx = regParams.numberOfThreads - 1;
+    [numberOfThreadsComboBox selectItemAtIndex:threadIdx];
     [numberOfThreadsComboBox setObjectValue:[self comboBox:numberOfThreadsComboBox
-                                 objectValueForItemAtIndex:regParams.numberOfThreads]];
+                                 objectValueForItemAtIndex:threadIdx]];
     [numberOfThreadsComboBox reloadData];
 
     // set things up based upon the image series information
@@ -412,7 +424,8 @@ enum TableTags
     // Find the first key image and assume that it is the desired fixed slice.
     if (seriesInfo.keyImageIdx == -1)
     {
-        regParams.fixedImageNumber = 1;
+        if (regParams.fixedImageNumber > regParams.numImages)
+            regParams.fixedImageNumber = 1;
         LOG4M_INFO(logger_, @"No key image found. ");
         LOG4M_INFO(logger_, @"Fixed image set to image: %d", regParams.fixedImageNumber);
     }
@@ -428,11 +441,28 @@ enum TableTags
     //[self setupMaskFromFixedImage];
 
     // Set up combobox to reflect number of images in series
+    // The number of items in a cb is set very early in the initialisation,
+    // well before we know how many images we have so we have to tell the cb
+    // that it needs to reset itself.
+    [fixedImageComboBox noteNumberOfItemsChanged];
     NSInteger index = regParams.fixedImageNumber - 1;
     [fixedImageComboBox selectItemAtIndex:index];
     [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
                             objectValueForItemAtIndex:index]];
     [fixedImageComboBox reloadData];
+
+    // ComboBoxes for the registration levels
+    NSInteger levelIdx = regParams.rigidRegMultiresLevels - 1;
+    [rigidRegLevelsComboBox selectItemAtIndex:levelIdx];
+    [rigidRegLevelsComboBox setObjectValue:[self comboBox:rigidRegLevelsComboBox
+                                objectValueForItemAtIndex:levelIdx]];
+    [rigidRegLevelsComboBox reloadData];
+
+    levelIdx = regParams.deformRegMultiresLevels - 1;
+    [deformRegLevelsComboBox selectItemAtIndex:levelIdx];
+    [deformRegLevelsComboBox setObjectValue:[self comboBox:deformRegLevelsComboBox
+                                 objectValueForItemAtIndex:levelIdx]];
+    [deformRegLevelsComboBox reloadData];
 
     // Set up label to reflect number of dimensions in images
     if (regParams.slicesPerImage == 1)
@@ -659,6 +689,25 @@ enum TableTags
 - (IBAction)regStartButtonPressed:(NSButton *)sender
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
+
+    if ((!regParams.rigidRegEnabled) && (!regParams.deformRegEnabled))
+    {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+
+        [alert addButtonWithTitle:@"Close"];
+        [alert setMessageText:@"DCEFit plugin."];
+        [alert setInformativeText:@"Both rigid and deformable registrations are disabled."
+             " You must enable at least one to continue."];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        [alert beginSheetModalForWindow:self.window
+                          modalDelegate:self
+                         didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
+                            contextInfo:nil];
+        LOG4M_INFO(logger_, @"Both rigid and deformable registrations are disabled."
+                   " You must enable at least one to continue.");
+
+        return;
+    }
 
     [self saveDefaults];
     [self disableControls];
@@ -1207,7 +1256,8 @@ enum TableTags
     switch (tag)
     {
         case 0:
-            regParams.fixedImageNumber = [value unsignedIntValue];
+            regParams.fixedImageNumber = idx+1;
+            //regParams.fixedImageNumber = [value unsignedIntValue];
             break;
 
         case 1:
@@ -1248,6 +1298,7 @@ enum TableTags
 }
 
 // NSComboboxDatasource methods
+// This fills the combo box.
 - (id)comboBox:(NSComboBox *)comboBox objectValueForItemAtIndex:(NSInteger)index
 {
     LOG4M_TRACE(logger_, @"%ld", (long)index);
@@ -1261,7 +1312,8 @@ enum TableTags
     switch (tag)
     {
         case 0:  // fixed image number
-            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            retVal = [NSString stringWithFormat:@"%3u - [%@]", idx + 1, [seriesInfo acqTimeString:idx]];
+            //retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
         case 1:  // rigid levels
@@ -1305,7 +1357,7 @@ enum TableTags
             break;
 
         case 4:  // number of threads
-            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            retVal = [NSNumber numberWithInt:idx + 1];
             break;
 
         default:
@@ -1344,10 +1396,10 @@ enum TableTags
             break;
 
         case 3:  // logging level
-            retVal = 7;
+            retVal = 7;  // There are 7 logging levels.
             break;
 
-        case 4: // number of threads, decided by ITK (sort of)
+        case 4: // number of threads
             retVal = MAX_THREADS;
             break;
 

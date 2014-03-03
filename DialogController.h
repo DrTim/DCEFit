@@ -20,8 +20,9 @@
 @class DicomSeries;
 
 @interface DialogController : NSWindowController
-    <NSWindowDelegate, NSTabViewDelegate, NSTextFieldDelegate, NSComboBoxDelegate,
-     NSTableViewDelegate, NSTableViewDataSource, NSComboBoxDataSource>
+    <NSWindowDelegate, NSTabViewDelegate, NSTextFieldDelegate,
+     NSTableViewDelegate, NSTableViewDataSource,
+     NSComboBoxDataSource, NSComboBoxDelegate>
 {
     Logger* logger_;
 
@@ -64,8 +65,8 @@
 
     // Bottom box buttons
     IBOutlet NSButton *regCloseButton;
-    NSComboBox *loggingLevelComboBox;
-    NSComboBox *numberOfThreadsComboBox;
+    IBOutlet NSComboBox *loggingLevelComboBox;
+    IBOutlet NSComboBox *numberOfThreadsComboBox;
     IBOutlet NSButton *regStartButton;
 
     // Optimizer and metric configuration sheets

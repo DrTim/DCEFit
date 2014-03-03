@@ -18,6 +18,11 @@ std::string LogLevelToString(int level);
 
 void SetupLogger(const char* name, int level)
 {
+    static bool setup = false;
+    if (setup)
+        return;
+    setup = true;
+
     std::string loggerName = name;
 
     // The logger is set to log all messages. We use the appenders to restrict the output(s).

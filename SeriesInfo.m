@@ -27,6 +27,7 @@
         keyImageIdx = -1;
         keySliceIdx = -1;
         acqTimeArray = [[NSMutableArray array] retain];
+        acqTimeStringArray = [[NSMutableArray array] retain];
     }
 
     return self;
@@ -35,6 +36,7 @@
 - (void)dealloc
 {
     [acqTimeArray release];
+    [acqTimeStringArray release];
     [super dealloc];
 }
 
@@ -46,10 +48,12 @@
                       "slicesPerImage: %u\n"
                       "keyImageIdx: %d\n"
                       "keySliceIdx: %d\n"
-                      "firstROI: %@\n",
+                      "firstROI: %@\n"
+                      "acqTimeArray: %@"
+                      @"acqTimeStringArray: %@",
                       numTimeSamples, sliceHeight, sliceWidth,
                       slicesPerImage, keyImageIdx, keySliceIdx,
-                      firstROI];
+                      firstROI, acqTimeArray, acqTimeStringArray];
     return desc;
 }
 
@@ -63,5 +67,16 @@
 {
     return [[acqTimeArray objectAtIndex:index] floatValue];
 }
+
+- (void)addAcqTimeString:(NSString*)timeStr
+{
+    [acqTimeStringArray addObject:timeStr];
+}
+
+- (NSString*)acqTimeString:(unsigned)index
+{
+    return [acqTimeStringArray objectAtIndex:index];
+}
+
 
 @end

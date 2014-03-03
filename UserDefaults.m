@@ -13,8 +13,8 @@
 #import "RegistrationParams.h"
 
 // General program defaults
-NSString* const DefaultLoggerLevelKey = @"DefaultLoggerLevel";
-NSString* const DefaultNumberOfThreadsKey = @"DefaultNumberOfThreads";
+NSString* const LoggerLevelKey = @"LoggerLevel";
+NSString* const NumberOfThreadsKey = @"NumberOfThreads";
 
 // general registration parameters
 NSString* const FixedImageNumberKey = @"FixedImageNumber";
@@ -105,8 +105,8 @@ static UserDefaults* sharedInstance;
 {
     NSDictionary* d =
     [NSDictionary dictionaryWithObjectsAndKeys:
-     [NSNumber numberWithInt:LOG4M_LEVEL_DEBUG], DefaultLoggerLevelKey,
-     [NSNumber numberWithInt:1], DefaultNumberOfThreadsKey,
+     [NSNumber numberWithInt:LOG4M_LEVEL_DEBUG], LoggerLevelKey,
+     [NSNumber numberWithInt:MAX_THREADS], NumberOfThreadsKey,
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 
@@ -196,9 +196,9 @@ static UserDefaults* sharedInstance;
     // Set the values and keys that currently exist in the data.
     // This needs to be kept synchronized with the +initialize method
     [defaultsDict setObject:[NSNumber numberWithInt:data.loggerLevel]
-                     forKey:DefaultLoggerLevelKey];
+                     forKey:LoggerLevelKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.numberOfThreads]
-                     forKey:DefaultNumberOfThreadsKey];
+                     forKey:NumberOfThreadsKey];
 
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.fixedImageNumber]
                      forKey:FixedImageNumberKey];

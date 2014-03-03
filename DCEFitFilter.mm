@@ -5,21 +5,11 @@
 //  Copyright (c) 2013 Tim. All rights reserved.
 //
 
-//#import <OsiriX/DCMObject.h>
-//#import <OsiriX/DCMAttribute.h>
-//#import <OsiriX/DCMAttributeTag.h>
-//#import <OsiriX/DCMCalendarDate.h>
-//#import <OsiriXAPI/DicomImage.h>
-//#import <OsiriXAPI/ROI.h>
 #import <OsiriXAPI/ViewerController.h>
+
 #import "ViewerController+ExportTimeSeries.h"
-//
-//#import "ProjectDefs.h"
 #import "DCEFitFilter.h"
 #import "DialogController.h"
-//#import "SeriesInfo.h"
-//#import "LoadingImagesWindowController.h"
-//#import "UserDefaults.h"
 
 @implementation DCEFitFilter
 
@@ -86,7 +76,7 @@
     return 0;
 }
 
-- (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+- (void) alertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
 {
     return;
 }
@@ -147,7 +137,7 @@
             // A 2D Viewer window needs 3 things:
             //     a mutable array composed of DCMPix objects
             //     a mutable array composed of DicomFile objects
-            //         (The number of DCMPix and DicomFile has to be EQUAL.)
+            //         (The number of DCMPix and DicomFile objects has to be EQUAL.)
             //     volumeData containing the images, represented in the DCMPix objects
             NSMutableArray* fileList = [viewerController fileList:timeIdx];
             if (new4DViewer == nil)

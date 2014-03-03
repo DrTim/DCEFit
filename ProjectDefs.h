@@ -53,6 +53,10 @@ enum ResultCode
 #define LOG_FILE_NAME LOGGER_NAME;
 
 // The most thhreads we will ever ask for.
+#ifdef __i386__
+#define MAX_THREADS 4
+#else
 #define MAX_THREADS 8
+#endif
 
 #endif
