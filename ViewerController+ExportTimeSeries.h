@@ -1,6 +1,6 @@
 //
 //  ViewerController+ExportTimeSeries.h
-//  Test4DDuplicate
+//  DCEFit
 //
 //  Created by Tim Allman on 2014-01-23.
 //

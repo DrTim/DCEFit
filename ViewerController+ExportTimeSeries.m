@@ -1,6 +1,6 @@
 //
 //  ViewerController+ExportTimeSeries.m
-//  Test4DDuplicate
+//  DCEFit
 //
 //  Created by Tim Allman on 2014-01-23.
 //
@@ -37,7 +37,7 @@
     //Try to create a unique series number... Do you have a better idea??
     long seriesNumber = 5300 + [[NSCalendarDate date] minuteOfHour] + [[NSCalendarDate date] secondOfMinute];
 	[exportDCM setSeriesNumber:seriesNumber];
-	[exportDCM setSeriesDescription: seriesDescription];
+	[exportDCM setSeriesDescription:seriesDescription];
 
 	LOG4M_INFO(logger_, @"Export 4D start. Series number: %ld; Series description %@",
                seriesNumber, seriesDescription);
@@ -77,7 +77,7 @@
     }
 	LOG4M_INFO(logger_, @"Export 4D end");
 
-	if( [producedFiles count])
+	if ([producedFiles count] > 0)
 	{
         DicomDatabase* db = BrowserController.currentBrowser.database;
 

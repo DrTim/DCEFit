@@ -58,6 +58,7 @@
 @synthesize regCloseButton;
 @synthesize loggingLevelComboBox;
 @synthesize numberOfThreadsComboBox;
+@synthesize useDefaultNumberOfThreadsCheckBox;
 @synthesize regStartButton;
 
 /**
@@ -86,7 +87,6 @@ enum TableTags
     if (self)
     {
         [self setupLogger];
-        LOG4M_TRACE(logger_, @"");
         openSheet_ = nil;
         viewerController1 = viewerController;
         parentFilter = filter;
@@ -156,32 +156,68 @@ enum TableTags
 
 - (void)setupProgramDefaults
 {
-    LOG4M_INFO(logger_, @"ITK threads: default = %d, max = %d",
-               itk::MultiThreader::GetGlobalDefaultNumberOfThreads(),
-               itk::MultiThreader::GetGlobalMaximumNumberOfThreads());
-
-    UserDefaults* defaults = [UserDefaults sharedInstance];
-
-    // Threading
-    int numThreads = [defaults unsignedIntegerForKey:NumberOfThreadsKey];
-    if (numThreads > MAX_THREADS)
-        numThreads = MAX_THREADS;
-    itk::MultiThreader::SetGlobalMaximumNumberOfThreads(numThreads);
-
-    regParams.numberOfThreads = numThreads;
-
-    int maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
-
     LOG4M_INFO(logger_, @"Using ITK version %d.%d.%d", itk::Version::GetITKMajorVersion(),
                itk::Version::GetITKMinorVersion(), itk::Version::GetITKBuildVersion());
 
-    LOG4M_INFO(logger_, @"ITK Number of threads used = %d", maxThreads);
+    // Set up the default threading. This can be changed later.
+    [self setNumberOfThreads:DEFAULT_32BIT_THREADS];
 }
 
 - (void)saveDefaults
 {
     UserDefaults* defaults = [UserDefaults sharedInstance];
     [defaults saveRegParams:regParams];
+}
+
+- (void)setNumberOfThreads:(unsigned)requested
+{
+    LOG4M_DEBUG(logger_, @"ITK threads: default = %d, max = %d",
+               itk::MultiThreader::GetGlobalDefaultNumberOfThreads(),
+               itk::MultiThreader::GetGlobalMaximumNumberOfThreads());
+
+    // Threading
+    // We want to set this up so that we maximise the use of the machine. If we are running
+    // 32 bit code, there isn't enough memory to run many threads so we cap it at MAX_32_BIT_THREADS
+    // If we are running in a 64 bit environment we can load up the processors.
+    // itk::MultiThreader::GetGlobalDefaultNumberOfThreads() gives a best guess at an optimal
+    // number and we will use this as the default and maximum.
+    UserDefaults* defaults = [UserDefaults sharedInstance];
+
+    // Cap the number of threads at ITK's best guess
+    unsigned maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
+#ifdef __i386__
+    maxThreads = MAX_32BIT_THREADS;
+    LOG4M_INFO(logger_, @"32 bit environment. Max threads = %u", maxThreads);
+#endif
+
+    unsigned defaultThreads = itk::MultiThreader::GetGlobalDefaultNumberOfThreads();
+#ifdef __i386__
+    defaultThreads = DEFAULT_32BIT_THREADS;
+    LOG4M_INFO(logger_, @"32 bit environment. Default threads = %u", defaultThreads);
+#endif
+
+    // First guess at the number we will use, ensuring it is not too many.
+    unsigned numThreads = [defaults unsignedIntegerForKey:NumberOfThreadsKey];
+    numThreads = std::min(numThreads, maxThreads);
+
+    // Use the ITK (64 bit) or the 32 bit default if this is true
+    BOOL useDefaultNumThreads = [defaults booleanForKey:UseDefaultNumberOfThreadsKey];
+    if (useDefaultNumThreads)
+        numThreads = defaultThreads;
+
+    // if requested is > 0 we will honour the request. This comes from the combobox so it
+    // is alread range checked.
+    if (requested > 0)
+        numThreads = requested;
+
+    // Set the global max for ITK
+    itk::MultiThreader::SetGlobalDefaultNumberOfThreads(numThreads);
+    itk::MultiThreader::SetGlobalMaximumNumberOfThreads(numThreads);
+
+    regParams.maxNumberOfThreads = maxThreads;
+    regParams.numberOfThreads = numThreads;
+
+    LOG4M_INFO(logger_, @"Number of ITK threads used = %d", numThreads);
 }
 
 - (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
@@ -1400,7 +1436,7 @@ enum TableTags
             break;
 
         case 4: // number of threads
-            retVal = MAX_THREADS;
+            retVal = regParams.maxNumberOfThreads;
             break;
 
          default:

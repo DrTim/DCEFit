@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DialogController">
@@ -47,12 +47,13 @@
                 <outlet property="rigidVersorOptimizerConfigPanel" destination="d0a-EX-YBo" id="t4e-At-nBK"/>
                 <outlet property="seriesDescriptionTextField" destination="14" id="597"/>
                 <outlet property="showDeformationFieldCheckBox" destination="1250" id="1256"/>
+                <outlet property="useDefaultNumberOfThreadsCheckBox" destination="eXj-1t-2q9" id="Bhf-7N-80y"/>
                 <outlet property="window" destination="1" id="836"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application"/>
-        <window title="DCEFit" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" wantsToBeColor="NO" frameAutosaveName="DCEFitMainDialog" animationBehavior="default" id="1" customClass="NSPanel">
+        <window title="DCEFit" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" frameAutosaveName="DCEFitMainDialog" animationBehavior="default" id="1" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="491" height="821"/>
@@ -240,7 +241,7 @@
                                                                     </connections>
                                                                 </comboBox>
                                                                 <button toolTip="Select to enable rigid registration." id="68">
-                                                                    <rect key="frame" x="16" y="15" width="64" height="18"/>
+                                                                    <rect key="frame" x="16" y="15" width="65" height="18"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <buttonCell key="cell" type="check" title="Enabled" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="69">
                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -465,13 +466,8 @@
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                                                         </tableHeaderCell>
-                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="387">
-                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="fDA-Rf-V61">
-                                                                                                <real key="roundingIncrement" value="0.0"/>
-                                                                                                <metadata>
-                                                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                                                </metadata>
-                                                                                            </numberFormatter>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="left" title="Text Cell" id="387">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="fDA-Rf-V61"/>
                                                                                             <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -484,13 +480,8 @@
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                         </tableHeaderCell>
-                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="8xc-Ab-PKX">
-                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="gzd-Zx-qt6">
-                                                                                                <real key="roundingIncrement" value="0.0"/>
-                                                                                                <metadata>
-                                                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                                                </metadata>
-                                                                                            </numberFormatter>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="left" title="Text Cell" id="8xc-Ab-PKX">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="gzd-Zx-qt6"/>
                                                                                             <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -503,13 +494,8 @@
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                         </tableHeaderCell>
-                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="hRY-iN-zPB">
-                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="cVk-vp-NAg">
-                                                                                                <real key="roundingIncrement" value="0.0"/>
-                                                                                                <metadata>
-                                                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                                                </metadata>
-                                                                                            </numberFormatter>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="left" title="Text Cell" id="hRY-iN-zPB">
+                                                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="cVk-vp-NAg"/>
                                                                                             <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -647,6 +633,11 @@ DQ
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </comboBoxCell>
                                                         <connections>
+                                                            <binding destination="630" name="enabled" keyPath="self.useDefaultNumberOfThreads" id="tjP-LD-Ivk">
+                                                                <dictionary key="options">
+                                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                </dictionary>
+                                                            </binding>
                                                             <outlet property="dataSource" destination="-2" id="jhX-le-TIm"/>
                                                             <outlet property="delegate" destination="-2" id="geX-0q-ogr"/>
                                                         </connections>
@@ -660,6 +651,17 @@ DQ
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
+                                                    <button id="eXj-1t-2q9">
+                                                        <rect key="frame" x="273" y="15" width="93" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Use default" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="oDN-Ih-MBo">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <binding destination="630" name="value" keyPath="self.useDefaultNumberOfThreads" id="Yal-iN-8aA"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                             </view>
                                             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -762,12 +764,10 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="707">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="839">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="839">
                                                                 <real key="minimum" value="1"/>
                                                                 <integer key="maximum" value="1000000000000"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -785,12 +785,10 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="706">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="828">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="828">
                                                                 <integer key="minimum" value="0"/>
                                                                 <integer key="maximum" value="1"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -807,12 +805,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="713">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="829">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="829">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -923,11 +917,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="864">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="865">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="865">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -944,11 +936,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="862">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="863">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="863">
                                                                 <integer key="minimum" value="0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -965,12 +955,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="860">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="861">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="861">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1081,11 +1067,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="997">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="998">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="998">
                                                                 <integer key="minimum" value="0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1102,11 +1086,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="995">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="996">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="996">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1123,13 +1105,9 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1228">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1232">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1232">
                                                                 <integer key="minimum" value="0"/>
                                                                 <integer key="maximum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1145,12 +1123,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1230">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1231">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1231">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1261,11 +1235,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="vRa-A8-z7H">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="qh6-s8-efR">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="qh6-s8-efR">
                                                                 <integer key="minimum" value="0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="0.001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1282,11 +1254,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="HYt-C0-Vgq">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="fKX-6p-EQy">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="fKX-6p-EQy">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1303,13 +1273,9 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="BZn-ZX-xvL">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1Ub-0c-MGZ">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1Ub-0c-MGZ">
                                                                 <integer key="minimum" value="0"/>
                                                                 <integer key="maximum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1325,12 +1291,10 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="A99-Pp-mcq">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="bCe-zB-Rcg">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="bCe-zB-Rcg">
                                                                 <real key="minimum" value="9.9999999999999995e-07"/>
                                                                 <real key="maximum" value="0.10000000000000001"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="0.001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1347,12 +1311,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="ZwR-29-sxa">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="cdf-es-Smu">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="cdf-es-Smu">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1463,12 +1423,10 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1045">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1046">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1046">
                                                                 <real key="minimum" value="1"/>
                                                                 <integer key="maximum" value="1000000000000"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1486,12 +1444,10 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1043">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1044">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1044">
                                                                 <integer key="minimum" value="0"/>
                                                                 <integer key="maximum" value="1"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1508,12 +1464,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1041">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1042">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1042">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1624,11 +1576,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1085">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1086">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1086">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1645,11 +1595,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1087">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1088">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1088">
                                                                 <integer key="minimum" value="0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1666,12 +1614,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1089">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1090">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1090">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1782,11 +1726,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1127">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1128">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="#0.00E00" negativeFormat="#0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1128">
                                                                 <integer key="minimum" value="0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="1234567.1234500001"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1803,11 +1745,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1129">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" id="1130">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00E00" negativeFormat="0.00E00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="1" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1130">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
                                                                     <real key="inspectorSampleValue" value="-0.000753456"/>
                                                                 </metadata>
                                                             </numberFormatter>
@@ -1824,13 +1764,9 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1234">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1248">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1248">
                                                                 <integer key="minimum" value="0"/>
                                                                 <integer key="maximum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1846,12 +1782,8 @@ DQ
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1236">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1237">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1237">
                                                                 <real key="minimum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1941,13 +1873,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1213">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1214">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1214">
                                                                 <real key="minimum" value="10"/>
                                                                 <real key="maximum" value="100"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1962,13 +1890,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1211">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" numberStyle="decimal" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1212">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" numberStyle="decimal" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1212">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <real key="maximum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2079,13 +2003,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1171">
-                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="1172">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1172">
                                                                 <real key="minimum" value="10"/>
                                                                 <real key="maximum" value="100"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2100,13 +2020,9 @@ DQ
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
                                                         <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="1173">
-                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" numberStyle="decimal" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" id="1174">
-                                                                <real key="roundingIncrement" value="0.0"/>
+                                                            <numberFormatter key="formatter" formatterBehavior="custom10_4" positiveFormat="0.00" negativeFormat="0.00" numberStyle="decimal" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="2" maximumFractionDigits="2" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="1174">
                                                                 <real key="minimum" value="0.0"/>
                                                                 <real key="maximum" value="1"/>
-                                                                <metadata>
-                                                                    <bool key="localizesFormat" value="YES"/>
-                                                                </metadata>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>

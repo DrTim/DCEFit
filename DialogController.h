@@ -67,10 +67,10 @@
     IBOutlet NSButton *regCloseButton;
     IBOutlet NSComboBox *loggingLevelComboBox;
     IBOutlet NSComboBox *numberOfThreadsComboBox;
+    NSButton *useDefaultNumberOfThreadsCheckBox;
     IBOutlet NSButton *regStartButton;
 
     // Optimizer and metric configuration sheets
-    //
     IBOutlet NSPanel *rigidRegLBFGSBOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegLBFGSOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegRSGDOptimizerConfigPanel;
@@ -124,6 +124,7 @@
 // Program defaults
 @property (assign) IBOutlet NSComboBox *loggingLevelComboBox;
 @property (assign) IBOutlet NSComboBox *numberOfThreadsComboBox;
+@property (assign) IBOutlet NSButton *useDefaultNumberOfThreadsCheckBox;
 
 // Actions
 //

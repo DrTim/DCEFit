@@ -18,6 +18,8 @@
     // Plugin configuration parameters
     int loggerLevel;
     int numberOfThreads;
+    int maxNumberOfThreads;
+    BOOL useDefaultNumberOfThreads;
 
     // General registration parameters
     unsigned numImages;
@@ -80,6 +82,8 @@
 // Plugin configuration parameters
 @property (assign) int loggerLevel;
 @property (assign) int numberOfThreads;
+@property (assign) int maxNumberOfThreads;
+@property (assign) BOOL useDefaultNumberOfThreads;
 
 // General registration parameters
 @property (assign) unsigned numImages;          ///< The number of images (2D or 3D) in the series.

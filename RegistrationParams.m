@@ -15,6 +15,8 @@
 // Plugin configuration parameters
 @synthesize loggerLevel;
 @synthesize numberOfThreads;
+@synthesize maxNumberOfThreads;
+@synthesize useDefaultNumberOfThreads;
 
 // General registration parameters
 @synthesize numImages;

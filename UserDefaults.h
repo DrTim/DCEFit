@@ -15,6 +15,7 @@
 // General program defaults
 extern NSString* const LoggerLevelKey;
 extern NSString* const NumberOfThreadsKey;
+extern NSString* const UseDefaultNumberOfThreadsKey;
 
 extern NSString* const FixedImageNumberKey;
 extern NSString* const SeriesDescriptionKey;

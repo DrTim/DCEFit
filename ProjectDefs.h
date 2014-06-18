@@ -52,11 +52,8 @@ enum ResultCode
 // The name of the rolling file log that we place in ~/Library/Logs
 #define LOG_FILE_NAME LOGGER_NAME;
 
-// The most thhreads we will ever ask for.
-#ifdef __i386__
-#define MAX_THREADS 4
-#else
-#define MAX_THREADS 8
-#endif
+// The number of threads we will permit in a 32 bit environment.
+#define MAX_32BIT_THREADS 4
+#define DEFAULT_32BIT_THREADS 2
 
 #endif
