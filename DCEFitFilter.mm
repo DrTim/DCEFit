@@ -41,25 +41,26 @@
     // Before anything else, we check to see if either we are in a 4D viewer.
     // We cannot continue if the user has loaded a time series of images in
     // the 2D viewer.
-//    if ([viewerController maxMovieIndex] == 1) // test for 2D viewer
-//    {
-//        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-//
-//        [alert addButtonWithTitle:@"Close"];
-//        [alert setMessageText:@"DCEFit plugin."];
-//        [alert setInformativeText:@"This is a time series of images."
-//         " Please reopen the series in the 4D viewer in order to analyse it with DCEFit."];
-//        [alert setAlertStyle:NSCriticalAlertStyle];
-//        [alert beginSheetModalForWindow:viewerController.window
-//                          modalDelegate:self
-//                         didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
-//                            contextInfo:nil];
-//
-//        NSLog(@"This is a time series of 2D or 3D images. Please reopen the series in the 4D viewer.");
-//
-//        // return 0 to suppress the OsiriX failure alert.
-//        return 0;
-//    }
+    if ([viewerController maxMovieIndex] == 1) // test for 2D viewer
+    {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+
+        [alert addButtonWithTitle:@"Close"];
+        [alert setMessageText:@"DCEFit plugin."];
+        [alert setInformativeText:@"This is a time series of images."
+         " Please reopen the series in the 4D viewer in order to analyse it with DCEFit."];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        [alert beginSheetModalForWindow:viewerController.window
+                          modalDelegate:self
+                         didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
+                            contextInfo:nil];
+
+        // We use NSLog because the Log4m logger is not yet set up.
+        NSLog(@"This is a time series of 2D or 3D images. Please reopen the series in the 4D viewer.");
+
+        // return 0 to suppress the OsiriX failure alert.
+        return 0;
+    }
 
     if (dialogController == nil)
     {

@@ -43,7 +43,7 @@ enum ResultCode
 };
 
 // The size of the arrays containing registration pyramid parameters.
-#define MAX_ARRAY_PARAMS 4
+#define MAX_REGISTRATION_LEVELS 4
 #define BSPLINE_ORDER 3
 
 // The name of the logger used through this plugin.

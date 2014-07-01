@@ -79,7 +79,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     // method PreparePyramids expects to have a working transform so that it can know the number of
     // parameters needed.
     BSplineTransform3D::Pointer transform = BSplineTransform3D::New();
-
     BSplineTransform3D::MeshSizeType meshSize;
     for (unsigned dim = 0; dim < Image3D::ImageDimension; ++dim)
         meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
@@ -111,13 +110,11 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            //mmiMetric->SetNumberOfThreads(4);
             observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
             metric = mmiMetric;
             break;
         case MeanSquares:
             msMetric = MSImageToImageMetric3D::New();
-            //msMetric->SetNumberOfThreads(1);
             metric = msMetric;
             break;
         default:
@@ -168,7 +165,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     LinearInterpolator3D::Pointer interpolator = LinearInterpolator3D::New();
     //BSplineInterpolator3D::Pointer interpolator = BSplineInterpolator3D::New();
     //interpolator->SetSplineOrder(BSPLINE_ORDER);
-    //interpolator->SetNumberOfThreads(1);
 
     // The image pyramids
     // These will be set up by the registration object.
@@ -184,7 +180,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
 
     Registration3D::Pointer registration = Registration3D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);
@@ -199,11 +194,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     //  We now pass the parameters of the current transform as the initial
     //  parameters to be used when the registration process starts.
     registration->SetInitialTransformParameters(transform->GetParameters());
-    //registration->SetDebug(true);
-
-    //    std::stringstream str;
-    //    registration->Print(str);
-    //    LOG4CPLUS_DEBUG(logger_, str.str());
 
     try
     {
@@ -231,8 +221,6 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     SingleValuedNonLinearOptimizer::ParametersType finalParameters =
         registration->GetLastTransformParameters();
 
-    //LOG4CPLUS_DEBUG(logger_, finalParameters);
-    
     transform->SetParameters(finalParameters);
 
     if (itkParams_.deformShowField)

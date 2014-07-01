@@ -41,7 +41,7 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
     setRegion(params.fixedImageRegion);
     //    createFixedImageMask(params.fixedImageMask);
     
-    for (unsigned level = 0; level < MAX_ARRAY_PARAMS; ++level)
+    for (unsigned level = 0; level < MAX_REGISTRATION_LEVELS; ++level)
     {
         // Rigid registration
         NSNumber* num = [params.rigidRegMMIHistogramBins objectAtIndex:level];

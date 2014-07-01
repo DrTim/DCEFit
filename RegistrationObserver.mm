@@ -334,7 +334,7 @@ void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(Registrati
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
-    typedef itk::BSplineTransform<double, TImage::ImageDimension, 3u> BSplineTransform;
+    typedef itk::BSplineTransform<double, TImage::ImageDimension, BSPLINE_ORDER> BSplineTransform;
     typedef itk::MattesMutualInformationImageToImageMetric<TImage, TImage> MMIMetric;
 
     BSplineTransform* bsplineTransform = dynamic_cast<BSplineTransform*>(multiResReg->GetTransform());

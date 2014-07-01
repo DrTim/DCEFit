@@ -10,7 +10,7 @@
 
 #include "RegisterOneImageRigid2D.h"
 #include "RegisterOneImageRigid3D.h"
-#include "RegisterOneImageDeformable2D.h"
+#include "RegisterOneImageBSpline2D.h"
 #include "RegisterOneImageDeformable3D.h"
 
 #import "SeriesInfo.h"
@@ -192,7 +192,7 @@
 
         if (params->deformRegEnabled)
         {
-            RegisterOneImageDeformable2D deformReg(progController, fixedImage, *params);
+            RegisterOneImageBSpline2D deformReg(progController, fixedImage, *params);
             regImage = deformReg.registerImage(regImage, resultCode);
         }
 
@@ -291,6 +291,9 @@
         if (resultCode == DISASTER)
         {
             [self performSelectorOnMainThread:@selector(queryContinue) withObject:nil waitUntilDone:NO];
+            while (waitingForAnswer_)
+                sleep(1);
+
             while (waitingForAnswer_)
                 sleep(1);
         }

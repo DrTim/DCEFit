@@ -1,11 +1,11 @@
 /*
- * File:   RegisterOneImageDeformable2D.mm
+ * File:   RegisterOneImageBSpline2D.mm
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
-#include "RegisterOneImageDeformable2D.h"
+#include "RegisterOneImageBSpline2D.h"
 #include "ItkTypedefs.h"
 #include "OptimizerUtils.h"
 #include "RegistrationObserver.h"
@@ -16,12 +16,12 @@
 
 #include <log4cplus/loggingmacros.h>
 
-RegisterOneImageDeformable2D::RegisterOneImageDeformable2D(
+RegisterOneImageBSpline2D::RegisterOneImageBSpline2D(
     ProgressWindowController* progressController, Image2D::Pointer fixedImage,
     const ItkRegistrationParams& params)
     : RegisterOneImage<Image2D>(progressController, fixedImage, params)
 {
-    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDeformable2D";
+    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageBSpline2D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
     
@@ -30,12 +30,10 @@ RegisterOneImageDeformable2D::RegisterOneImageDeformable2D(
     {
         LOG4CPLUS_FATAL(logger_, "Deformable registration levels == 0.");
         throw itk::InvalidArgumentError();
-        return;
     }
 }
 
-Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
-                                Image2D::Pointer movingImage, ResultCode& code)
+Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
@@ -107,13 +105,11 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            //mmiMetric->SetNumberOfThreads(1);
             observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
             metric = mmiMetric;
             break;
         case MeanSquares:
             msMetric = MSImageToImageMetric2D::New();
-            //msMetric->SetNumberOfThreads(1);
             metric = msMetric;
             break;
         default:
@@ -159,7 +155,6 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     // This does not change during registration
     BSplineInterpolator2D::Pointer interpolator = BSplineInterpolator2D::New();
     interpolator->SetSplineOrder(BSPLINE_ORDER);
-    //interpolator->SetNumberOfThreads(1);
 
     //
     // The image pyramids
@@ -173,7 +168,6 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     // Set up the registration
     Registration2D::Pointer registration = Registration2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
-    //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
     registration->SetOptimizer(optimizer);
@@ -183,17 +177,11 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     registration->SetFixedImagePyramid(fixedImagePyramid);
     registration->SetMovingImagePyramid(movingImagePyramid);
     registration->SetFixedImageRegion(itkParams_.fixedImageRegion);
-    //registration->SetFixedImageRegion(fixedImage_->GetBufferedRegion());
     registration->SetSchedules(resolutionSchedule, resolutionSchedule);
 
     //  We now pass the parameters of the current transform as the initial
     //  parameters to be used when the registration process starts.
     registration->SetInitialTransformParameters(transform->GetParameters());
-    //registration->SetDebug(true);
-
-    //    std::stringstream str;
-    //    registration->Print(str);
-    //    LOG4CPLUS_DEBUG(logger_, str.str());
 
     try
     {
@@ -221,8 +209,6 @@ Image2D::Pointer RegisterOneImageDeformable2D::registerImage(
     SingleValuedNonLinearOptimizer::ParametersType finalParameters =
         registration->GetLastTransformParameters();
 
-    //LOG4CPLUS_DEBUG(logger_, finalParameters);
-    
     transform->SetParameters(finalParameters);
 
     if (itkParams_.deformShowField)

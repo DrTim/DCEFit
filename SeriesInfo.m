@@ -15,17 +15,17 @@
 @synthesize sliceWidth;
 @synthesize slicesPerImage;
 @synthesize isFlipped;
-@synthesize keyImageIdx;
-@synthesize keySliceIdx;
-@synthesize firstROI;
+@synthesize roiImageIdx;
+@synthesize roiSliceIdx;
+@synthesize regROI;
 
 - (id)init
 {
     self = [super init];
     if (self)
     {
-        keyImageIdx = -1;
-        keySliceIdx = -1;
+        roiImageIdx = -1;
+        roiSliceIdx = -1;
         acqTimeArray = [[NSMutableArray array] retain];
         acqTimeStringArray = [[NSMutableArray array] retain];
     }
@@ -46,14 +46,14 @@
                       "sliceHeight: %u\n"
                       "sliceWidth: %u\n"
                       "slicesPerImage: %u\n"
-                      "keyImageIdx: %d\n"
-                      "keySliceIdx: %d\n"
-                      "firstROI: %@\n"
+                      "roiImageIdx: %d\n"
+                      "roiSliceIdx: %d\n"
+                      "regROI: %@\n"
                       "acqTimeArray: %@"
                       @"acqTimeStringArray: %@",
                       numTimeSamples, sliceHeight, sliceWidth,
-                      slicesPerImage, keyImageIdx, keySliceIdx,
-                      firstROI, acqTimeArray, acqTimeStringArray];
+                      slicesPerImage, roiImageIdx, roiSliceIdx,
+                      regROI, acqTimeArray, acqTimeStringArray];
     return desc;
 }
 

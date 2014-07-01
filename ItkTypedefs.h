@@ -33,7 +33,11 @@
 #include <itkMultiResolutionPyramidImageFilter.h>
 #include <itkImportImageFilter.h>
 #include <itkExtractImageFilter.h>
-#include <itkBlobSpatialObject.h>
+#include <itkPolygonSpatialObject.h>
+#include <itkHistogramMatchingImageFilter.h>
+#include <itkDemonsRegistrationFilter.h>
+#include <itkMultiResolutionPDEDeformableRegistration.h>
+#include <itkWarpImageFilter.h>
 
 #include "ProjectDefs.h"
 
@@ -101,8 +105,30 @@ typedef itk::ResampleImageFilter<Image2D, Image2D> ResampleFilter2D;
 typedef itk::ResampleImageFilter<Image3D, Image3D> ResampleFilter3D;
 
 // Typedef for the registration spatial object mask
-typedef itk::BlobSpatialObject<2u> SpatialMask2D;
-typedef itk::BlobSpatialObject<3u> SpatialMask3D;
+typedef itk::PolygonSpatialObject<2u> SpatialMask2D;
+typedef itk::PolygonSpatialObject<3u> SpatialMask3D;
+
+// Demons registration filter and needed accessories
+typedef itk::Vector<float, Image2D::ImageDimension> DemonsVectorPixel2D;
+typedef itk::Image<DemonsVectorPixel2D, Image2D::ImageDimension> DemonsDisplacementField2D;
+typedef itk::DemonsRegistrationFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsRegistrationFilter2D;
+typedef itk::Vector<float, Image3D::ImageDimension> DemonsVectorPixel3D;
+typedef itk::Image<DemonsVectorPixel3D, Image3D::ImageDimension> DemonsDisplacementField3D;
+typedef itk::DemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField2D> DemonsRegistrationFilter3D;
+
+// Histogram matching filter for Demons registration
+typedef itk::HistogramMatchingImageFilter<Image2D, Image2D> MatchingFilterType2D;
+typedef itk::HistogramMatchingImageFilter<Image3D, Image3D> MatchingFilterType3D;
+
+// Warp filters for Demons registration
+typedef itk::WarpImageFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsWarper2D;
+typedef itk::WarpImageFilter<Image3D, Image3D, DemonsDisplacementField3D> DemonsWarper3D;
+
+// Multi-resolution registration objects for Demons registration
+typedef itk::MultiResolutionPDEDeformableRegistration<Image2D, Image2D, DemonsDisplacementField2D>
+    DemonsMultiResRegistration2D;
+typedef itk::MultiResolutionPDEDeformableRegistration<Image3D, Image3D, DemonsDisplacementField3D>
+    DemonsMultiResRegistration3D;
 
 // Filter to import the OsiriX image to itk
 typedef itk::ImportImageFilter<TPixel, 3u> ImportImageFilter3D;

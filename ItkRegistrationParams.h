@@ -21,10 +21,10 @@
 
 // Essentially a C11 typedef 
 template <typename TValueType>
-using ParamVector = itk::FixedArray<TValueType, MAX_ARRAY_PARAMS>;
+using ParamVector = itk::FixedArray<TValueType, MAX_REGISTRATION_LEVELS>;
 
 template <typename TValueType>
-using ParamMatrix = itk::Matrix<TValueType, MAX_ARRAY_PARAMS, 3>;
+using ParamMatrix = itk::Matrix<TValueType, MAX_REGISTRATION_LEVELS, 3>;
 
 /**
  * This is a class that provides a way of passing the Obj-C based parameters

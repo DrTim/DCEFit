@@ -1,19 +1,19 @@
 /*
- * File:   RegisterOneImageDeformable2D.h
+ * File:   RegisterOneImageBSpline2D.h
  * Author: tim
  *
  * Created on January 25, 2013, 9:13 AM
  */
 
-#ifndef REGISTERONEIMAGEDEFORMABLE2D_H
-#define	REGISTERONEIMAGEDEFORMABLE2D_H
+#ifndef RegisterOneImageBSpline2D_H
+#define	RegisterOneImageBSpline2D_H
 
 #include "RegisterOneImage.h"
 
 /**
  * Performs a multiresolution deformable registration of one image
  */
-class RegisterOneImageDeformable2D : public RegisterOneImage<Image2D>
+class RegisterOneImageBSpline2D : public RegisterOneImage<Image2D>
 {
 public:
     /**
@@ -22,7 +22,7 @@ public:
      * @param fixedImage The fixed image.
      * @param params The registration parameters.
      */
-    RegisterOneImageDeformable2D(ProgressWindowController* progressController,
+    RegisterOneImageBSpline2D(ProgressWindowController* progressController,
                 Image2D::Pointer fixedImage, const ItkRegistrationParams& params);
 
     /**

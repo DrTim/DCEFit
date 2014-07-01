@@ -17,8 +17,8 @@
 
     // Plugin configuration parameters
     int loggerLevel;
-    int numberOfThreads;
-    int maxNumberOfThreads;
+    unsigned numberOfThreads;
+    unsigned maxNumberOfThreads;
     BOOL useDefaultNumberOfThreads;
 
     // General registration parameters
@@ -81,8 +81,8 @@
 
 // Plugin configuration parameters
 @property (assign) int loggerLevel;
-@property (assign) int numberOfThreads;
-@property (assign) int maxNumberOfThreads;
+@property (assign) unsigned numberOfThreads;
+@property (assign) unsigned maxNumberOfThreads;
 @property (assign) BOOL useDefaultNumberOfThreads;
 
 // General registration parameters

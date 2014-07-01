@@ -40,7 +40,7 @@
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <PathRunnable
-         FilePath = "/Users/tim/devel/osirix-develop/build/Development/OsiriX.app">
+         FilePath = "/Users/tim/devel/osirix/build/Development/OsiriX.app">
       </PathRunnable>
       <MacroExpansion>
          <BuildableReference

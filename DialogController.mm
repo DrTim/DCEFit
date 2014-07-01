@@ -148,7 +148,7 @@ enum TableTags
  */
 - (void)setupSystemLogger
 {
-    UserDefaults* defaults = [UserDefaults sharedInstance];;
+    UserDefaults* defaults = [UserDefaults sharedInstance];
 
     regParams.loggerLevel = [defaults integerForKey:LoggerLevelKey];
     SetupLogger(LOGGER_NAME, regParams.loggerLevel);
@@ -160,7 +160,7 @@ enum TableTags
                itk::Version::GetITKMinorVersion(), itk::Version::GetITKBuildVersion());
 
     // Set up the default threading. This can be changed later.
-    [self setNumberOfThreads:DEFAULT_32BIT_THREADS];
+    [self setNumberOfThreads:0];
 }
 
 - (void)saveDefaults
@@ -217,30 +217,27 @@ enum TableTags
     regParams.maxNumberOfThreads = maxThreads;
     regParams.numberOfThreads = numThreads;
 
-    LOG4M_INFO(logger_, @"Number of ITK threads used = %d", numThreads);
+    LOG4M_INFO(logger_, @"Number of ITK threads set to = %u", numThreads);
 }
 
 - (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
 {
     LOG4M_TRACE(logger_, @"Enter");
 
-
-    BOOL keyFound = NO;  // used for finding first key image below
     unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
     NSTimeInterval firstTime = 0.0;
 
     info.numTimeSamples = numTimeImages;
     info.slicesPerImage = [[viewerController1 pixList] count];
-    info.isFlipped = [[viewerController1
-                       imageView] flippedData];
+    info.isFlipped = [[viewerController1 imageView] flippedData];
 
     if (numTimeImages == 1)  // we have a 2D viewer
     {
-        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", info.slicesPerImage);
+        LOG4M_DEBUG(logger_, @"2D viewer with %u slices.", info.slicesPerImage);
     }
     else // we have a 4D viewer
     {
-        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
+        LOG4M_DEBUG(logger_, @"4D viewer with %u images and %u slices per image.",
                     info.numTimeSamples, info.slicesPerImage);
     }
 
@@ -253,7 +250,7 @@ enum TableTags
     info.sliceHeight = [firstPix pheight];
     info.sliceWidth = [firstPix pwidth];
 
-    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
+    LOG4M_DEBUG(logger_, @"Slice height = %u, width = %u, size = %u pixels.",
                 info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
 
     for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
@@ -270,7 +267,7 @@ enum TableTags
         NSArray* pixList = [viewerController1 pixList:timeIdx];
 
         // The list of DicomImage instances corresponding to the slices.
-        NSArray* fileList = [viewerController1 fileList:timeIdx];
+        //NSArray* fileList = [viewerController1 fileList:timeIdx];
 
         unsigned numSlices = info.slicesPerImage;
         for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
@@ -279,41 +276,33 @@ enum TableTags
             DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
 
             // The DicomImage instance containing this slice.
-            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
-            BOOL isKey = [[curSlice isKeyImage] boolValue];
-            if ((isKey) && (!keyFound))
+            //DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+
+            // Image may be displayed flipped. We need the real index.
+            // The list of ROIs in this slice. Pick out either the first one named "DCEFit"
+            // or the first one in the list
+            NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+            if ((curRoiList != nil) && ([curRoiList count] > 0))
             {
-                // Image may be displayed flipped. We need the real index.
-                info.keySliceIdx = sliceIdx;
-
-                info.keyImageIdx = timeIdx;
-                LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",
-                            info.keyImageIdx, info.keySliceIdx);
-
-                // The list of ROIs in this slice. Pick out either the first one named "Reg"
-                // or the first one in the list
-                NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
-                if ((curRoiList != nil) && ([curRoiList count] > 0))
+                BOOL found = NO;
+                for (ROI* r in curRoiList)
                 {
-                    ROI* roi = [curRoiList objectAtIndex:0];  // default
-                    BOOL found = NO;
-                    for (ROI* r in curRoiList)
-                    {
-                        NSString* name = r.name;
-                        if ((!found) &&
-                            ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
+                    NSString* name = r.name;
+                    if ((!found) &&
+                        ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
                         {
                             found = YES;
-                            roi = r;
+                            info.regROI = r;
+                            info.roiSliceIdx = sliceIdx;
+                            info.roiImageIdx = timeIdx;
+                            LOG4M_DEBUG(logger_, @"ROI image index: %u (slice index %u)",
+                                        info.roiImageIdx, info.roiSliceIdx);
                         }
-                    }
-
-                    info.firstROI = roi;
-
-                    LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
-                                [info.firstROI name]);
-                    LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.firstROI points]);
                 }
+
+                LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
+                                [info.regROI name]);
+                LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.regROI points]);
             }
 
             NSString* filePath = [curPix sourceFile];
@@ -324,11 +313,11 @@ enum TableTags
             DCMCalendarDate* dcmDate = attr.value;
             NSTimeInterval acqTime = [dcmDate timeIntervalSinceReferenceDate];
 
-             // do this once per series
+            // do this once per series
             if ((timeIdx == 0) && (sliceIdx == 0))
                 firstTime = acqTime;
 
-             // do this once per time increment
+            // do this once per time increment
             if (sliceIdx == 0)
             {
                 NSString* dateStr = [dcmDate descriptionWithCalendarFormat:@"%H:%M:%S"];
@@ -341,7 +330,7 @@ enum TableTags
             }
         }
     }
-
+    
     [progWindow close];
 }
 
@@ -458,17 +447,17 @@ enum TableTags
     }
 
     // Find the first key image and assume that it is the desired fixed slice.
-    if (seriesInfo.keyImageIdx == -1)
+    if (seriesInfo.roiImageIdx == -1)
     {
         if (regParams.fixedImageNumber > regParams.numImages)
             regParams.fixedImageNumber = 1;
-        LOG4M_INFO(logger_, @"No key image found. ");
+        LOG4M_INFO(logger_, @"No image with ROI named \"DCEFit\" found.");
         LOG4M_INFO(logger_, @"Fixed image set to image: %d", regParams.fixedImageNumber);
     }
     else
     {
-        regParams.fixedImageNumber = seriesInfo.keyImageIdx + 1;
-        LOG4M_INFO(logger_, @"Fixed image set to key image: %d", regParams.fixedImageNumber);
+        regParams.fixedImageNumber = seriesInfo.roiImageIdx + 1;
+        LOG4M_INFO(logger_, @"Fixed image set to image: %d", regParams.fixedImageNumber);
     }
 
     [self setupRegionFromFixedImage];
@@ -544,11 +533,11 @@ enum TableTags
 - (void)setupRegionFromFixedImage
 {
     // ROI which defines our itk::ImageRegion
-    ROI* regRoi = seriesInfo.firstROI;
+    ROI* regRoi = seriesInfo.regROI;
 
     if (regRoi != nil)
     {
-        LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' on key slice as registration region.", [regRoi name]);
+        LOG4M_DEBUG(logger_, @"Using ROI named \"%@\" as registration region.", [regRoi name]);
 
         // we create the rectangle which just encloses the ROI
         float xmin = MAXFLOAT, xmax = -MAXFLOAT, ymin = MAXFLOAT, ymax = -MAXFLOAT;
@@ -1323,7 +1312,7 @@ enum TableTags
 
         case 4:
             regParams.numberOfThreads = [value intValue];
-            itk::MultiThreader::SetGlobalMaximumNumberOfThreads(regParams.numberOfThreads);
+            [self setNumberOfThreads:regParams.numberOfThreads];
             break;
 
         default:
@@ -1424,11 +1413,11 @@ enum TableTags
             break;
 
         case 1:  // rigid levels
-            retVal = (NSInteger)MAX_ARRAY_PARAMS;
+            retVal = (NSInteger)MAX_REGISTRATION_LEVELS;
             break;
 
         case 2:  // deformable levels
-            retVal = (NSInteger)MAX_ARRAY_PARAMS;
+            retVal = (NSInteger)MAX_REGISTRATION_LEVELS;
             break;
 
         case 3:  // logging level
@@ -1627,3 +1616,127 @@ enum TableTags
 }
 
 @end
+
+//- (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
+//{
+//    LOG4M_TRACE(logger_, @"Enter");
+//
+//
+//    BOOL keyFound = NO;  // used for finding first key image below
+//    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
+//    NSTimeInterval firstTime = 0.0;
+//
+//    info.numTimeSamples = numTimeImages;
+//    info.slicesPerImage = [[viewerController1 pixList] count];
+//    info.isFlipped = [[viewerController1 imageView] flippedData];
+//
+//    if (numTimeImages == 1)  // we have a 2D viewer
+//    {
+//        LOG4M_DEBUG(logger_, @"2D viewer with %u slices.", info.slicesPerImage);
+//    }
+//    else // we have a 4D viewer
+//    {
+//        LOG4M_DEBUG(logger_, @"4D viewer with %u images and %u slices per image.",
+//                    info.numTimeSamples, info.slicesPerImage);
+//    }
+//
+//    // initialise the progress indicator
+//    [progWindow setNumImages:info.numTimeSamples];
+//
+//    NSArray* firstImage = [viewerController1 pixList:0];
+//    DCMPix* firstPix = [firstImage objectAtIndex:0];
+//
+//    info.sliceHeight = [firstPix pheight];
+//    info.sliceWidth = [firstPix pwidth];
+//
+//    LOG4M_DEBUG(logger_, @"Slice height = %u, width = %u, size = %u pixels.",
+//                info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
+//
+//    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
+//    {
+//        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
+//
+//        // Bump the progress indicator
+//        [progWindow incrementIndicator];
+//
+//        // The ROIs for this image.
+//        NSArray* roiList = [viewerController1 roiList:timeIdx];
+//
+//        // The array of slices in the image.
+//        NSArray* pixList = [viewerController1 pixList:timeIdx];
+//
+//        // The list of DicomImage instances corresponding to the slices.
+//        NSArray* fileList = [viewerController1 fileList:timeIdx];
+//
+//        unsigned numSlices = info.slicesPerImage;
+//        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
+//        {
+//            // DCMPix instance containing this slice
+//            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
+//
+//            // The DicomImage instance containing this slice.
+//            DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
+//            BOOL isKey = [[curSlice isKeyImage] boolValue];
+//            if ((isKey) && (!keyFound))
+//            {
+//                // Image may be displayed flipped. We need the real index.
+//                info.keySliceIdx = sliceIdx;
+//                info.keyImageIdx = timeIdx;
+//                LOG4M_DEBUG(logger_, @"Key image index: %u (slice index %u)",
+//                            info.keyImageIdx, info.keySliceIdx);
+//
+//                // The list of ROIs in this slice. Pick out either the first one named "DCEFit"
+//                // or the first one in the list
+//                NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
+//                if ((curRoiList != nil) && ([curRoiList count] > 0))
+//                {
+//                    ROI* roi = [curRoiList objectAtIndex:0];  // default
+//                    BOOL found = NO;
+//                    for (ROI* r in curRoiList)
+//                    {
+//                        NSString* name = r.name;
+//                        if ((!found) &&
+//                            ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
+//                        {
+//                            found = YES;
+//                            roi = r;
+//                        }
+//                    }
+//
+//                    info.firstROI = roi;
+//
+//                    LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
+//                                [info.firstROI name]);
+//                    LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.firstROI points]);
+//                }
+//            }
+//
+//            NSString* filePath = [curPix sourceFile];
+//            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
+//
+//            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
+//            DCMAttribute* attr = [dcmObj attributeForTag:tag];
+//            DCMCalendarDate* dcmDate = attr.value;
+//            NSTimeInterval acqTime = [dcmDate timeIntervalSinceReferenceDate];
+//
+//            // do this once per series
+//            if ((timeIdx == 0) && (sliceIdx == 0))
+//                firstTime = acqTime;
+//
+//            // do this once per time increment
+//            if (sliceIdx == 0)
+//            {
+//                NSString* dateStr = [dcmDate descriptionWithCalendarFormat:@"%H:%M:%S"];
+//                [info addAcqTimeString:dateStr];
+//                LOG4M_DEBUG(logger_, @"Acquisition time = %@", dateStr);
+//
+//                NSTimeInterval normalisedTime = acqTime - firstTime;
+//                [info addAcqTime:normalisedTime];
+//                LOG4M_DEBUG(logger_, @"Normalised acquisition time = %fs", normalisedTime);
+//            }
+//        }
+//    }
+//
+//    [progWindow close];
+//}
+//
