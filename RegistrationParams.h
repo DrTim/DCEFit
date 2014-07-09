@@ -60,23 +60,32 @@
     NSMutableArray* rigidRegVersorOptRelaxationFactor;
     NSMutableArray* rigidRegMaxIter;           // contains NSNumbers (unsigned)
 
-    // deformable regitration parameters
+    // general deformable registration parameters
     BOOL deformRegEnabled;
+    enum DeformableRegistrationType deformRegType;
     BOOL deformShowField;
     unsigned deformRegMultiresLevels;
-    enum MetricType deformRegMetric;
-    enum OptimizerType deformRegOptimizer;
-    NSMutableArray* deformRegGridSizeArray;     // contains arrays of NSNumbers (unsigned)
-    NSMutableArray* deformRegMMIHistogramBins;  // contains NSNumbers (unsigned)
-    NSMutableArray* deformRegMMISampleRate;     // contains NSNumbers (float)
-    NSMutableArray* deformRegLBFGSBCostConvergence;
-    NSMutableArray* deformRegLBFGSBGradientTolerance;
-    NSMutableArray* deformRegLBFGSGradientConvergence;
-    NSMutableArray* deformRegLBFGSDefaultStepSize;
-    NSMutableArray* deformRegRSGDMinStepSize;
-    NSMutableArray* deformRegRSGDMaxStepSize;
-    NSMutableArray* deformRegRSGDRelaxationFactor;
     NSMutableArray* deformRegMaxIter;           // contains NSNumbers (unsigned)
+
+    // B-spline specific parameters
+    enum MetricType bsplineRegMetric;
+    enum OptimizerType bsplineRegOptimizer;
+    NSMutableArray* bsplineRegGridSizeArray;     // contains arrays of NSNumbers (unsigned)
+    NSMutableArray* bsplineRegMMIHistogramBins;  // contains NSNumbers (unsigned)
+    NSMutableArray* bsplineRegMMISampleRate;     // contains NSNumbers (float)
+    NSMutableArray* bsplineRegLBFGSBCostConvergence;
+    NSMutableArray* bsplineRegLBFGSBGradientTolerance;
+    NSMutableArray* bsplineRegLBFGSGradientConvergence;
+    NSMutableArray* bsplineRegLBFGSDefaultStepSize;
+    NSMutableArray* bsplineRegRSGDMinStepSize;
+    NSMutableArray* bsplineRegRSGDMaxStepSize;
+    NSMutableArray* bsplineRegRSGDRelaxationFactor;
+
+    // Demons specific parameters
+    NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
+    unsigned demonsRegHistogramBins;
+    unsigned demonsRegHistogramMatchPoints;
+    float demonsRegStandardDeviations;
 }
 
 // Plugin configuration parameters
@@ -114,23 +123,36 @@
 @property (retain) NSMutableArray* rigidRegVersorOptRelaxationFactor;/**< VersorOpt tuning (~0.0 - 1.0). */
 @property (retain) NSMutableArray* rigidRegMaxIter;        /**< Last resort termination criterion. */
 
-// deformable regitration parameters
-@property (assign) BOOL deformRegEnabled;              /**< Deformable registration enabled if true. */
+// general deformable registration parameters
+//@property (assign) enum DeformableRegistrationType deformRegType; /**< Type of deformable reg. to do. */
 @property (assign) BOOL deformShowField;               /**< Show the displacement field. */
-@property (assign) unsigned deformRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
-@property (assign) enum MetricType deformRegMetric;    /**< The metric to use. (enum value) */
-@property (assign) enum OptimizerType deformRegOptimizer; /**< The optimizer to use. (enum value) */
-@property (retain) NSMutableArray* deformRegGridSizeArray; /**< Num of Bspline nodes in each dimension. */
-@property (retain) NSMutableArray* deformRegMMIHistogramBins; /**< Number of bins for MMI metric. */
-@property (retain) NSMutableArray* deformRegMMISampleRate;    /**< Fraction of voxels to sample for MMI. */
-@property (retain) NSMutableArray* deformRegLBFGSBCostConvergence;   /**< LBFGSB termination criterion. */         
-@property (retain) NSMutableArray* deformRegLBFGSBGradientTolerance; /**< LBFGSB termination criterion. */         
-@property (retain) NSMutableArray* deformRegLBFGSGradientConvergence;/**< LBFGS termination criterion. */          
-@property (retain) NSMutableArray* deformRegLBFGSDefaultStepSize;    /**< LBFGS initial step size. */              
-@property (retain) NSMutableArray* deformRegRSGDMinStepSize;         /**< RSGD termination criterion. */           
-@property (retain) NSMutableArray* deformRegRSGDMaxStepSize;         /**< RSGD initial step size. */               
-@property (retain) NSMutableArray* deformRegRSGDRelaxationFactor;    /**< RSGD tuning (~0.0 - 1.0). */             
-@property (retain) NSMutableArray* deformRegMaxIter;             /**< Last resort termination criterion. */
+//@property (assign) unsigned deformRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
+//@property (retain) NSMutableArray* deformRegMaxIter;             /**< Last resort termination criterion. */
+
+// B-spline specific deformable registration parameters
+@property (assign) BOOL bsplineRegEnabled;              /**< B-spline registration enabled if true. */
+@property (assign) unsigned bsplineRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
+@property (assign) enum MetricType bsplineRegMetric;    /**< The metric to use. (enum value) */
+@property (assign) enum OptimizerType bsplineRegOptimizer; /**< The optimizer to use. (enum value) */
+@property (retain) NSMutableArray* bsplineRegGridSizeArray; /**< Num of Bspline nodes in each dimension. */
+@property (retain) NSMutableArray* bsplineRegMMIHistogramBins; /**< Number of bins for MMI metric. */
+@property (retain) NSMutableArray* bsplineRegMMISampleRate;    /**< Fraction of voxels to sample for MMI. */
+@property (retain) NSMutableArray* bsplineRegLBFGSBCostConvergence;   /**< LBFGSB termination criterion. */         
+@property (retain) NSMutableArray* bsplineRegLBFGSBGradientTolerance; /**< LBFGSB termination criterion. */         
+@property (retain) NSMutableArray* bsplineRegLBFGSGradientConvergence;/**< LBFGS termination criterion. */          
+@property (retain) NSMutableArray* bsplineRegLBFGSDefaultStepSize;    /**< LBFGS initial step size. */              
+@property (retain) NSMutableArray* bsplineRegRSGDMinStepSize;         /**< RSGD termination criterion. */           
+@property (retain) NSMutableArray* bsplineRegRSGDMaxStepSize;         /**< RSGD initial step size. */               
+@property (retain) NSMutableArray* bsplineRegRSGDRelaxationFactor;    /**< RSGD tuning (~0.0 - 1.0). */             
+@property (retain) NSMutableArray* bsplineRegMaxIter;             /**< Last resort termination criterion. */
+
+// Demons specific parameters
+@property (assign) BOOL demonsRegEnabled;              /**< Demons registration enabled if true. */
+@property (retain) NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
+@property (assign) unsigned demonsRegHistogramBins;
+@property (assign) unsigned demonsRegHistogramMatchPoints;
+@property (assign) float demonsRegStandardDeviations;
+@property (retain) NSMutableArray* demonsRegMaxIter;             /**< Last resort termination criterion. */
 
 /**
  * Standard init.

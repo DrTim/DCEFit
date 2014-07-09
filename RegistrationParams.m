@@ -47,23 +47,32 @@
 @synthesize rigidRegVersorOptRelaxationFactor;
 @synthesize rigidRegMaxIter;
 
-// deformable regitration parameters
+// deformable registration parameters
 @synthesize deformRegEnabled;
+@synthesize deformRegType;
 @synthesize deformShowField;
 @synthesize deformRegMultiresLevels;
-@synthesize deformRegGridSizeArray;
-@synthesize deformRegMetric;
-@synthesize deformRegOptimizer;
-@synthesize deformRegMMIHistogramBins;
-@synthesize deformRegMMISampleRate;
-@synthesize deformRegLBFGSBCostConvergence;
-@synthesize deformRegLBFGSBGradientTolerance;
-@synthesize deformRegLBFGSGradientConvergence;
-@synthesize deformRegLBFGSDefaultStepSize;
-@synthesize deformRegRSGDMinStepSize;
-@synthesize deformRegRSGDMaxStepSize;
-@synthesize deformRegRSGDRelaxationFactor;
 @synthesize deformRegMaxIter;
+
+// B-spline registration parameters
+@synthesize bsplineRegGridSizeArray;
+@synthesize bsplineRegMetric;
+@synthesize bsplineRegOptimizer;
+@synthesize bsplineRegMMIHistogramBins;
+@synthesize bsplineRegMMISampleRate;
+@synthesize bsplineRegLBFGSBCostConvergence;
+@synthesize bsplineRegLBFGSBGradientTolerance;
+@synthesize bsplineRegLBFGSGradientConvergence;
+@synthesize bsplineRegLBFGSDefaultStepSize;
+@synthesize bsplineRegRSGDMinStepSize;
+@synthesize bsplineRegRSGDMaxStepSize;
+@synthesize bsplineRegRSGDRelaxationFactor;
+
+// Demons registration parameters
+@synthesize demonsRegHistogramBins;
+@synthesize demonsRegHistogramMatchPoints;
+@synthesize demonsRegMaxRMSError;
+@synthesize demonsRegStandardDeviations;
 
 - (id)init
 {
@@ -101,20 +110,21 @@
     [rigidRegVersorOptRelaxationFactor release];
     [rigidRegVersorOptTransScale release];
     [rigidRegMaxIter release];
-    [deformRegGridSizeArray release];
-    [deformRegMMIHistogramBins release];
-    [deformRegMMISampleRate release];
 
-    [deformRegLBFGSBCostConvergence release];
-    [deformRegLBFGSBGradientTolerance release];
-    [deformRegLBFGSGradientConvergence release];
-    [deformRegLBFGSDefaultStepSize release];
-    [deformRegRSGDMinStepSize release];
-    [deformRegRSGDMaxStepSize release];
-    [deformRegRSGDRelaxationFactor release];
+    [bsplineRegGridSizeArray release];
+    [bsplineRegMMIHistogramBins release];
+    [bsplineRegMMISampleRate release];
 
+    [bsplineRegLBFGSBCostConvergence release];
+    [bsplineRegLBFGSBGradientTolerance release];
+    [bsplineRegLBFGSGradientConvergence release];
+    [bsplineRegLBFGSDefaultStepSize release];
+    [bsplineRegRSGDMinStepSize release];
+    [bsplineRegRSGDMaxStepSize release];
+    [bsplineRegRSGDRelaxationFactor release];
     [deformRegMaxIter release];
-
+    [demonsRegMaxRMSError release];
+    
     [logger_ release];
     [super dealloc];
 }
@@ -179,35 +189,44 @@
 
     // Deformable registration parameters
     self.deformRegEnabled = [def booleanForKey:DeformRegEnabledKey];
-    self.deformShowField = [def booleanForKey:DeformShowFieldKey];
-    self.deformRegMultiresLevels = [def unsignedIntegerForKey:DeformRegMultiresLevelsKey];
-    self.deformRegMetric = [def integerForKey:DeformRegMetricKey];
-    self.deformRegOptimizer = [def integerForKey:DeformRegOptimizerKey];
-    self.deformRegGridSizeArray = [NSMutableArray arrayWithArray:
-                              [def objectForKey:DeformRegGridSizeArrayKey]];
-    self.deformRegMMIHistogramBins = [NSMutableArray arrayWithArray:
-                                      [def objectForKey:DeformRegMMIHistogramBinsKey]];
-    self.deformRegMMISampleRate = [NSMutableArray arrayWithArray:
-                                   [def objectForKey:DeformRegMMISampleRateKey]];
-
-    self.deformRegLBFGSBCostConvergence = [NSMutableArray arrayWithArray:
-                                          [def objectForKey:DeformRegLBFGSBCostConvergenceKey]];
-    self.deformRegLBFGSBGradientTolerance = [NSMutableArray arrayWithArray:
-                                            [def objectForKey:DeformRegLBFGSBGradientToleranceKey]];
-    self.deformRegLBFGSGradientConvergence = [NSMutableArray arrayWithArray:
-                                             [def objectForKey:DeformRegLBFGSGradientConvergenceKey]];
-    self.deformRegLBFGSDefaultStepSize = [NSMutableArray arrayWithArray:
-                                         [def objectForKey:DeformRegLBFGSDefaultStepSizeKey]];
-
-    self.deformRegRSGDMinStepSize = [NSMutableArray arrayWithArray:
-                                    [def objectForKey:DeformRegRSGDMinStepSizeKey]];
-    self.deformRegRSGDMaxStepSize = [NSMutableArray arrayWithArray:
-                                    [def objectForKey:DeformRegRSGDMaxStepSizeKey]];
-    self.deformRegRSGDRelaxationFactor = [NSMutableArray arrayWithArray:
-                                          [def objectForKey:DeformRegRSGDRelaxationFactorKey]];
-    
+    self.deformRegType = [def integerForKey:DeformRegTypeKey];
     self.deformRegMaxIter = [NSMutableArray arrayWithArray:
                              [def objectForKey:DeformRegMaxIterKey]];
+    self.deformShowField = [def booleanForKey:DeformRegShowFieldKey];
+    self.deformRegMultiresLevels = [def unsignedIntegerForKey:DeformRegMultiresLevelsKey];
+
+    // BSpline registration
+    self.bsplineRegMetric = [def integerForKey:BsplineRegMetricKey];
+    self.bsplineRegOptimizer = [def integerForKey:BsplineRegOptimizerKey];
+    self.bsplineRegGridSizeArray = [NSMutableArray arrayWithArray:
+                              [def objectForKey:BsplineRegGridSizeArrayKey]];
+    self.bsplineRegMMIHistogramBins = [NSMutableArray arrayWithArray:
+                                      [def objectForKey:BsplineRegMMIHistogramBinsKey]];
+    self.bsplineRegMMISampleRate = [NSMutableArray arrayWithArray:
+                                   [def objectForKey:BsplineRegMMISampleRateKey]];
+
+    self.bsplineRegLBFGSBCostConvergence = [NSMutableArray arrayWithArray:
+                                          [def objectForKey:BsplineRegLBFGSBCostConvergenceKey]];
+    self.bsplineRegLBFGSBGradientTolerance = [NSMutableArray arrayWithArray:
+                                            [def objectForKey:BsplineRegLBFGSBGradientToleranceKey]];
+    self.bsplineRegLBFGSGradientConvergence = [NSMutableArray arrayWithArray:
+                                             [def objectForKey:BsplineRegLBFGSGradientConvergenceKey]];
+    self.bsplineRegLBFGSDefaultStepSize = [NSMutableArray arrayWithArray:
+                                         [def objectForKey:BsplineRegLBFGSDefaultStepSizeKey]];
+
+    self.bsplineRegRSGDMinStepSize = [NSMutableArray arrayWithArray:
+                                    [def objectForKey:BsplineRegRSGDMinStepSizeKey]];
+    self.bsplineRegRSGDMaxStepSize = [NSMutableArray arrayWithArray:
+                                    [def objectForKey:BsplineRegRSGDMaxStepSizeKey]];
+    self.bsplineRegRSGDRelaxationFactor = [NSMutableArray arrayWithArray:
+                                          [def objectForKey:BsplineRegRSGDRelaxationFactorKey]];
+
+    // Demons registration
+    self.demonsRegMaxRMSError = [NSMutableArray arrayWithArray:
+                                 [def objectForKey:DemonsRegMaxRMSErrorKey]];
+    self.demonsRegHistogramBins = [def unsignedIntegerForKey:DemonsRegHistogramBinsKey];
+    self.demonsRegHistogramMatchPoints = [def unsignedIntegerForKey:DemonsRegHistogramMatchPointsKey];
+    self.demonsRegStandardDeviations = [def floatForKey:DemonsRegStandardDeviationsKey];
 }
 
 - (unsigned)sliceNumberToIndex:(unsigned)number

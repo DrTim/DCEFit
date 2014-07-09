@@ -283,8 +283,8 @@
 		22799E0818294697006D5EB1 /* libLog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLog4m.a; path = ../../usr/local/lib/libLog4m.a; sourceTree = "<group>"; };
 		2284DDBE181561960008B134 /* ImageTagger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTagger.cpp; sourceTree = "<group>"; };
 		2284DDBF181561960008B134 /* ImageTagger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTagger.h; sourceTree = "<group>"; };
-		229367CA17204AEF00F1C1EF /* DialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialogController.h; sourceTree = "<group>"; };
-		229367CB17204AEF00F1C1EF /* DialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DialogController.mm; sourceTree = "<group>"; };
+		229367CA17204AEF00F1C1EF /* DialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = DialogController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		229367CB17204AEF00F1C1EF /* DialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = DialogController.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2293D970188DC0FC00619245 /* SeriesInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeriesInfo.h; sourceTree = "<group>"; };
 		2293D971188DC0FC00619245 /* SeriesInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeriesInfo.m; sourceTree = "<group>"; };
 		22AF448217CE3C990091644F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -422,7 +422,6 @@
 			isa = PBXGroup;
 			children = (
 				22C326A41892C02D00E8A071 /* Osirix Frameworks */,
-				22CF47D117D4EBCE00C49614 /* Private Frameworks */,
 				22AF44A117CE48250091644F /* Logger */,
 				229793FD17248441004CCBC6 /* ITK */,
 				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
@@ -638,13 +637,6 @@
 				22C326A51892C0DB00E8A071 /* OsiriXAPI.framework */,
 			);
 			name = "Osirix Frameworks";
-			sourceTree = "<group>";
-		};
-		22CF47D117D4EBCE00C49614 /* Private Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Private Frameworks";
 			sourceTree = "<group>";
 		};
 		32C88E010371C26100C91783 /* Other Sources */ = {

@@ -49,11 +49,11 @@
 @synthesize rigidRegLevelsComboBox;
 @synthesize rigidRegMetricRadioMatrix;
 @synthesize rigidRegOptimizerLabel;
-@synthesize deformRegEnableCheckBox;
-@synthesize deformRegLevelsComboBox;
-@synthesize deformRegGridSizeTableView;
-@synthesize deformRegMetricRadioMatrix;
-@synthesize deformRegOptimizerRadioMatrix;
+@synthesize bsplineRegEnableCheckBox;
+@synthesize bsplineRegLevelsComboBox;
+@synthesize bsplineRegGridSizeTableView;
+@synthesize bsplineRegMetricRadioMatrix;
+@synthesize bsplineRegOptimizerRadioMatrix;
 @synthesize deformShowFieldCheckBox;
 @synthesize regCloseButton;
 @synthesize loggingLevelComboBox;
@@ -440,8 +440,8 @@ enum TableTags
     regParams.flippedData = [[viewerController1 imageView] flippedData];
     if (regParams.slicesPerImage == 1)
     {
-        NSArray* cols = [deformRegGridSizeTableView tableColumns];
-        NSInteger zColNum = [deformRegGridSizeTableView columnWithIdentifier:@"z"];
+        NSArray* cols = [bsplineRegGridSizeTableView tableColumns];
+        NSInteger zColNum = [bsplineRegGridSizeTableView columnWithIdentifier:@"z"];
         NSTableColumn* zCol = [cols objectAtIndex:zColNum];
         [zCol setHidden:YES];
     }
@@ -483,11 +483,11 @@ enum TableTags
                                 objectValueForItemAtIndex:levelIdx]];
     [rigidRegLevelsComboBox reloadData];
 
-    levelIdx = regParams.deformRegMultiresLevels - 1;
-    [deformRegLevelsComboBox selectItemAtIndex:levelIdx];
-    [deformRegLevelsComboBox setObjectValue:[self comboBox:deformRegLevelsComboBox
+    levelIdx = regParams.bsplineRegMultiresLevels - 1;
+    [bsplineRegLevelsComboBox selectItemAtIndex:levelIdx];
+    [bsplineRegLevelsComboBox setObjectValue:[self comboBox:bsplineRegLevelsComboBox
                                  objectValueForItemAtIndex:levelIdx]];
-    [deformRegLevelsComboBox reloadData];
+    [bsplineRegLevelsComboBox reloadData];
 
     // Set up label to reflect number of dimensions in images
     if (regParams.slicesPerImage == 1)
@@ -715,7 +715,7 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"%@", [sender title]);
 
-    if ((!regParams.rigidRegEnabled) && (!regParams.deformRegEnabled))
+    if ((!regParams.rigidRegEnabled) && (!regParams.bsplineRegEnabled))
     {
         NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 
@@ -804,20 +804,20 @@ enum TableTags
        didEndSelector:nil contextInfo:nil];
 }
 
-- (IBAction)deformRegOptimizerConfigButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton *)sender
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    switch (regParams.deformRegOptimizer)
+    switch (regParams.bsplineRegOptimizer)
     {
         case LBFGSB:
-            openSheet_ = deformRegLBFGSBOptimizerConfigPanel;
+            openSheet_ = bsplineRegLBFGSBOptimizerConfigPanel;
             break;
         case LBFGS:
-            openSheet_ = deformRegLBFGSOptimizerConfigPanel;
+            openSheet_ = bsplineRegLBFGSOptimizerConfigPanel;
             break;
         case RSGD:
-            openSheet_ = deformRegRSGDOptimizerConfigPanel;
+            openSheet_ = bsplineRegRSGDOptimizerConfigPanel;
             break;
         default:
             break;
@@ -844,16 +844,16 @@ enum TableTags
        didEndSelector:nil contextInfo:nil];
 }
 
-- (IBAction)deformRegMetricConfigButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender
 {
     LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
 
-    switch (regParams.deformRegMetric)
+    switch (regParams.bsplineRegMetric)
     {
         case MeanSquares:
             break;
         case MattesMutualInformation:
-            openSheet_ = deformRegMMIMetricConfigPanel;
+            openSheet_ = bsplineRegMMIMetricConfigPanel;
             break;
     }
 
@@ -896,25 +896,25 @@ enum TableTags
     [self closeSheet];
 }
 
-- (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
 }
 
-- (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
 }
 
-- (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton *)sender
 {
     // Do nothing but close the panel because the data have already been stored.
     [self closeSheet];
 }
 
-- (IBAction)deformRegMMIConfigCloseButtonPressed:(NSButton *)sender
+- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton *)sender
 {
     [self closeSheet];
 }
@@ -1007,7 +1007,7 @@ enum TableTags
         case DeformRSGDOptimizerTag:
         case DeformMattesMIMetricTag:
         case DeformBsplineGridSizeTag:
-            retVal = regParams.deformRegMultiresLevels;
+            retVal = regParams.bsplineRegMultiresLevels;
             break;
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in numberOfRowsInTableView", (long)tag);
@@ -1078,29 +1078,29 @@ enum TableTags
             break;
         case DeformLBFGSBOptimizerTag:  // deformable LBFGSB parameters
             if ([colIdent isEqualToString:@"convergence"])
-                retVal = [regParams.deformRegLBFGSBCostConvergence objectAtIndex:row];
+                retVal = [regParams.bsplineRegLBFGSBCostConvergence objectAtIndex:row];
             else if ([colIdent isEqualToString:@"gradient"])
-                retVal = [regParams.deformRegLBFGSBGradientTolerance objectAtIndex:row];
+                retVal = [regParams.bsplineRegLBFGSBGradientTolerance objectAtIndex:row];
             else if ([colIdent isEqualToString:@"iterations"])
-                retVal = [regParams.deformRegMaxIter objectAtIndex:row];
+                retVal = [regParams.bsplineRegMaxIter objectAtIndex:row];
             break;
         case DeformLBFGSOptimizerTag:  // deformable LBFGS parameters
             if ([colIdent isEqualToString:@"convergence"])
-                retVal = [regParams.deformRegLBFGSGradientConvergence objectAtIndex:row];
+                retVal = [regParams.bsplineRegLBFGSGradientConvergence objectAtIndex:row];
             else if ([colIdent isEqualToString:@"initstepsize"])
-                retVal = [regParams.deformRegLBFGSDefaultStepSize objectAtIndex:row];
+                retVal = [regParams.bsplineRegLBFGSDefaultStepSize objectAtIndex:row];
             else if ([colIdent isEqualToString:@"iterations"])
-                retVal = [regParams.deformRegMaxIter objectAtIndex:row];
+                retVal = [regParams.bsplineRegMaxIter objectAtIndex:row];
             break;
         case DeformRSGDOptimizerTag:  // deformable RSGD parameters
             if ([colIdent isEqualToString:@"minstepsize"])
-                retVal = [regParams.deformRegRSGDMinStepSize objectAtIndex:row];
+                retVal = [regParams.bsplineRegRSGDMinStepSize objectAtIndex:row];
             else if ([colIdent isEqualToString:@"initstepsize"])
-                retVal = [regParams.deformRegRSGDMaxStepSize objectAtIndex:row];
+                retVal = [regParams.bsplineRegRSGDMaxStepSize objectAtIndex:row];
             else if ([colIdent isEqualToString:@"relaxation"])
-                retVal = [regParams.deformRegRSGDRelaxationFactor objectAtIndex:row];
+                retVal = [regParams.bsplineRegRSGDRelaxationFactor objectAtIndex:row];
             else if ([colIdent isEqualToString:@"iterations"])
-                retVal = [regParams.deformRegMaxIter objectAtIndex:row];
+                retVal = [regParams.bsplineRegMaxIter objectAtIndex:row];
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
@@ -1110,17 +1110,17 @@ enum TableTags
             break;
         case DeformMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-                retVal = [regParams.deformRegMMIHistogramBins objectAtIndex:row];
+                retVal = [regParams.bsplineRegMMIHistogramBins objectAtIndex:row];
             else if ([colIdent isEqualToString:@"samplerate"])
-                retVal = [regParams.deformRegMMISampleRate objectAtIndex:row];
+                retVal = [regParams.bsplineRegMMISampleRate objectAtIndex:row];
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
             if ([colIdent isEqualToString:@"x"])
-                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:0];
+                retVal = [[regParams.bsplineRegGridSizeArray objectAtIndex:row] objectAtIndex:0];
             else if ([colIdent isEqualToString:@"y"])
-                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:1];
+                retVal = [[regParams.bsplineRegGridSizeArray objectAtIndex:row] objectAtIndex:1];
             else if ([colIdent isEqualToString:@"z"])
-                retVal = [[regParams.deformRegGridSizeArray objectAtIndex:row] objectAtIndex:2];
+                retVal = [[regParams.bsplineRegGridSizeArray objectAtIndex:row] objectAtIndex:2];
             break;
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld in objectValueForTableColumn", (long)tag);
@@ -1190,29 +1190,29 @@ enum TableTags
             // deformable Optimizer parameters
         case DeformLBFGSBOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-                [regParams.deformRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegLBFGSBCostConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"gradient"])
-                [regParams.deformRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegLBFGSBGradientTolerance replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-                [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
         case DeformLBFGSOptimizerTag:
             if ([colIdent isEqualToString:@"convergence"])
-                [regParams.deformRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegLBFGSGradientConvergence replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-                [regParams.deformRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegLBFGSDefaultStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-                [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
         case DeformRSGDOptimizerTag:
             if ([colIdent isEqualToString:@"minstepsize"])
-                [regParams.deformRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegRSGDMinStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"initstepsize"])
-                [regParams.deformRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegRSGDMaxStepSize replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"relaxation"])
-                [regParams.deformRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegRSGDRelaxationFactor replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"iterations"])
-                [regParams.deformRegMaxIter replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegMaxIter replaceObjectAtIndex:row withObject:object];
             break;
         case RigidMattesMIMetricTag:  // rigid MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
@@ -1222,19 +1222,19 @@ enum TableTags
             break;
         case DeformMattesMIMetricTag:  // deformable MMI metric parameters
             if ([colIdent isEqualToString:@"bins"])
-                [regParams.deformRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegMMIHistogramBins replaceObjectAtIndex:row withObject:object];
             else if ([colIdent isEqualToString:@"samplerate"])
-                [regParams.deformRegMMISampleRate replaceObjectAtIndex:row withObject:object];
+                [regParams.bsplineRegMMISampleRate replaceObjectAtIndex:row withObject:object];
             break;
         case DeformBsplineGridSizeTag:  // deformable grid size
             if ([colIdent isEqualToString:@"x"])
-                [[regParams.deformRegGridSizeArray objectAtIndex:row]replaceObjectAtIndex:0
+                [[regParams.bsplineRegGridSizeArray objectAtIndex:row]replaceObjectAtIndex:0
                                                                                withObject:object];
             else if ([colIdent isEqualToString:@"y"])
-                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:1
+                [[regParams.bsplineRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:1
                                                                                 withObject:object];
             if ([colIdent isEqualToString:@"z"])
-                [[regParams.deformRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:2
+                [[regParams.bsplineRegGridSizeArray objectAtIndex:row] replaceObjectAtIndex:2
                                                                                 withObject:object];
             break;
 
@@ -1244,7 +1244,7 @@ enum TableTags
                         format:@"Invalid tag %ld in tableView:setObjectValue:forTableColumn:row", (long)tag];
     }
 
-    // This is done because the rigidRegMaxIter and deformRegMaxIter properties
+    // This is done because the rigidRegMaxIter and bsplineRegMaxIter properties
     // in the regParams instance are shared among the tables.
     [self reloadAllTables];
 }
@@ -1258,11 +1258,11 @@ enum TableTags
     [rigidRegRSGDOptOptimizerTableView reloadData];
     [rigidRegVersorOptimizerTableView reloadData];
     [rigidRegMMIMetricTableView reloadData];
-    [deformRegLBFGSBOptimizerTableView reloadData];
-    [deformRegLBFGSOptimizerTableView reloadData];
-    [deformRegRSGDOptimizerTableView reloadData];
-    [deformRegMMIMetricTableView reloadData];
-    [deformRegGridSizeTableView reloadData];
+    [bsplineRegLBFGSBOptimizerTableView reloadData];
+    [bsplineRegLBFGSOptimizerTableView reloadData];
+    [bsplineRegRSGDOptimizerTableView reloadData];
+    [bsplineRegMMIMetricTableView reloadData];
+    [bsplineRegGridSizeTableView reloadData];
 }
 
 // NSComboboxDelegate methods
@@ -1295,12 +1295,12 @@ enum TableTags
             break;
 
         case 2:
-            regParams.deformRegMultiresLevels = [value unsignedIntValue];
-            [deformRegLBFGSBOptimizerTableView reloadData];
-            [deformRegLBFGSOptimizerTableView reloadData];
-            [deformRegRSGDOptimizerTableView reloadData];
-            [deformRegMMIMetricTableView reloadData];
-            [deformRegGridSizeTableView reloadData];
+            regParams.bsplineRegMultiresLevels = [value unsignedIntValue];
+            [bsplineRegLBFGSBOptimizerTableView reloadData];
+            [bsplineRegLBFGSOptimizerTableView reloadData];
+            [bsplineRegRSGDOptimizerTableView reloadData];
+            [bsplineRegMMIMetricTableView reloadData];
+            [bsplineRegGridSizeTableView reloadData];
             break;
 
         case 3:
@@ -1480,42 +1480,42 @@ enum TableTags
     }
 }
 
-- (IBAction)deformRegEnableChanged:(NSButton *)sender
+- (IBAction)bsplineRegEnableChanged:(NSButton *)sender
 {
-    LOG4M_DEBUG(logger_, @"deformRegEnableChanged state = %ld", (long)[sender state]);
+    LOG4M_DEBUG(logger_, @"bsplineRegEnableChanged state = %ld", (long)[sender state]);
     
-    [deformRegLevelsComboBox setEnabled:regParams.deformRegEnabled];
-    [deformRegGridSizeTableView setEnabled:regParams.deformRegEnabled];
-    [deformRegMetricRadioMatrix setEnabled:regParams.deformRegEnabled];
-    [deformRegMetricConfigButton setEnabled:regParams.deformRegEnabled];
-    [deformRegOptimizerRadioMatrix setEnabled:regParams.deformRegEnabled];
-    [deformRegOptimizerConfigButton setEnabled:regParams.deformRegEnabled];
+    [bsplineRegLevelsComboBox setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegGridSizeTableView setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegMetricRadioMatrix setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegMetricConfigButton setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegOptimizerRadioMatrix setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegOptimizerConfigButton setEnabled:regParams.bsplineRegEnabled];
 
-    if (regParams.deformRegEnabled)
+    if (regParams.bsplineRegEnabled)
     {
-        switch (regParams.deformRegMetric)
+        switch (regParams.bsplineRegMetric)
         {
             case MattesMutualInformation:
-                [deformRegMetricConfigButton setEnabled:YES];
+                [bsplineRegMetricConfigButton setEnabled:YES];
                 break;
             default:
-                [deformRegMetricConfigButton setEnabled:NO];
+                [bsplineRegMetricConfigButton setEnabled:NO];
                 break;
         }
     }
 }
 
-- (IBAction)deformRegMetricChanged:(NSMatrix *)sender
+- (IBAction)bsplineRegMetricChanged:(NSMatrix *)sender
 {
     LOG4M_DEBUG(logger_, @"deformMetricChanged tag = %ld", (long)[[sender selectedCell] tag]);
     
-    switch (regParams.deformRegMetric)
+    switch (regParams.bsplineRegMetric)
     {
         case MattesMutualInformation:
-            [deformRegMetricConfigButton setEnabled:YES];
+            [bsplineRegMetricConfigButton setEnabled:YES];
             break;
         default:
-            [deformRegMetricConfigButton setEnabled:NO];
+            [bsplineRegMetricConfigButton setEnabled:NO];
             break;
     }
 }
@@ -1534,13 +1534,13 @@ enum TableTags
     [rigidRegMetricRadioMatrix setEnabled:NO];
     [rigidRegMetricConfigButton setEnabled:NO];
 
-    [deformRegEnableCheckBox setEnabled:NO];
-    [deformRegLevelsComboBox setEnabled:NO];
-    [deformRegGridSizeTableView setEnabled:NO];
-    [deformRegOptimizerRadioMatrix setEnabled:NO];
-    [deformRegOptimizerConfigButton setEnabled:NO];
-    [deformRegMetricRadioMatrix setEnabled:NO];
-    [deformRegMetricConfigButton setEnabled:NO];
+    [bsplineRegEnableCheckBox setEnabled:NO];
+    [bsplineRegLevelsComboBox setEnabled:NO];
+    [bsplineRegGridSizeTableView setEnabled:NO];
+    [bsplineRegOptimizerRadioMatrix setEnabled:NO];
+    [bsplineRegOptimizerConfigButton setEnabled:NO];
+    [bsplineRegMetricRadioMatrix setEnabled:NO];
+    [bsplineRegMetricConfigButton setEnabled:NO];
 
     [regCloseButton setEnabled:NO];
     [regStartButton setEnabled:NO];
@@ -1557,7 +1557,7 @@ enum TableTags
     [seriesDescriptionTextField setEnabled:YES];
     [fixedImageComboBox setEnabled:YES];
     [rigidRegEnableCheckBox setEnabled:YES];
-    [deformRegEnableCheckBox setEnabled:YES];
+    [bsplineRegEnableCheckBox setEnabled:YES];
     [regCloseButton setEnabled:YES];
     [regStartButton setEnabled:YES];
 
@@ -1579,22 +1579,22 @@ enum TableTags
         }
     }
 
-    [deformRegLevelsComboBox setEnabled:regParams.deformRegEnabled];
-    [deformShowFieldCheckBox setEnabled:regParams.deformRegEnabled];
-    [deformRegGridSizeTableView setEnabled:regParams.deformRegEnabled];
-    [deformRegOptimizerRadioMatrix setEnabled:regParams.deformRegEnabled];
-    [deformRegMetricRadioMatrix setEnabled:regParams.deformRegEnabled];
-    [deformRegOptimizerConfigButton setEnabled:regParams.deformRegEnabled];
-    [deformRegMetricConfigButton setEnabled:regParams.deformRegEnabled];
-    if (regParams.deformRegEnabled)
+    [bsplineRegLevelsComboBox setEnabled:regParams.bsplineRegEnabled];
+    [deformShowFieldCheckBox setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegGridSizeTableView setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegOptimizerRadioMatrix setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegMetricRadioMatrix setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegOptimizerConfigButton setEnabled:regParams.bsplineRegEnabled];
+    [bsplineRegMetricConfigButton setEnabled:regParams.bsplineRegEnabled];
+    if (regParams.bsplineRegEnabled)
     {
-        if (regParams.deformRegMetric == MattesMutualInformation)
+        if (regParams.bsplineRegMetric == MattesMutualInformation)
         {
-            [deformRegMetricConfigButton setEnabled:YES];
+            [bsplineRegMetricConfigButton setEnabled:YES];
         }
         else
         {
-            [deformRegMetricConfigButton setEnabled:NO];
+            [bsplineRegMetricConfigButton setEnabled:NO];
         }
     }
 }

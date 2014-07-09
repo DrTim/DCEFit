@@ -25,10 +25,16 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
   rigidMaxIter(params.rigidRegMultiresLevels),
 
   deformRegEnabled(params.deformRegEnabled),
+  deformRegType(params.deformRegType),
   deformShowField(params.deformShowField),
   deformLevels(params.deformRegMultiresLevels),
-  deformRegMetric(params.deformRegMetric),
-  deformRegOptimiser(params.deformRegOptimizer),
+
+  bsplineMetric(params.bsplineRegMetric),
+  bsplineOptimiser(params.bsplineRegOptimizer),
+
+  demonsHistogramBins(params.demonsRegHistogramBins),
+  demonsHistogramMatchPoints(params.demonsRegHistogramMatchPoints),
+  demonsStandardDeviations(params.demonsRegStandardDeviations),
 
   objcParams(params)
 {
@@ -77,33 +83,36 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
         rigidMaxIter[level] = [num unsignedIntValue];
 
         // Deformable registration
-        NSArray* gridSizes = [NSArray arrayWithArray:[params.deformRegGridSizeArray objectAtIndex:level]];
+        num = [params.deformRegMaxIter objectAtIndex:level];
+        deformMaxIter[level] = [num unsignedIntValue];
+        NSArray* gridSizes = [NSArray arrayWithArray:[params.bsplineRegGridSizeArray objectAtIndex:level]];
         for (unsigned dim = 0; dim < 3; ++dim)
         {
             num = [gridSizes objectAtIndex:dim];
-            deformGridSizes(level, dim) = [num unsignedIntValue];
+            bsplineGridSizes(level, dim) = [num unsignedIntValue];
         }
 
-        num = [params.deformRegMMIHistogramBins objectAtIndex:level];
-        deformMMINumBins[level] = [num unsignedIntValue];
-        num = [params.deformRegMMISampleRate objectAtIndex:level];
-        deformMMISampleRate[level] = [num floatValue];
-        num = [params.deformRegLBFGSBCostConvergence objectAtIndex:level];
-        deformLBFGSBCostConvergence[level] = [num floatValue];
-        num = [params.deformRegLBFGSBGradientTolerance objectAtIndex:level];
-        deformLBFGSBGradientTolerance[level] = [num floatValue];
-        num = [params.deformRegLBFGSGradientConvergence objectAtIndex:level];
-        deformLBFGSGradientConvergence[level] = [num floatValue];
-        num = [params.deformRegLBFGSDefaultStepSize objectAtIndex:level];
-        deformLBFGSDefaultStepSize[level] = [num floatValue];
-        num = [params.deformRegRSGDMinStepSize objectAtIndex:level];
-        deformRSGDMinStepSize[level] = [num floatValue];
-        num = [params.deformRegRSGDMaxStepSize objectAtIndex:level];
-        deformRSGDMaxStepSize[level] = [num floatValue];
-        num = [params.deformRegRSGDRelaxationFactor objectAtIndex:level];
-        deformRSGDRelaxationFactor[level] = [num floatValue];
-        num = [params.deformRegMaxIter objectAtIndex:level];
-        deformMaxIter[level] = [num unsignedIntValue];
+        num = [params.bsplineRegMMIHistogramBins objectAtIndex:level];
+        bsplineMMINumBins[level] = [num unsignedIntValue];
+        num = [params.bsplineRegMMISampleRate objectAtIndex:level];
+        bsplineMMISampleRate[level] = [num floatValue];
+        num = [params.bsplineRegLBFGSBCostConvergence objectAtIndex:level];
+        bsplineLBFGSBCostConvergence[level] = [num floatValue];
+        num = [params.bsplineRegLBFGSBGradientTolerance objectAtIndex:level];
+        bsplineLBFGSBGradientTolerance[level] = [num floatValue];
+        num = [params.bsplineRegLBFGSGradientConvergence objectAtIndex:level];
+        bsplineLBFGSGradientConvergence[level] = [num floatValue];
+        num = [params.bsplineRegLBFGSDefaultStepSize objectAtIndex:level];
+        bsplineLBFGSDefaultStepSize[level] = [num floatValue];
+        num = [params.bsplineRegRSGDMinStepSize objectAtIndex:level];
+        bsplineRSGDMinStepSize[level] = [num floatValue];
+        num = [params.bsplineRegRSGDMaxStepSize objectAtIndex:level];
+        bsplineRSGDMaxStepSize[level] = [num floatValue];
+        num = [params.bsplineRegRSGDRelaxationFactor objectAtIndex:level];
+        bsplineRSGDRelaxationFactor[level] = [num floatValue];
+
+        num = [params.demonsRegMaxRMSError objectAtIndex:level];
+        demonsMaxRMSError[level] = [num floatValue];
     }
 }
 
@@ -204,55 +213,66 @@ std::string ItkRegistrationParams::Print() const
 
     if (deformRegEnabled)
     {
-        str << "Deformable registration enabled\n";
-        str << "  Pyramid levels: " << deformLevels << "\n";
-        str << "  Grid size: " << deformGridSizes << "\n";
-        str << "  Bspline order: " << BSPLINE_ORDER << "\n";
-        str << "  Metric: ";
-
+        str << "Deformable registration enabled.\n";
         if (deformShowField)
-            str << "Showing deformation field.\n";
-            
-        switch (deformRegMetric)
-        {
-            case MeanSquares:
-                str << "Mean squares\n";
-                break;
-            case MattesMutualInformation:
-                str << "Mattes mutual information\n";
-                str << "  Number of bins: " << deformMMINumBins << "\n";
-                str << "  Sample rate: " << std::fixed << std::setprecision(2)
-                                         << deformMMISampleRate << "\n";
-                break;
-            default:;
-        }
-        str << "  Optimiser: ";
-        switch (deformRegOptimiser)
-        {
-            case LBFGSB:
-                str << "LBFGSB\n";
-                str << "  LBFGSB Convergence: " << std::scientific << std::setprecision(2)
-                                                << deformLBFGSBCostConvergence << "\n";
-                break;
-            case LBFGS:
-                str << "LBFGS\n";
-                str << "  LBFGS Convergence: " << std::scientific << std::setprecision(2)
-                                               << deformLBFGSGradientConvergence << "\n";
-                break;
-            case RSGD:
-                str << "RSGD\n";
-                str << "  RSGD Min. step size: " << std::scientific << std::setprecision(2)
-                                                 << deformRSGDMinStepSize << "\n";
-                str << "  RSGD Max. step size: " << std::scientific << std::setprecision(2)
-                                                 << deformRSGDMaxStepSize << "\n";
-                str << "  RSGD Relaxation factor: " << std::fixed << std::setprecision(2)
-                                                    << deformRSGDRelaxationFactor << "\n";
-                break;
-            default:;
-        }
-
-
+            str << "  Showing deformation field.\n";
         str << "  Max. iterations: " << deformMaxIter << "\n";
+
+        switch (deformRegType)
+        {
+            case BSpline:
+                str << "  BSpline deformable registration selected.\n";
+                str << "  Pyramid levels: " << deformLevels << "\n";
+                str << "  Grid size: " << bsplineGridSizes << "\n";
+                str << "  Bspline order: " << BSPLINE_ORDER << "\n";
+                str << "  Metric: ";
+
+                switch (bsplineMetric)
+                {
+                    case MeanSquares:
+                        str << "Mean squares\n";
+                        break;
+                    case MattesMutualInformation:
+                        str << "Mattes mutual information\n";
+                        str << "  Number of bins: " << bsplineMMINumBins << "\n";
+                        str << "  Sample rate: " << std::fixed << std::setprecision(2)
+                            << bsplineMMISampleRate << "\n";
+                        break;
+                    default:;
+                }
+                str << "  Optimiser: ";
+                switch (bsplineOptimiser)
+                {
+                    case LBFGSB:
+                        str << "LBFGSB\n";
+                        str << "  LBFGSB Convergence: " << std::scientific << std::setprecision(2)
+                                                        << bsplineLBFGSBCostConvergence << "\n";
+                        break;
+                    case LBFGS:
+                        str << "LBFGS\n";
+                        str << "  LBFGS Convergence: " << std::scientific << std::setprecision(2)
+                                                       << bsplineLBFGSGradientConvergence << "\n";
+                        break;
+                    case RSGD:
+                        str << "RSGD\n";
+                        str << "  RSGD Min. step size: " << std::scientific << std::setprecision(2)
+                                                         << bsplineRSGDMinStepSize << "\n";
+                        str << "  RSGD Max. step size: " << std::scientific << std::setprecision(2)
+                                                         << bsplineRSGDMaxStepSize << "\n";
+                        str << "  RSGD Relaxation factor: " << std::fixed << std::setprecision(2)
+                                                            << bsplineRSGDRelaxationFactor << "\n";
+                        break;
+                    default:;
+                }
+                break;
+            case Demons:
+                str << "  Demons deformable registration selected.\n";
+                str << "  Max. RMS error: " << demonsMaxRMSError << "\n";
+                str << "  Histogram bins: " << demonsHistogramBins << "\n";
+                str << "  Histogram match points: " << demonsHistogramMatchPoints << "\n";
+                str << "  Standard deviations: " << demonsStandardDeviations << "\n";
+                break;
+        }
     }
     else
     {

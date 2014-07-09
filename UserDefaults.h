@@ -42,21 +42,28 @@ extern NSString* const RigidRegMaxIterKey;
 
 // deformable regitration parameters
 extern NSString* const DeformRegEnabledKey;
-extern NSString* const DeformShowFieldKey;
-extern NSString* const DeformRegMultiresLevelsKey;
-extern NSString* const DeformRegGridSizeArrayKey;
-extern NSString* const DeformRegMetricKey;
-extern NSString* const DeformRegOptimizerKey;
-extern NSString* const DeformRegMMIHistogramBinsKey;
-extern NSString* const DeformRegMMISampleRateKey;
-extern NSString* const DeformRegLBFGSBCostConvergenceKey;
-extern NSString* const DeformRegLBFGSBGradientToleranceKey;
-extern NSString* const DeformRegLBFGSGradientConvergenceKey;
-extern NSString* const DeformRegLBFGSDefaultStepSizeKey;
-extern NSString* const DeformRegRSGDMinStepSizeKey;
-extern NSString* const DeformRegRSGDMaxStepSizeKey;
-extern NSString* const DeformRegRSGDRelaxationFactorKey;
+extern NSString* const DeformRegTypeKey;
 extern NSString* const DeformRegMaxIterKey;
+extern NSString* const DeformRegShowFieldKey;
+extern NSString* const DeformRegMultiresLevelsKey;
+
+extern NSString* const BsplineRegGridSizeArrayKey;
+extern NSString* const BsplineRegMetricKey;
+extern NSString* const BsplineRegOptimizerKey;
+extern NSString* const BsplineRegMMIHistogramBinsKey;
+extern NSString* const BsplineRegMMISampleRateKey;
+extern NSString* const BsplineRegLBFGSBCostConvergenceKey;
+extern NSString* const BsplineRegLBFGSBGradientToleranceKey;
+extern NSString* const BsplineRegLBFGSGradientConvergenceKey;
+extern NSString* const BsplineRegLBFGSDefaultStepSizeKey;
+extern NSString* const BsplineRegRSGDMinStepSizeKey;
+extern NSString* const BsplineRegRSGDMaxStepSizeKey;
+extern NSString* const BsplineRegRSGDRelaxationFactorKey;
+
+extern NSString* const DemonsRegMaxRMSErrorKey;
+extern NSString* const DemonsRegHistogramBinsKey;
+extern NSString* const DemonsRegHistogramMatchPointsKey;
+extern NSString* const DemonsRegStandardDeviationsKey;
 
 @class RegistrationParams;
 

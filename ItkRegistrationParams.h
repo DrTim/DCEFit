@@ -74,22 +74,32 @@ public:
 
     ParamVector<unsigned> rigidMaxIter;          ///< Stop at this number of iterations if no convergence.
 
-    bool deformRegEnabled;                  ///< Do deformable reg if true.
+    bool deformRegEnabled;                     ///< True if deform. reg. is enabled.
+    enum DeformableRegistrationType deformRegType; ///< Which type of def. reg. to do if enabled.
     bool deformShowField;                   ///< Show displacement field on image if true.
     unsigned deformLevels;                  ///< Number of multi-res levels to use (max 4).
-    MetricType deformRegMetric;             ///< Type of metric to use.
-    OptimizerType deformRegOptimiser;       ///< Optimiser to use.
-    ParamMatrix<unsigned> deformGridSizes;    ///< Sizes of BSpline grids to use.
-    ParamVector<unsigned> deformMMINumBins;   ///< MMI bins. See ITK docs.
-    ParamVector<float> deformMMISampleRate;   ///< Fraction of image for MMI metric to sample.
-    ParamVector<float> deformLBFGSBCostConvergence;    ///< Stop criterion. See ITK docs.
-    ParamVector<float> deformLBFGSBGradientTolerance;  ///< Stop criterion. See ITK docs.
-    ParamVector<float> deformLBFGSGradientConvergence; ///< Stop criterion. See ITK docs.
-    ParamVector<float> deformLBFGSDefaultStepSize;     ///< Initial step size. See ITK docs.
-    ParamVector<float> deformRSGDMinStepSize;          ///< Stop criterion. See ITK docs.
-    ParamVector<float> deformRSGDMaxStepSize;          ///< Initial step size. See ITK docs.
-    ParamVector<float> deformRSGDRelaxationFactor;     ///< RSGD tuning. See ITK docs.
     ParamVector<unsigned> deformMaxIter; ///< Stop at this number of iterations if no convergence.
+
+    bool bsplineRegEnabled;                  ///< Do Bspline reg if true.
+    MetricType bsplineMetric;             ///< Type of metric to use.
+    OptimizerType bsplineOptimiser;       ///< Optimiser to use.
+    ParamMatrix<unsigned> bsplineGridSizes;    ///< Sizes of BSpline grids to use.
+    ParamVector<unsigned> bsplineMMINumBins;   ///< MMI bins. See ITK docs.
+    ParamVector<float> bsplineMMISampleRate;   ///< Fraction of image for MMI metric to sample.
+    ParamVector<float> bsplineLBFGSBCostConvergence;    ///< Stop criterion. See ITK docs.
+    ParamVector<float> bsplineLBFGSBGradientTolerance;  ///< Stop criterion. See ITK docs.
+    ParamVector<float> bsplineLBFGSGradientConvergence; ///< Stop criterion. See ITK docs.
+    ParamVector<float> bsplineLBFGSDefaultStepSize;     ///< Initial step size. See ITK docs.
+    ParamVector<float> bsplineRSGDMinStepSize;          ///< Stop criterion. See ITK docs.
+    ParamVector<float> bsplineRSGDMaxStepSize;          ///< Initial step size. See ITK docs.
+    ParamVector<float> bsplineRSGDRelaxationFactor;     ///< RSGD tuning. See ITK docs.
+
+    // Demons specific parameters
+    bool demonsRegEnabled;
+    ParamVector<unsigned> demonsMaxRMSError;     // contains NSNumbers (float)
+    unsigned demonsHistogramBins;
+    unsigned demonsHistogramMatchPoints;
+    float demonsStandardDeviations;
 
     void createFixedImageMask(Image2D::Pointer image); ///< Create spatial object mask.
 

@@ -63,7 +63,7 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     // Set up the observer
     RegistrationObserver2D::Pointer observer = RegistrationObserver2D::New();
     observer->SetNumberOfLevels(itkParams_.deformLevels);
-    observer->SetGridSizeSchedule(itkParams_.deformGridSizes);
+    observer->SetGridSizeSchedule(itkParams_.bsplineGridSizes);
     observer->SetProgressWindowController(progController_);
     [progController_ setObserver:observer];
 
@@ -75,7 +75,7 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     BSplineTransform2D::Pointer transform = BSplineTransform2D::New();
     BSplineTransform2D::MeshSizeType meshSize;
     for (unsigned dim = 0; dim < Image2D::GetImageDimension(); ++dim)
-        meshSize[dim] = itkParams_.deformGridSizes(0, dim) - BSPLINE_ORDER;
+        meshSize[dim] = itkParams_.bsplineGridSizes(0, dim) - BSPLINE_ORDER;
     
     BSplineTransformInitializer2D::Pointer transformInitializer = BSplineTransformInitializer2D::New();
     transformInitializer->SetTransform(transform);
@@ -98,14 +98,14 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     MMIImageToImageMetric2D::Pointer mmiMetric;
     MSImageToImageMetric2D::Pointer msMetric;
     ImageToImageMetric2D::Pointer metric;
-    switch (itkParams_.deformRegMetric)
+    switch (itkParams_.bsplineMetric)
     {
         case MattesMutualInformation:
             mmiMetric = MMIImageToImageMetric2D::New();
             mmiMetric->UseExplicitPDFDerivativesOn();  // Best for large number of parameters
             mmiMetric->SetUseCachingOfBSplineWeights(true); // default == true
             mmiMetric->ReinitializeSeed(76926294);
-            observer->SetMMISchedules(itkParams_.deformMMINumBins, itkParams_.deformMMISampleRate);
+            observer->SetMMISchedules(itkParams_.bsplineMMINumBins, itkParams_.bsplineMMISampleRate);
             metric = mmiMetric;
             break;
         case MeanSquares:
@@ -122,25 +122,25 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
 
     // Set up the optimizer. We are using the Bspline transform so there is no scaling needed.
     SingleValuedNonLinearOptimizer::Pointer optimizer;
-    switch (itkParams_.deformRegOptimiser)
+    switch (itkParams_.bsplineOptimiser)
     {
         case LBFGSB:
             optimizer = GetLBFGSBOptimizer(transform->GetNumberOfParameters(), 1e9, 0.0, 300, 100);
-            observer->SetLBFGSBSchedules(itkParams_.deformLBFGSBCostConvergence,
-                                         itkParams_.deformLBFGSBGradientTolerance,
+            observer->SetLBFGSBSchedules(itkParams_.bsplineLBFGSBCostConvergence,
+                                         itkParams_.bsplineLBFGSBGradientTolerance,
                                          itkParams_.deformMaxIter);
             break;
         case LBFGS:
             optimizer = GetLBFGSOptimizer(1e-5, 0.1, 300);
-            observer->SetLBFGSSchedules(itkParams_.deformLBFGSGradientConvergence,
-                                        itkParams_.deformLBFGSDefaultStepSize,
+            observer->SetLBFGSSchedules(itkParams_.bsplineLBFGSGradientConvergence,
+                                        itkParams_.bsplineLBFGSDefaultStepSize,
                                         itkParams_.deformMaxIter);
             break;
         case RSGD:
             optimizer = GetRSGDOptimizer(1.0, 1.0, 0.5, 1e-4, 300);
-            observer->SetRSGDSchedules(itkParams_.deformRSGDMinStepSize,
-                                       itkParams_.deformRSGDMaxStepSize,
-                                       itkParams_.deformRSGDRelaxationFactor,
+            observer->SetRSGDSchedules(itkParams_.bsplineRSGDMinStepSize,
+                                       itkParams_.bsplineRSGDMaxStepSize,
+                                       itkParams_.bsplineRSGDRelaxationFactor,
                                        itkParams_.deformMaxIter);
         default:
             break;

@@ -32,8 +32,8 @@ NSString* const RigidRegLBFGSBCostConvergenceKey = @"RigidRegLBFGSBCostConvergen
 NSString* const RigidRegLBFGSBGradientToleranceKey = @"RigidRegLBFGSBGradientTolerance";
 NSString* const RigidRegLBFGSGradientConvergenceKey = @"RigidRegLBFGSGradientConvergence";
 NSString* const RigidRegLBFGSDefaultStepSizeKey = @"RigidRegLBFGSDefaultStepSize";
-NSString* const RigidRegRSGDMinStepSizeKey = @"RigidRegRSGDMinStepSizeKey";
-NSString* const RigidRegRSGDMaxStepSizeKey = @"RigidRegRSGDMaxStepSizeKey";
+NSString* const RigidRegRSGDMinStepSizeKey = @"RigidRegRSGDMinStepSize";
+NSString* const RigidRegRSGDMaxStepSizeKey = @"RigidRegRSGDMaxStepSize";
 NSString* const RigidRegRSGDRelaxationFactorKey = @"RigidRegRSGDRelaxationFactor";
 NSString* const RigidRegVersorOptTransScaleKey = @"RigidRegVersorOptTransScale";
 NSString* const RigidRegVersorOptMinStepSizeKey = @"RigidRegVersorOptMinStepSize";
@@ -42,22 +42,32 @@ NSString* const RigidRegVersorOptRelaxationFactorKey = @"RigidRegVersorOptRelaxa
 NSString* const RigidRegMaxIterKey = @"RigidRegMaxIter";
 
 // deformable regitration parameters
-NSString* const DeformRegEnabledKey = @"DeformRegEnable";
-NSString* const DeformShowFieldKey = @"DeformShowField";
-NSString* const DeformRegMultiresLevelsKey = @"DeformRegMultiresLevels";
-NSString* const DeformRegGridSizeArrayKey = @"DeformRegGridSizeArray";
-NSString* const DeformRegMetricKey = @"DeformRegMetric";
-NSString* const DeformRegOptimizerKey = @"DeformRegOptimizer";
-NSString* const DeformRegMMIHistogramBinsKey = @"DeformRegMMIHistogramBins";
-NSString* const DeformRegMMISampleRateKey = @"DeformRegMMISampleRate";
-NSString* const DeformRegLBFGSBCostConvergenceKey = @"DeformRegLBFGSBCostConvergence";
-NSString* const DeformRegLBFGSBGradientToleranceKey = @"DeformRegLBFGSBGradientTolerance";
-NSString* const DeformRegLBFGSDefaultStepSizeKey = @"DeformRegLBFGSDefaultStepSize";
-NSString* const DeformRegLBFGSGradientConvergenceKey = @"DeformRegRSGDGradientConvergence";
-NSString* const DeformRegRSGDMinStepSizeKey = @"DeformRegRSGDMinStepSizeKey";
-NSString* const DeformRegRSGDMaxStepSizeKey = @"DeformRegRSGDMaxStepSizeKey";
-NSString* const DeformRegRSGDRelaxationFactorKey = @"DeformRegRSGDRelaxationFactor";
+NSString* const DeformRegEnabledKey = @"DeformRegEnabled";
+NSString* const DeformRegTypeKey = @"DeformRegType";
 NSString* const DeformRegMaxIterKey = @"DeformRegMaxIter";
+NSString* const DeformRegShowFieldKey = @"DeformRegShowField";
+NSString* const DeformRegMultiresLevelsKey = @"DeformRegMultiresLevels";
+
+// BSpline specific
+NSString* const BsplineRegGridSizeArrayKey = @"BsplineRegGridSizeArray";
+NSString* const BsplineRegMetricKey = @"BsplineRegMetric";
+NSString* const BsplineRegOptimizerKey = @"BsplineRegOptimizer";
+NSString* const BsplineRegMMIHistogramBinsKey = @"BsplineRegMMIHistogramBins";
+NSString* const BsplineRegMMISampleRateKey = @"BsplineRegMMISampleRate";
+NSString* const BsplineRegLBFGSBCostConvergenceKey = @"BsplineRegLBFGSBCostConvergence";
+NSString* const BsplineRegLBFGSBGradientToleranceKey = @"BsplineRegLBFGSBGradientTolerance";
+NSString* const BsplineRegLBFGSDefaultStepSizeKey = @"BsplineRegLBFGSDefaultStepSize";
+NSString* const BsplineRegLBFGSGradientConvergenceKey = @"BsplineRegRSGDGradientConvergence";
+NSString* const BsplineRegRSGDMinStepSizeKey = @"BsplineRegRSGDMinStepSize";
+NSString* const BsplineRegRSGDMaxStepSizeKey = @"BsplineRegRSGDMaxStepSize";
+NSString* const BsplineRegRSGDRelaxationFactorKey = @"BsplineRegRSGDRelaxationFactor";
+
+// Demons specific
+NSString* const DemonsRegMaxRMSErrorKey = @"DemonsRegMaxRMSError";
+NSString* const DemonsRegHistogramBinsKey = @"DemonsRegHistogramBins";
+NSString* const DemonsRegHistogramMatchPointsKey = @"DemonsRegHistogramMatchPoints";
+NSString* const DemonsRegStandardDeviationsKey = @"DemonsRegStandardDeviations";
+
 
 static NSMutableDictionary *defaultsDict;
 static NSString* bundleId;
@@ -133,25 +143,32 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], RigidRegMaxIterKey,
 
      [NSNumber numberWithBool:YES], DeformRegEnabledKey,
-     [NSNumber numberWithBool:NO], DeformShowFieldKey,
+     [NSNumber numberWithInt:Demons], DeformRegTypeKey,
+     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DeformRegMaxIterKey,
+     [NSNumber numberWithBool:NO], DeformRegShowFieldKey,
      [NSNumber numberWithUnsignedInt:3], DeformRegMultiresLevelsKey,
-     [NSNumber numberWithInt:MattesMutualInformation], DeformRegMetricKey,
-     [NSNumber numberWithInt:LBFGSB], DeformRegOptimizerKey,
+
+     [NSNumber numberWithInt:MattesMutualInformation], BsplineRegMetricKey,
+     [NSNumber numberWithInt:LBFGSB], BsplineRegOptimizerKey,
      [NSArray arrayWithObjects:[NSArray arrayWithObjects:@21, @21, @21, nil],
                                [NSArray arrayWithObjects:@15, @15, @15, nil],
                                [NSArray arrayWithObjects:@11, @11, @11, nil],
-                               [NSArray arrayWithObjects:@9, @9, @9, nil], nil], DeformRegGridSizeArrayKey,
-     [NSArray arrayWithObjects:@50, @50, @50, @50, nil], DeformRegMMIHistogramBinsKey,
-     [NSArray arrayWithObjects:@1.0, @1.0, @1.0, @1.0, nil], DeformRegMMISampleRateKey,
-     [NSArray arrayWithObjects:@1e9, @1e9, @1e9, @1e9, nil], DeformRegLBFGSBCostConvergenceKey,
-     [NSArray arrayWithObjects:@0.0, @0.0, @0.0, @0.0, nil], DeformRegLBFGSBGradientToleranceKey,
+                               [NSArray arrayWithObjects:@9, @9, @9, nil], nil], BsplineRegGridSizeArrayKey,
+     [NSArray arrayWithObjects:@50, @50, @50, @50, nil], BsplineRegMMIHistogramBinsKey,
+     [NSArray arrayWithObjects:@1.0, @1.0, @1.0, @1.0, nil], BsplineRegMMISampleRateKey,
+     [NSArray arrayWithObjects:@1e9, @1e9, @1e9, @1e9, nil], BsplineRegLBFGSBCostConvergenceKey,
+     [NSArray arrayWithObjects:@0.0, @0.0, @0.0, @0.0, nil], BsplineRegLBFGSBGradientToleranceKey,
      [NSArray arrayWithObjects:@1e-5, @1e-4, @1e-3, @1e-3, nil],
-                               DeformRegLBFGSGradientConvergenceKey,
-     [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], DeformRegLBFGSDefaultStepSizeKey,
-     [NSArray arrayWithObjects:@1e-6, @1e-5, @1e-4, @1e-4, nil], DeformRegRSGDMinStepSizeKey,
-     [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], DeformRegRSGDMaxStepSizeKey,
-     [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], DeformRegRSGDRelaxationFactorKey,
-     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DeformRegMaxIterKey,
+                               BsplineRegLBFGSGradientConvergenceKey,
+     [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], BsplineRegLBFGSDefaultStepSizeKey,
+     [NSArray arrayWithObjects:@1e-6, @1e-5, @1e-4, @1e-4, nil], BsplineRegRSGDMinStepSizeKey,
+     [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], BsplineRegRSGDMaxStepSizeKey,
+     [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], BsplineRegRSGDRelaxationFactorKey,
+
+     [NSArray arrayWithObjects:@0.8, @0.75, @0.4, @0.2, nil], DemonsRegMaxRMSErrorKey,
+     [NSNumber numberWithUnsignedInt:1000], DemonsRegHistogramBinsKey,
+     [NSNumber numberWithUnsignedInt:10], DemonsRegHistogramMatchPointsKey,
+     [NSNumber numberWithFloat:1.0], DemonsRegStandardDeviationsKey,
 
      nil];
     
@@ -250,37 +267,49 @@ static UserDefaults* sharedInstance;
 
     [defaultsDict setObject:[NSNumber numberWithBool:data.deformRegEnabled]
                      forKey:DeformRegEnabledKey];
+    [defaultsDict setObject:[NSNumber numberWithInt:data.deformRegType]
+                     forKey:DeformRegTypeKey];
     [defaultsDict setObject:[NSNumber numberWithBool:data.deformShowField]
-                     forKey:DeformShowFieldKey];
+                     forKey:DeformRegShowFieldKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.deformRegMultiresLevels]
                      forKey:DeformRegMultiresLevelsKey];
-    [defaultsDict setObject:[NSNumber numberWithInt:data.deformRegMetric]
-                     forKey:DeformRegMetricKey];
-    [defaultsDict setObject:[NSNumber numberWithInt:data.deformRegOptimizer]
-                     forKey:DeformRegOptimizerKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegGridSizeArray]
-                     forKey:DeformRegGridSizeArrayKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMMIHistogramBins]
-                     forKey:DeformRegMMIHistogramBinsKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMMISampleRate]
-                     forKey:DeformRegMMISampleRateKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegLBFGSBCostConvergence]
-                     forKey:DeformRegLBFGSBCostConvergenceKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegLBFGSBGradientTolerance]
-                     forKey:DeformRegLBFGSBGradientToleranceKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegLBFGSGradientConvergence]
-                     forKey:DeformRegLBFGSGradientConvergenceKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegLBFGSDefaultStepSize]
-                     forKey:DeformRegLBFGSDefaultStepSizeKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegRSGDMinStepSize]
-                     forKey:DeformRegRSGDMinStepSizeKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegRSGDMaxStepSize]
-                     forKey:DeformRegRSGDMaxStepSizeKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegRSGDRelaxationFactor]
-                     forKey:DeformRegRSGDRelaxationFactorKey];
-
     [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMaxIter]
                      forKey:DeformRegMaxIterKey];
+
+    [defaultsDict setObject:[NSNumber numberWithInt:data.bsplineRegMetric]
+                     forKey:BsplineRegMetricKey];
+    [defaultsDict setObject:[NSNumber numberWithInt:data.bsplineRegOptimizer]
+                     forKey:BsplineRegOptimizerKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegGridSizeArray]
+                     forKey:BsplineRegGridSizeArrayKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegMMIHistogramBins]
+                     forKey:BsplineRegMMIHistogramBinsKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegMMISampleRate]
+                     forKey:BsplineRegMMISampleRateKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegLBFGSBCostConvergence]
+                     forKey:BsplineRegLBFGSBCostConvergenceKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegLBFGSBGradientTolerance]
+                     forKey:BsplineRegLBFGSBGradientToleranceKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegLBFGSGradientConvergence]
+                     forKey:BsplineRegLBFGSGradientConvergenceKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegLBFGSDefaultStepSize]
+                     forKey:BsplineRegLBFGSDefaultStepSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDMinStepSize]
+                     forKey:BsplineRegRSGDMinStepSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDMaxStepSize]
+                     forKey:BsplineRegRSGDMaxStepSizeKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDRelaxationFactor]
+                     forKey:BsplineRegRSGDRelaxationFactorKey];
+
+    [defaultsDict setObject:[NSArray arrayWithArray:data.demonsRegMaxRMSError]
+                     forKey:DemonsRegMaxRMSErrorKey];
+    [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegHistogramBins]
+                     forKey:DemonsRegHistogramBinsKey];
+    [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegHistogramMatchPoints]
+                     forKey:DemonsRegHistogramMatchPointsKey];
+    [defaultsDict setObject:[NSNumber numberWithFloat:data.demonsRegStandardDeviations]
+                     forKey:DemonsRegStandardDeviationsKey];
+
 
     // Set the current values for for next time
     [defaults setPersistentDomain: defaultsDict forName: bundleId];
