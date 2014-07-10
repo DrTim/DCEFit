@@ -61,13 +61,10 @@
     NSMutableArray* rigidRegMaxIter;           // contains NSNumbers (unsigned)
 
     // general deformable registration parameters
-    BOOL deformRegEnabled;
-    enum DeformableRegistrationType deformRegType;
     BOOL deformShowField;
-    unsigned deformRegMultiresLevels;
-    NSMutableArray* deformRegMaxIter;           // contains NSNumbers (unsigned)
 
     // B-spline specific parameters
+    BOOL bsplineRegEnabled;
     enum MetricType bsplineRegMetric;
     enum OptimizerType bsplineRegOptimizer;
     NSMutableArray* bsplineRegGridSizeArray;     // contains arrays of NSNumbers (unsigned)
@@ -80,12 +77,17 @@
     NSMutableArray* bsplineRegRSGDMinStepSize;
     NSMutableArray* bsplineRegRSGDMaxStepSize;
     NSMutableArray* bsplineRegRSGDRelaxationFactor;
+    unsigned bsplineRegMultiresLevels;
+    NSMutableArray* bsplineRegMaxIter;           // contains NSNumbers (unsigned)
 
     // Demons specific parameters
+    BOOL demonsRegEnabled;
     NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
     unsigned demonsRegHistogramBins;
     unsigned demonsRegHistogramMatchPoints;
     float demonsRegStandardDeviations;
+    unsigned demonsRegMultiresLevels;
+    NSMutableArray* demonsRegMaxIter;           // contains NSNumbers (unsigned)
 }
 
 // Plugin configuration parameters
@@ -124,10 +126,7 @@
 @property (retain) NSMutableArray* rigidRegMaxIter;        /**< Last resort termination criterion. */
 
 // general deformable registration parameters
-//@property (assign) enum DeformableRegistrationType deformRegType; /**< Type of deformable reg. to do. */
 @property (assign) BOOL deformShowField;               /**< Show the displacement field. */
-//@property (assign) unsigned deformRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
-//@property (retain) NSMutableArray* deformRegMaxIter;             /**< Last resort termination criterion. */
 
 // B-spline specific deformable registration parameters
 @property (assign) BOOL bsplineRegEnabled;              /**< B-spline registration enabled if true. */
@@ -148,11 +147,12 @@
 
 // Demons specific parameters
 @property (assign) BOOL demonsRegEnabled;              /**< Demons registration enabled if true. */
+@property (assign) unsigned demonsRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
 @property (retain) NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
 @property (assign) unsigned demonsRegHistogramBins;
 @property (assign) unsigned demonsRegHistogramMatchPoints;
 @property (assign) float demonsRegStandardDeviations;
-@property (retain) NSMutableArray* demonsRegMaxIter;             /**< Last resort termination criterion. */
+@property (retain) NSMutableArray* demonsRegMaxIter;     /**< Last resort termination criterion. */
 
 /**
  * Standard init.

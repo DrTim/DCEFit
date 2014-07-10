@@ -40,13 +40,13 @@ extern NSString* const RigidRegVersorOptMaxStepSizeKey;
 extern NSString* const RigidRegVersorOptRelaxationFactorKey;
 extern NSString* const RigidRegMaxIterKey;
 
-// deformable regitration parameters
-extern NSString* const DeformRegEnabledKey;
-extern NSString* const DeformRegTypeKey;
-extern NSString* const DeformRegMaxIterKey;
+// deformable registration parameters
 extern NSString* const DeformRegShowFieldKey;
-extern NSString* const DeformRegMultiresLevelsKey;
 
+// Bspline
+extern NSString* const BsplineRegEnabledKey;
+extern NSString* const BsplineRegMaxIterKey;
+extern NSString* const BsplineRegMultiresLevelsKey;
 extern NSString* const BsplineRegGridSizeArrayKey;
 extern NSString* const BsplineRegMetricKey;
 extern NSString* const BsplineRegOptimizerKey;
@@ -60,6 +60,10 @@ extern NSString* const BsplineRegRSGDMinStepSizeKey;
 extern NSString* const BsplineRegRSGDMaxStepSizeKey;
 extern NSString* const BsplineRegRSGDRelaxationFactorKey;
 
+//Demons
+extern NSString* const DemonsRegEnabledKey;
+extern NSString* const DemonsRegMaxIterKey;
+extern NSString* const DemonsRegMultiresLevelsKey;
 extern NSString* const DemonsRegMaxRMSErrorKey;
 extern NSString* const DemonsRegHistogramBinsKey;
 extern NSString* const DemonsRegHistogramMatchPointsKey;

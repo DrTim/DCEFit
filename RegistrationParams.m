@@ -48,11 +48,7 @@
 @synthesize rigidRegMaxIter;
 
 // deformable registration parameters
-@synthesize deformRegEnabled;
-@synthesize deformRegType;
 @synthesize deformShowField;
-@synthesize deformRegMultiresLevels;
-@synthesize deformRegMaxIter;
 
 // B-spline registration parameters
 @synthesize bsplineRegGridSizeArray;
@@ -67,12 +63,18 @@
 @synthesize bsplineRegRSGDMinStepSize;
 @synthesize bsplineRegRSGDMaxStepSize;
 @synthesize bsplineRegRSGDRelaxationFactor;
+@synthesize bsplineRegEnabled;
+@synthesize bsplineRegMaxIter;
+@synthesize bsplineRegMultiresLevels;
 
 // Demons registration parameters
 @synthesize demonsRegHistogramBins;
 @synthesize demonsRegHistogramMatchPoints;
 @synthesize demonsRegMaxRMSError;
 @synthesize demonsRegStandardDeviations;
+@synthesize demonsRegEnabled;
+@synthesize demonsRegMaxIter;
+@synthesize demonsRegMultiresLevels;
 
 - (id)init
 {
@@ -122,7 +124,9 @@
     [bsplineRegRSGDMinStepSize release];
     [bsplineRegRSGDMaxStepSize release];
     [bsplineRegRSGDRelaxationFactor release];
-    [deformRegMaxIter release];
+    [bsplineRegMaxIter release];
+
+    [demonsRegMaxIter release];
     [demonsRegMaxRMSError release];
     
     [logger_ release];

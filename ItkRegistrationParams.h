@@ -74,12 +74,10 @@ public:
 
     ParamVector<unsigned> rigidMaxIter;          ///< Stop at this number of iterations if no convergence.
 
-    bool deformRegEnabled;                     ///< True if deform. reg. is enabled.
-    enum DeformableRegistrationType deformRegType; ///< Which type of def. reg. to do if enabled.
     bool deformShowField;                   ///< Show displacement field on image if true.
-    unsigned deformLevels;                  ///< Number of multi-res levels to use (max 4).
-    ParamVector<unsigned> deformMaxIter; ///< Stop at this number of iterations if no convergence.
 
+    unsigned bsplineLevels;                  ///< Number of multi-res levels to use (max 4).
+    ParamVector<unsigned> bsplineMaxIter; ///< Stop at this number of iterations if no convergence.
     bool bsplineRegEnabled;                  ///< Do Bspline reg if true.
     MetricType bsplineMetric;             ///< Type of metric to use.
     OptimizerType bsplineOptimiser;       ///< Optimiser to use.
@@ -96,6 +94,8 @@ public:
 
     // Demons specific parameters
     bool demonsRegEnabled;
+    unsigned demonsLevels;                  ///< Number of multi-res levels to use (max 4).
+    ParamVector<unsigned> demonsMaxIter; ///< Stop at this number of iterations if no convergence.
     ParamVector<unsigned> demonsMaxRMSError;     // contains NSNumbers (float)
     unsigned demonsHistogramBins;
     unsigned demonsHistogramMatchPoints;

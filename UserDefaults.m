@@ -42,13 +42,12 @@ NSString* const RigidRegVersorOptRelaxationFactorKey = @"RigidRegVersorOptRelaxa
 NSString* const RigidRegMaxIterKey = @"RigidRegMaxIter";
 
 // deformable regitration parameters
-NSString* const DeformRegEnabledKey = @"DeformRegEnabled";
-NSString* const DeformRegTypeKey = @"DeformRegType";
-NSString* const DeformRegMaxIterKey = @"DeformRegMaxIter";
 NSString* const DeformRegShowFieldKey = @"DeformRegShowField";
-NSString* const DeformRegMultiresLevelsKey = @"DeformRegMultiresLevels";
 
 // BSpline specific
+NSString* const BsplineRegEnabledKey = @"BsplineRegEnabled";
+NSString* const BsplineRegMaxIterKey = @"BsplineRegMaxIter";
+NSString* const BsplineRegMultiresLevelsKey = @"BsplineRegMultiresLevels";
 NSString* const BsplineRegGridSizeArrayKey = @"BsplineRegGridSizeArray";
 NSString* const BsplineRegMetricKey = @"BsplineRegMetric";
 NSString* const BsplineRegOptimizerKey = @"BsplineRegOptimizer";
@@ -63,6 +62,9 @@ NSString* const BsplineRegRSGDMaxStepSizeKey = @"BsplineRegRSGDMaxStepSize";
 NSString* const BsplineRegRSGDRelaxationFactorKey = @"BsplineRegRSGDRelaxationFactor";
 
 // Demons specific
+NSString* const DemonsRegEnabledKey = @"DemonsRegEnabled";
+NSString* const DemonsRegMaxIterKey = @"DemonsRegMaxIter";
+NSString* const DemonsRegMultiresLevelsKey = @"DemonsRegMultiresLevels";
 NSString* const DemonsRegMaxRMSErrorKey = @"DemonsRegMaxRMSError";
 NSString* const DemonsRegHistogramBinsKey = @"DemonsRegHistogramBins";
 NSString* const DemonsRegHistogramMatchPointsKey = @"DemonsRegHistogramMatchPoints";
@@ -142,12 +144,11 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], RigidRegVersorOptRelaxationFactorKey,
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], RigidRegMaxIterKey,
 
-     [NSNumber numberWithBool:YES], DeformRegEnabledKey,
-     [NSNumber numberWithInt:Demons], DeformRegTypeKey,
-     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DeformRegMaxIterKey,
      [NSNumber numberWithBool:NO], DeformRegShowFieldKey,
-     [NSNumber numberWithUnsignedInt:3], DeformRegMultiresLevelsKey,
 
+     [NSNumber numberWithBool:YES], BsplineRegEnabledKey,
+     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], BsplineRegMaxIterKey,
+     [NSNumber numberWithUnsignedInt:3], BsplineRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], BsplineRegMetricKey,
      [NSNumber numberWithInt:LBFGSB], BsplineRegOptimizerKey,
      [NSArray arrayWithObjects:[NSArray arrayWithObjects:@21, @21, @21, nil],
@@ -165,6 +166,9 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], BsplineRegRSGDMaxStepSizeKey,
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], BsplineRegRSGDRelaxationFactorKey,
 
+     [NSNumber numberWithBool:YES], DemonsRegEnabledKey,
+     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DemonsRegMaxIterKey,
+     [NSNumber numberWithUnsignedInt:3], DemonsRegMultiresLevelsKey,
      [NSArray arrayWithObjects:@0.8, @0.75, @0.4, @0.2, nil], DemonsRegMaxRMSErrorKey,
      [NSNumber numberWithUnsignedInt:1000], DemonsRegHistogramBinsKey,
      [NSNumber numberWithUnsignedInt:10], DemonsRegHistogramMatchPointsKey,
@@ -265,17 +269,15 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSArray arrayWithArray:data.rigidRegMaxIter]
                      forKey:RigidRegMaxIterKey];
 
-    [defaultsDict setObject:[NSNumber numberWithBool:data.deformRegEnabled]
-                     forKey:DeformRegEnabledKey];
-    [defaultsDict setObject:[NSNumber numberWithInt:data.deformRegType]
-                     forKey:DeformRegTypeKey];
     [defaultsDict setObject:[NSNumber numberWithBool:data.deformShowField]
                      forKey:DeformRegShowFieldKey];
-    [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.deformRegMultiresLevels]
-                     forKey:DeformRegMultiresLevelsKey];
-    [defaultsDict setObject:[NSArray arrayWithArray:data.deformRegMaxIter]
-                     forKey:DeformRegMaxIterKey];
 
+    [defaultsDict setObject:[NSNumber numberWithBool:data.bsplineRegEnabled]
+                     forKey:BsplineRegEnabledKey];
+    [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.bsplineRegMultiresLevels]
+                     forKey:BsplineRegMultiresLevelsKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegMaxIter]
+                     forKey:BsplineRegMaxIterKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.bsplineRegMetric]
                      forKey:BsplineRegMetricKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.bsplineRegOptimizer]
@@ -301,6 +303,12 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDRelaxationFactor]
                      forKey:BsplineRegRSGDRelaxationFactorKey];
 
+    [defaultsDict setObject:[NSNumber numberWithBool:data.demonsRegEnabled]
+                     forKey:DemonsRegEnabledKey];
+    [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegMultiresLevels]
+                     forKey:DemonsRegMultiresLevelsKey];
+    [defaultsDict setObject:[NSArray arrayWithArray:data.demonsRegMaxIter]
+                     forKey:DemonsRegMaxIterKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.demonsRegMaxRMSError]
                      forKey:DemonsRegMaxRMSErrorKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegHistogramBins]
