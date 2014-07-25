@@ -19,6 +19,7 @@
 @synthesize useDefaultNumberOfThreads;
 
 // General registration parameters
+@synthesize regSequence;
 @synthesize numImages;
 @synthesize fixedImageNumber;
 @synthesize slicesPerImage;
@@ -28,7 +29,7 @@
 @synthesize fixedImageMask;
 
 // rigid registration parameters
-@synthesize rigidRegEnabled;
+//@synthesize rigidRegEnabled;
 @synthesize rigidRegMultiresLevels;
 @synthesize rigidRegMetric;
 @synthesize rigidRegOptimizer;
@@ -63,7 +64,7 @@
 @synthesize bsplineRegRSGDMinStepSize;
 @synthesize bsplineRegRSGDMaxStepSize;
 @synthesize bsplineRegRSGDRelaxationFactor;
-@synthesize bsplineRegEnabled;
+//@synthesize bsplineRegEnabled;
 @synthesize bsplineRegMaxIter;
 @synthesize bsplineRegMultiresLevels;
 
@@ -72,7 +73,7 @@
 @synthesize demonsRegHistogramMatchPoints;
 @synthesize demonsRegMaxRMSError;
 @synthesize demonsRegStandardDeviations;
-@synthesize demonsRegEnabled;
+//@synthesize demonsRegEnabled;
 @synthesize demonsRegMaxIter;
 @synthesize demonsRegMultiresLevels;
 
@@ -150,9 +151,10 @@
     // General parameters
     self.fixedImageNumber = [def integerForKey:FixedImageNumberKey];
     self.seriesDescription = [def stringForKey:SeriesDescriptionKey];
+    self.regSequence = [def integerForKey:RegistrationSequenceKey];
 
     // Rigid registration parameters
-    self.rigidRegEnabled = [def booleanForKey:RigidRegEnabledKey];
+    //self.rigidRegEnabled = [def booleanForKey:RigidRegEnabledKey];
     self.rigidRegMultiresLevels = [def unsignedIntegerForKey:RigidRegMultiresLevelsKey];
     self.rigidRegMetric = [def integerForKey:RigidRegMetricKey];
     self.rigidRegOptimizer = [def integerForKey:RigidRegOptimizerKey];
@@ -192,14 +194,14 @@
                             [def objectForKey:RigidRegMaxIterKey]];
 
     // Deformable registration parameters
-    self.deformRegEnabled = [def booleanForKey:DeformRegEnabledKey];
-    self.deformRegType = [def integerForKey:DeformRegTypeKey];
-    self.deformRegMaxIter = [NSMutableArray arrayWithArray:
-                             [def objectForKey:DeformRegMaxIterKey]];
     self.deformShowField = [def booleanForKey:DeformRegShowFieldKey];
-    self.deformRegMultiresLevels = [def unsignedIntegerForKey:DeformRegMultiresLevelsKey];
 
     // BSpline registration
+    //self.bsplineRegEnabled = [def booleanForKey:BsplineRegEnabledKey];
+
+    self.bsplineRegMaxIter = [NSMutableArray arrayWithArray:
+                             [def objectForKey:BsplineRegMaxIterKey]];
+    self.bsplineRegMultiresLevels = [def unsignedIntegerForKey:BsplineRegMultiresLevelsKey];
     self.bsplineRegMetric = [def integerForKey:BsplineRegMetricKey];
     self.bsplineRegOptimizer = [def integerForKey:BsplineRegOptimizerKey];
     self.bsplineRegGridSizeArray = [NSMutableArray arrayWithArray:
@@ -226,6 +228,10 @@
                                           [def objectForKey:BsplineRegRSGDRelaxationFactorKey]];
 
     // Demons registration
+    //self.demonsRegEnabled = [def booleanForKey:DemonsRegEnabledKey];
+    self.demonsRegMaxIter = [NSMutableArray arrayWithArray:
+                              [def objectForKey:DemonsRegMaxIterKey]];
+    self.demonsRegMultiresLevels = [def unsignedIntegerForKey:DemonsRegMultiresLevelsKey];
     self.demonsRegMaxRMSError = [NSMutableArray arrayWithArray:
                                  [def objectForKey:DemonsRegMaxRMSErrorKey]];
     self.demonsRegHistogramBins = [def unsignedIntegerForKey:DemonsRegHistogramBinsKey];
@@ -247,6 +253,21 @@
         return slicesPerImage - index;
     else
         return index + 1;
+}
+
+- (BOOL)isRigidRegEnabled
+{
+    return ((regSequence == Rigid) || (regSequence == RigidBSpline));
+}
+
+- (BOOL)isBsplineRegEnabled
+{
+    return ((regSequence == BSpline) || (regSequence == RigidBSpline));
+}
+
+- (BOOL)isDemonsRegEnabled
+{
+    return (regSequence == Demons);
 }
 
 @end

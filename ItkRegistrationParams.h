@@ -42,8 +42,11 @@ public:
     std::string Print() const;
     unsigned sliceNumberToIndex(unsigned number);
     unsigned indexToSliceNumber(unsigned index);
+    bool isRigidRegEnabled() const;
+    bool isBSplineRegEnabled() const;
+    bool isDemonsRegEnabled() const;
 
-public:
+    RegistrationSequenceType regSequence;
     unsigned numImages;                      ///< Number of images (time samples) in series, 2D or 3D.
     unsigned slicesPerImage;                 ///< Number of slices (2D) per time sample.
     unsigned fixedImageNumber;               ///< Number of fixed image, 1 based as in OsiriX.
@@ -52,7 +55,7 @@ public:
     Image2D::RegionType fixedImageRegion;    ///< Region to register.
     SpatialMask2D::Pointer fixedImageMask;   ///< Spatial mask for registration.
 
-    bool rigidRegEnabled;                    ///< Do rigid step first if  true.
+    //bool rigidRegEnabled;                    ///< Do rigid step first if  true.
     unsigned rigidLevels;                    ///< Number of multi-res levels to use (max 4).
     MetricType rigidRegMetric;               ///< Type of metric to use.
     OptimizerType rigidRegOptimiser;         ///< Optimiser to use.
@@ -78,7 +81,7 @@ public:
 
     unsigned bsplineLevels;                  ///< Number of multi-res levels to use (max 4).
     ParamVector<unsigned> bsplineMaxIter; ///< Stop at this number of iterations if no convergence.
-    bool bsplineRegEnabled;                  ///< Do Bspline reg if true.
+                                          //bool bsplineRegEnabled;                  ///< Do Bspline reg if true.
     MetricType bsplineMetric;             ///< Type of metric to use.
     OptimizerType bsplineOptimiser;       ///< Optimiser to use.
     ParamMatrix<unsigned> bsplineGridSizes;    ///< Sizes of BSpline grids to use.
@@ -93,10 +96,10 @@ public:
     ParamVector<float> bsplineRSGDRelaxationFactor;     ///< RSGD tuning. See ITK docs.
 
     // Demons specific parameters
-    bool demonsRegEnabled;
+    //bool demonsRegEnabled;
     unsigned demonsLevels;                  ///< Number of multi-res levels to use (max 4).
-    ParamVector<unsigned> demonsMaxIter; ///< Stop at this number of iterations if no convergence.
-    ParamVector<unsigned> demonsMaxRMSError;     // contains NSNumbers (float)
+    ParamVector<unsigned> demonsMaxIter;    ///< Stop at this number of iterations if no convergence.
+    ParamVector<float> demonsMaxRMSError;   ///< Optimizer convergence criterion.
     unsigned demonsHistogramBins;
     unsigned demonsHistogramMatchPoints;
     float demonsStandardDeviations;

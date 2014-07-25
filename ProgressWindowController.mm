@@ -13,7 +13,8 @@
 #import "RegProgressValues.h"
 #import "RegistrationManager.h"
 
-#include "RegistrationObserver.h"
+#include "RegistrationObserverBSpline.h"
+#include "RegistrationObserverDemons.h"
 
 #include <Log4m/LoggingMacros.h>
 
@@ -150,19 +151,30 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 
 - (void)setObserver:(void *)observer
 {
+    // observer may be 0 so we catch this first.
+    if (observer == 0)
+    {
+        observer_ = 0;
+        return;
+    }
+
     // This is an effort to shoehorn namespaces and templates into Obj-C.
-    // If *observer_ is not one of the acceptable classes observerDims
-    // will be 0.
     itk::Command* obs = static_cast<itk::Command*>(observer);
     observer_ = obs;
+    observerDims_ = 0;
 
-    if (dynamic_cast<RegistrationObserver<Image2D>*>(obs) != 0)
+    if (dynamic_cast<RegistrationObserverBSpline<Image2D>*>(obs) != 0)
         observerDims_ = 2;
-    else if (dynamic_cast<RegistrationObserver<Image3D>*>(obs) != 0)
+    else if (dynamic_cast<RegistrationObserverBSpline<Image3D>*>(obs) != 0)
+        observerDims_ = 3;
+    else if (dynamic_cast<RegistrationObserverDemons<Image2D, DemonsDisplacementField2D>*>(obs) != 0)
+        observerDims_ = 2;
+    else if (dynamic_cast<RegistrationObserverDemons<Image3D, DemonsDisplacementField3D>*>(obs) != 0)
         observerDims_ = 3;
 
+    // If none of the above worked, observerDims_ will still be 0
     NSAssert(((observerDims_ == 2) || (observerDims_ == 3)),
-        @"Argument 'observer' not an instantiation of RegistrationObserver<>");
+        @"Argument 'observer' not an instantiation of RegistrationObserver");
 }
 
 - (void)setMaxIterations:(NSNumber*)iterations
@@ -214,11 +226,15 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 {
     LOG4M_TRACE(logger_, @"Enter");
 
-    if (registrationCancelled)
-        [statusTextField setStringValue:@"Registration cancelled by user."];
-    else
-        [statusTextField setStringValue:@"Registration finished normally."];
+    NSString* msg;
 
+    if (registrationCancelled)
+        msg = @"Registration cancelled by user.";
+    else
+        msg = @"Registration finished normally.";
+
+    [statusTextField setStringValue:msg];
+    [self setStopCondition:msg];
     registrationFinished = YES;
     [stopButton setEnabled:NO];
     [saveButton setEnabled:YES];
@@ -254,18 +270,9 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 
 - (void)stopRegistration
 {
-    itk::Command* obs = static_cast<itk::Command*>(observer_);
+    RegistrationObserverBase* obs = static_cast<RegistrationObserverBase*>(observer_);
 
-    if (observerDims_ == 2)
-    {
-        RegistrationObserver<Image2D>* obs2D = dynamic_cast<RegistrationObserver<Image2D>*>(obs);
-        obs2D->StopRegistration();
-    }
-    else if (observerDims_ == 3)
-    {
-        RegistrationObserver<Image3D>* obs3D = dynamic_cast<RegistrationObserver<Image3D>*>(obs);
-        obs3D->StopRegistration();
-    }
+    obs->StopRegistration();
 
     [regManager cancelRegistration];
     [statusTextField setStringValue:@"Waiting for termination."];

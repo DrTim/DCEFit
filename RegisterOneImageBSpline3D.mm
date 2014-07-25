@@ -1,14 +1,14 @@
 /*
- * File:   RegisterOneImageDeformable3D.mm
+ * File:   RegisterOneImageBSpline3D.mm
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
-#include "RegisterOneImageDeformable3D.h"
+#include "RegisterOneImageBSpline3D.h"
 #include "ItkTypedefs.h"
 #include "OptimizerUtils.h"
-#include "RegistrationObserver.h"
+#include "RegistrationObserverBSpline.h"
 #include "ParseITKException.h"
 #include "ImageTagger.h"
 
@@ -16,25 +16,24 @@
 
 #include <log4cplus/loggingmacros.h>
 
-RegisterOneImageDeformable3D::RegisterOneImageDeformable3D(
+RegisterOneImageBSpline3D::RegisterOneImageBSpline3D(
     ProgressWindowController* progressController, Image3D::Pointer fixedImage,
     const ItkRegistrationParams& params)
     : RegisterOneImage<Image3D>(progressController, fixedImage, params)
 {
-    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDeformable3D";
+    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageBSpline3D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
 
     // don't do anything if this is turned off
-    if (itkParams_.deformLevels == 0)
+    if (itkParams_.bsplineLevels == 0)
     {
-        LOG4CPLUS_FATAL(logger_, "Deformable registration levels == 0.");
+        LOG4CPLUS_FATAL(logger_, "B-spline deformable registration levels == 0.");
         throw itk::InvalidArgumentError();
-        return;
     }
 }
 
-Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer movingImage, ResultCode& code)
+Image3D::Pointer RegisterOneImageBSpline3D::registerImage(Image3D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
@@ -44,9 +43,9 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     // Set the resolution schedule
     // We use reduced resolution in the plane of the slices but not in the other dimension
     // because it is small to begin with in DCE images.
-    Registration3D::ScheduleType resolutionSchedule(itkParams_.deformLevels, Image3D::ImageDimension);
+    MultiResRegistrationMethod3D::ScheduleType resolutionSchedule(itkParams_.bsplineLevels, Image3D::ImageDimension);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
-                double>(std::pow(2.0, static_cast<double>(itkParams_.deformLevels - 1)));
+                double>(std::pow(2.0, static_cast<double>(itkParams_.bsplineLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
     {
         for (unsigned dim = 0; dim < resolutionSchedule.cols(); ++dim)
@@ -67,8 +66,8 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    RegistrationObserver<Image3D>::Pointer observer = RegistrationObserver<Image3D>::New();
-    observer->SetNumberOfLevels(itkParams_.deformLevels);
+    RegistrationObserverBSpline<Image3D>::Pointer observer = RegistrationObserverBSpline<Image3D>::New();
+    observer->SetNumberOfLevels(itkParams_.bsplineLevels);
     observer->SetGridSizeSchedule(itkParams_.bsplineGridSizes);
     observer->SetProgressWindowController(progController_);
     [progController_ setObserver:observer];
@@ -133,20 +132,20 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
             optimizer = GetLBFGSBOptimizer(transform->GetNumberOfParameters(), 1e9, 0.0, 300, 100);
             observer->SetLBFGSBSchedules(itkParams_.bsplineLBFGSBCostConvergence,
                                          itkParams_.bsplineLBFGSBGradientTolerance,
-                                         itkParams_.deformMaxIter);
+                                         itkParams_.bsplineMaxIter);
             break;
         case LBFGS:
             optimizer = GetLBFGSOptimizer(1e-5, 0.1, 300);
             observer->SetLBFGSSchedules(itkParams_.bsplineLBFGSGradientConvergence,
                                         itkParams_.bsplineLBFGSDefaultStepSize,
-                                        itkParams_.deformMaxIter);
+                                        itkParams_.bsplineMaxIter);
             break;
         case RSGD:
             optimizer = GetRSGDOptimizer(1.0, 1.0, 0.5, 1e-4, 300);
             observer->SetRSGDSchedules(itkParams_.bsplineRSGDMinStepSize,
                                        itkParams_.bsplineRSGDMaxStepSize,
                                        itkParams_.bsplineRSGDRelaxationFactor,
-                                       itkParams_.deformMaxIter);
+                                       itkParams_.bsplineMaxIter);
         default:
             break;
     }
@@ -169,16 +168,16 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     // The image pyramids
     // These will be set up by the registration object.
     ImagePyramid3D::Pointer fixedImagePyramid = ImagePyramid3D::New();
-    fixedImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
+    fixedImagePyramid->SetNumberOfLevels(itkParams_.bsplineLevels);
 
     ImagePyramid3D::Pointer movingImagePyramid = ImagePyramid3D::New();
-    movingImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
+    movingImagePyramid->SetNumberOfLevels(itkParams_.bsplineLevels);
 
     // Set up the registration
     Image3D::RegionType reg = fixedImage_->GetLargestPossibleRegion();
     Image3D::RegionType regRegion = Create3DRegion(itkParams_.fixedImageRegion, reg.GetSize(2u));
 
-    Registration3D::Pointer registration = Registration3D::New();
+    MultiResRegistrationMethod3D::Pointer registration = MultiResRegistrationMethod3D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);
@@ -245,7 +244,7 @@ Image3D::Pointer RegisterOneImageDeformable3D::registerImage(Image3D::Pointer mo
     return result;
 }
 
-Image3D::RegionType RegisterOneImageDeformable3D::Create3DRegion(const Image2D::RegionType& region2D, unsigned numSlices)
+Image3D::RegionType RegisterOneImageBSpline3D::Create3DRegion(const Image2D::RegionType& region2D, unsigned numSlices)
 {
     Image3D::RegionType region;
 

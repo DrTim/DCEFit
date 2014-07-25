@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ItkTypedefs.h"
-#import "RegistrationObserver.h"
+#import "RegistrationObserverBSpline.h"
 
 #include "ImageSlicer.h"
 

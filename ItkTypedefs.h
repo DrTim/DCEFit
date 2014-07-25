@@ -35,6 +35,7 @@
 #include <itkExtractImageFilter.h>
 #include <itkPolygonSpatialObject.h>
 #include <itkHistogramMatchingImageFilter.h>
+#include <itkSymmetricForcesDemonsRegistrationFilter.h>
 #include <itkDemonsRegistrationFilter.h>
 #include <itkMultiResolutionPDEDeformableRegistration.h>
 #include <itkWarpImageFilter.h>
@@ -59,9 +60,9 @@ typedef itk::MetaDataDictionary MetaDataDictionary;
 typedef SeriesReader::DictionaryArrayType MetaDataDictionaryArray;
 
 // The registration object types
-typedef itk::MultiResolutionImageRegistrationMethod<Image2D, Image2D> Registration2D;
+typedef itk::MultiResolutionImageRegistrationMethod<Image2D, Image2D> MultiResRegistrationMethod2D;
 typedef itk::MultiResolutionPyramidImageFilter<Image2D, Image2D> ImagePyramid2D;
-typedef itk::MultiResolutionImageRegistrationMethod<Image3D, Image3D> Registration3D;
+typedef itk::MultiResolutionImageRegistrationMethod<Image3D, Image3D> MultiResRegistrationMethod3D;
 typedef itk::MultiResolutionPyramidImageFilter<Image3D, Image3D> ImagePyramid3D;
 
 // Typedefs of metrics we will be selecting
@@ -111,10 +112,12 @@ typedef itk::PolygonSpatialObject<3u> SpatialMask3D;
 // Demons registration filter and needed accessories
 typedef itk::Vector<float, Image2D::ImageDimension> DemonsVectorPixel2D;
 typedef itk::Image<DemonsVectorPixel2D, Image2D::ImageDimension> DemonsDisplacementField2D;
+//typedef itk::SymmetricForcesDemonsRegistrationFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsRegistrationFilter2D;
 typedef itk::DemonsRegistrationFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsRegistrationFilter2D;
 typedef itk::Vector<float, Image3D::ImageDimension> DemonsVectorPixel3D;
 typedef itk::Image<DemonsVectorPixel3D, Image3D::ImageDimension> DemonsDisplacementField3D;
-typedef itk::DemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField2D> DemonsRegistrationFilter3D;
+//typedef itk::SymmetricForcesDemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField3D> DemonsRegistrationFilter3D;
+typedef itk::DemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField3D> DemonsRegistrationFilter3D;
 
 // Histogram matching filter for Demons registration
 typedef itk::HistogramMatchingImageFilter<Image2D, Image2D> MatchingFilterType2D;

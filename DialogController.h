@@ -41,56 +41,65 @@
 
     // Main dialog
     //
+    // Main tab view
+    IBOutlet NSTabView *mainTabView;
+    
+    // Tab view for the registration parameters
+    IBOutlet NSTabView *registrationParametersTabView;
+
     // Top box
     IBOutlet NSTextField *seriesDescriptionTextField;
     IBOutlet NSComboBox *fixedImageComboBox;
+    IBOutlet NSMatrix *registrationSelectionRadioMatrix;
 
-    // Rigid registration box
-    IBOutlet NSButton *rigidRegEnableCheckBox;
+    // Rigid registration tab
     IBOutlet NSComboBox *rigidRegLevelsComboBox;
     IBOutlet NSTextField *rigidRegOptimizerLabel;
     IBOutlet NSButton *rigidRegOptimizerConfigButton;
     IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
     IBOutlet NSButton *rigidRegMetricConfigButton;
 
-    // Deformable registration box
-    IBOutlet NSButton *deformRegEnableCheckBox;
-    IBOutlet NSButton *deformShowFieldCheckBox;
-    IBOutlet NSComboBox *deformRegLevelsComboBox;
-    IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
-    IBOutlet NSButton *deformRegOptimizerConfigButton;
-    IBOutlet NSMatrix *deformRegMetricRadioMatrix;
-    IBOutlet NSButton *deformRegMetricConfigButton;
-    IBOutlet NSTableView *deformRegGridSizeTableView;
+    // B-spline deformable registration tab
+    //IBOutlet NSButton *bsplineShowFieldCheckBox;
+    IBOutlet NSComboBox *bsplineRegLevelsComboBox;
+    IBOutlet NSMatrix *bsplineRegOptimizerRadioMatrix;
+    IBOutlet NSButton *bsplineRegOptimizerConfigButton;
+    IBOutlet NSMatrix *bsplineRegMetricRadioMatrix;
+    IBOutlet NSButton *bsplineRegMetricConfigButton;
+    IBOutlet NSTableView *bsplineRegGridSizeTableView;
+
+    // Demons deformable registration tab
+    IBOutlet NSComboBox *demonsRegLevelsComboBox;
+    IBOutlet NSButton *demonsRegOptimizerConfigButton;
 
     // Bottom box buttons
     IBOutlet NSButton *regCloseButton;
     IBOutlet NSComboBox *loggingLevelComboBox;
+
+    //
     IBOutlet NSComboBox *numberOfThreadsComboBox;
     NSButton *useDefaultNumberOfThreadsCheckBox;
     IBOutlet NSButton *regStartButton;
 
     // Optimizer and metric configuration sheets
-    IBOutlet NSPanel *rigidRegLBFGSBOptimizerConfigPanel;
-    IBOutlet NSPanel *rigidRegLBFGSOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegRSGDOptimizerConfigPanel;
     IBOutlet NSPanel *rigidVersorOptimizerConfigPanel;
     IBOutlet NSPanel *rigidRegMMIMetricConfigPanel;
-    IBOutlet NSPanel *deformRegLBFGSBOptimizerConfigPanel;
-    IBOutlet NSPanel *deformRegLBFGSOptimizerConfigPanel;
-    IBOutlet NSPanel *deformRegRSGDOptimizerConfigPanel;
-    IBOutlet NSPanel *deformRegMMIMetricConfigPanel;
+    IBOutlet NSPanel *bsplineRegLBFGSBOptimizerConfigPanel;
+    IBOutlet NSPanel *bsplineRegLBFGSOptimizerConfigPanel;
+    IBOutlet NSPanel *bsplineRegRSGDOptimizerConfigPanel;
+    IBOutlet NSPanel *bsplineRegMMIMetricConfigPanel;
+    IBOutlet NSPanel *demonsRegOptimizerConfigPanel;
 
     // Tables in the configuration sheets
-    IBOutlet NSTableView *rigidRegLBFGSBOptimizerTableView;
-    IBOutlet NSTableView *rigidRegLBFGSOptimizerTableView;
     IBOutlet NSTableView *rigidRegRSGDOptOptimizerTableView;
     IBOutlet NSTableView *rigidRegVersorOptimizerTableView;
     IBOutlet NSTableView *rigidRegMMIMetricTableView;
-    IBOutlet NSTableView *deformRegLBFGSBOptimizerTableView;
-    IBOutlet NSTableView *deformRegLBFGSOptimizerTableView;
-    IBOutlet NSTableView *deformRegRSGDOptimizerTableView;
-    IBOutlet NSTableView *deformRegMMIMetricTableView;
+    IBOutlet NSTableView *bsplineRegLBFGSBOptimizerTableView;
+    IBOutlet NSTableView *bsplineRegLBFGSOptimizerTableView;
+    IBOutlet NSTableView *bsplineRegRSGDOptimizerTableView;
+    IBOutlet NSTableView *bsplineRegMMIMetricTableView;
+    IBOutlet NSTableView *demonsRegOptimizerTableView;
 }
 
 // properties associated with non-outlet members
@@ -105,18 +114,16 @@
 @property (assign) IBOutlet NSComboBox *fixedImageComboBox;
 @property (assign) IBOutlet NSTextField *seriesDescriptionTextField;
 
-@property (assign) IBOutlet NSButton *rigidRegEnableCheckBox;
 @property (assign) IBOutlet NSComboBox *rigidRegLevelsComboBox;
 @property (assign) IBOutlet NSTextField* rigidRegOptimizerLabel;
 @property (assign) IBOutlet NSMatrix *rigidRegMetricRadioMatrix;
 
-@property (assign) IBOutlet NSButton *deformRegEnableCheckBox;
-@property (assign) IBOutlet NSComboBox *deformRegLevelsComboBox;
-@property (assign) IBOutlet NSTableView *deformRegGridSizeTableView;
+@property (assign) IBOutlet NSComboBox *bsplineRegLevelsComboBox;
+@property (assign) IBOutlet NSTableView *bsplineRegGridSizeTableView;
 
-@property (assign) IBOutlet NSMatrix *deformRegMetricRadioMatrix;
-@property (assign) IBOutlet NSMatrix *deformRegOptimizerRadioMatrix;
-@property (assign) IBOutlet NSButton *deformShowFieldCheckBox;
+@property (assign) IBOutlet NSMatrix *bsplineRegMetricRadioMatrix;
+@property (assign) IBOutlet NSMatrix *bsplineRegOptimizerRadioMatrix;
+//@property (assign) IBOutlet NSButton *bsplineShowFieldCheckBox;
 
 @property (assign) IBOutlet NSButton *regStartButton;
 @property (assign) IBOutlet NSButton *regCloseButton;
@@ -129,14 +136,20 @@
 // Actions
 //
 // Main dialog
-- (IBAction)rigidRegEnableChanged:(NSButton *)sender;
+
+- (IBAction)registrationSelectionRadioMatrixChanged:(NSMatrix *)sender;
+
 - (IBAction)rigidRegMetricChanged:(NSMatrix *)sender;
 - (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegMetricConfigButtonPressed:(NSButton *)sender;
-- (IBAction)deformRegEnableChanged:(NSButton *)sender;
-- (IBAction)deformRegMetricChanged:(NSMatrix *)sender;
-- (IBAction)deformRegOptimizerConfigButtonPressed:(NSButton *)sender;
-- (IBAction)deformRegMetricConfigButtonPressed:(NSButton *)sender;
+
+- (IBAction)bsplineRegMetricChanged:(NSMatrix *)sender;
+- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender;
+
+- (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender;
+
+- (IBAction)useDefaultNumberOfThreadsCheckBoxPressed:(NSButton *)sender;
 
 - (IBAction)regStartButtonPressed:(NSButton *)sender;
 - (IBAction)regCloseButtonPressed:(NSButton *)sender;
@@ -144,16 +157,16 @@
 // Configuration sheets
 //
 // Close buttons
-- (IBAction)rigidRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)rigidRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
 - (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton*)sender;
 - (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender;
 
-- (IBAction)deformRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)deformRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)deformRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)deformRegMMIConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton *)sender;
+
+- (IBAction)demonsRegOptimizerCloseButtonPressed:(NSButton *)sender;
 
 // Class methods
 /**

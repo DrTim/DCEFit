@@ -1,12 +1,12 @@
 //
-//  RegistrationObserver.mm
+//  RegistrationObserverBSpline.mm
 //  DCEFit
 //
 //  Created by Tim Allman on 2013-04-25.
 //
 //
 
-#import "RegistrationObserver.h"
+#import "RegistrationObserverBSpline.h"
 #import "RegProgressValues.h"
 #import "ProgressWindowController.h"
 
@@ -15,22 +15,11 @@
 #include <itkCommand.h>
 #include <itkBSplineTransform.h>
 #include <itkBSplineTransformParametersAdaptor.h>
-//#include <itkNumberToString.h>
 
 #include <log4cplus/loggingmacros.h>
 
-
-//template <class TImage>
-//RegistrationObserver<TImage>::RegistrationObserver()
-//: DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
-//{
-//    std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
-//    logger_ = log4cplus::Logger::getInstance(name);
-//    LOG4CPLUS_TRACE(logger_, "Enter");
-//};
-
 template <class TImage>
-void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::EventObject& event)
+void RegistrationObserverBSpline<TImage>::Execute(itk::Object* caller, const itk::EventObject& event)
 {
     // The first event caller is always the registration object. We use this
     // opportunity to set up the optimiser pointers and to make it safe to call
@@ -74,7 +63,7 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
             }
 
             // Set the parameters for the current level.
-            CalcMultiResRegistrationParameters(multiResReg);
+            CalcMultiResRegistrationParameters();
 
             [progressWindowController performSelectorOnMainThread:@selector(setMaxIterations:)
                                                        withObject:[NSNumber numberWithUnsignedInt:maxIterSchedule[level]]
@@ -273,7 +262,6 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
             NSString* stopCondDesc = [NSString stringWithUTF8String:stopConditionDesc.c_str()];
             [progressWindowController performSelectorOnMainThread:@selector(setStopCondition:)
                                                        withObject:stopCondDesc waitUntilDone:YES];
-
         }
         else if (versorOpt != 0)
         {
@@ -318,19 +306,8 @@ void RegistrationObserver<TImage>::Execute(itk::Object* caller, const itk::Event
     }
 }
 
-/**
- * Const caller version of the above Execute function.
- * @param caller Pointer to the caller
- * @param event Reference to an EventObject. May be any kind of event.
- */
 template <class TImage>
-void RegistrationObserver<TImage>::Execute(const itk::Object* caller, const itk::EventObject& event)
-{
-    LOG4CPLUS_WARN(logger_, "Unexpected const object event: " << event.GetEventName());
-}
-
-template <class TImage>
-void RegistrationObserver<TImage>::CalcMultiResRegistrationParameters(RegistrationMethod* multiResReg)
+void RegistrationObserverBSpline<TImage>::CalcMultiResRegistrationParameters()
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 

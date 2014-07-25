@@ -7,7 +7,7 @@
 
 #include "RegisterOneImageRigid2D.h"
 #include "OptimizerUtils.h"
-#include "RegistrationObserver.h"
+#include "RegistrationObserverBSpline.h"
 #include "ParseITKException.h"
 #include "ImageTagger.h"
 
@@ -42,7 +42,7 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
     code = SUCCESS;
 
     // Set the resolution schedule
-    Registration2D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image2D::ImageDimension);
+    MultiResRegistrationMethod2D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image2D::ImageDimension);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
                     double>(std::pow(2.0, static_cast<double>(itkParams_.rigidLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
@@ -61,7 +61,7 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    typedef RegistrationObserver<Image2D> ObserverType;
+    typedef RegistrationObserverBSpline<Image2D> ObserverType;
     ObserverType::Pointer observer = ObserverType::New();
     observer->SetProgressWindowController(progController_);
     observer->SetNumberOfLevels(itkParams_.rigidLevels);
@@ -193,7 +193,7 @@ Image2D::Pointer RegisterOneImageRigid2D::registerImage(
     movingImagePyramid->SetNumberOfLevels(itkParams_.rigidLevels);
 
     // Set up the registration
-    Registration2D::Pointer registration = Registration2D::New();
+    MultiResRegistrationMethod2D::Pointer registration = MultiResRegistrationMethod2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);

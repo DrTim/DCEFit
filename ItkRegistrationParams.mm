@@ -13,25 +13,27 @@
 #include <itkContinuousIndex.h>
 
 ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
-: numImages(params.numImages),
+: regSequence(params.regSequence),
+  numImages(params.numImages),
   slicesPerImage(params.slicesPerImage),
   fixedImageNumber(params.fixedImageNumber),
   flippedData(params.flippedData),
   seriesName([params.seriesDescription UTF8String]),
-  rigidRegEnabled(params.rigidRegEnabled),
+  //rigidRegEnabled(params.rigidRegEnabled),
   rigidLevels(params.rigidRegMultiresLevels),
   rigidRegMetric(params.rigidRegMetric),
   rigidRegOptimiser(params.rigidRegOptimizer),
   rigidMaxIter(params.rigidRegMultiresLevels),
 
-  deformRegEnabled(params.deformRegEnabled),
-  deformRegType(params.deformRegType),
   deformShowField(params.deformShowField),
-  deformLevels(params.deformRegMultiresLevels),
 
+  //bsplineRegEnabled(params.bsplineRegEnabled),
+  bsplineLevels(params.bsplineRegMultiresLevels),
   bsplineMetric(params.bsplineRegMetric),
   bsplineOptimiser(params.bsplineRegOptimizer),
 
+  //demonsRegEnabled(params.demonsRegEnabled),
+  demonsLevels(params.demonsRegMultiresLevels),
   demonsHistogramBins(params.demonsRegHistogramBins),
   demonsHistogramMatchPoints(params.demonsRegHistogramMatchPoints),
   demonsStandardDeviations(params.demonsRegStandardDeviations),
@@ -82,9 +84,9 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
         num = [params.rigidRegMaxIter objectAtIndex:level];
         rigidMaxIter[level] = [num unsignedIntValue];
 
-        // Deformable registration
-        num = [params.deformRegMaxIter objectAtIndex:level];
-        deformMaxIter[level] = [num unsignedIntValue];
+        // Bspline registration
+        num = [params.bsplineRegMaxIter objectAtIndex:level];
+        bsplineMaxIter[level] = [num unsignedIntValue];
         NSArray* gridSizes = [NSArray arrayWithArray:[params.bsplineRegGridSizeArray objectAtIndex:level]];
         for (unsigned dim = 0; dim < 3; ++dim)
         {
@@ -113,6 +115,8 @@ ItkRegistrationParams::ItkRegistrationParams(const RegistrationParams* params)
 
         num = [params.demonsRegMaxRMSError objectAtIndex:level];
         demonsMaxRMSError[level] = [num floatValue];
+        num = [params.demonsRegMaxIter objectAtIndex:level];
+        demonsMaxIter[level] = [num unsignedIntValue];
     }
 }
 
@@ -151,7 +155,7 @@ std::string ItkRegistrationParams::Print() const
 
     str << "Region: " << fixedImageRegion << "\n";
 
-    if (rigidRegEnabled)
+    if (isRigidRegEnabled())
     {
         str << "Rigid registration enabled.\n";
         str << "  Pyramid levels: " << rigidLevels << "\n";
@@ -211,72 +215,75 @@ std::string ItkRegistrationParams::Print() const
         str << "Rigid registration disabled\n";
     }
 
-    if (deformRegEnabled)
+    if (isBSplineRegEnabled())
     {
-        str << "Deformable registration enabled.\n";
+        str << "B-spline deformable registration enabled.\n";
         if (deformShowField)
             str << "  Showing deformation field.\n";
-        str << "  Max. iterations: " << deformMaxIter << "\n";
-
-        switch (deformRegType)
+        str << "  Max. iterations: " << bsplineMaxIter << "\n";
+        str << "  Pyramid levels: " << bsplineLevels << "\n";
+        str << "  Grid size: " << bsplineGridSizes << "\n";
+        str << "  Bspline order: " << BSPLINE_ORDER << "\n";
+        str << "  Metric: ";
+        
+        switch (bsplineMetric)
         {
-            case BSpline:
-                str << "  BSpline deformable registration selected.\n";
-                str << "  Pyramid levels: " << deformLevels << "\n";
-                str << "  Grid size: " << bsplineGridSizes << "\n";
-                str << "  Bspline order: " << BSPLINE_ORDER << "\n";
-                str << "  Metric: ";
-
-                switch (bsplineMetric)
-                {
-                    case MeanSquares:
-                        str << "Mean squares\n";
-                        break;
-                    case MattesMutualInformation:
-                        str << "Mattes mutual information\n";
-                        str << "  Number of bins: " << bsplineMMINumBins << "\n";
-                        str << "  Sample rate: " << std::fixed << std::setprecision(2)
-                            << bsplineMMISampleRate << "\n";
-                        break;
-                    default:;
-                }
-                str << "  Optimiser: ";
-                switch (bsplineOptimiser)
-                {
-                    case LBFGSB:
-                        str << "LBFGSB\n";
-                        str << "  LBFGSB Convergence: " << std::scientific << std::setprecision(2)
-                                                        << bsplineLBFGSBCostConvergence << "\n";
-                        break;
-                    case LBFGS:
-                        str << "LBFGS\n";
-                        str << "  LBFGS Convergence: " << std::scientific << std::setprecision(2)
-                                                       << bsplineLBFGSGradientConvergence << "\n";
-                        break;
-                    case RSGD:
-                        str << "RSGD\n";
-                        str << "  RSGD Min. step size: " << std::scientific << std::setprecision(2)
-                                                         << bsplineRSGDMinStepSize << "\n";
-                        str << "  RSGD Max. step size: " << std::scientific << std::setprecision(2)
-                                                         << bsplineRSGDMaxStepSize << "\n";
-                        str << "  RSGD Relaxation factor: " << std::fixed << std::setprecision(2)
-                                                            << bsplineRSGDRelaxationFactor << "\n";
-                        break;
-                    default:;
-                }
+            case MeanSquares:
+                str << "Mean squares\n";
                 break;
-            case Demons:
-                str << "  Demons deformable registration selected.\n";
-                str << "  Max. RMS error: " << demonsMaxRMSError << "\n";
-                str << "  Histogram bins: " << demonsHistogramBins << "\n";
-                str << "  Histogram match points: " << demonsHistogramMatchPoints << "\n";
-                str << "  Standard deviations: " << demonsStandardDeviations << "\n";
+            case MattesMutualInformation:
+                str << "Mattes mutual information\n";
+                str << "  Number of bins: " << bsplineMMINumBins << "\n";
+                str << "  Sample rate: " << std::fixed << std::setprecision(2)
+                << bsplineMMISampleRate << "\n";
                 break;
+            default:;
+        }
+        str << "  Optimizer: ";
+        switch (bsplineOptimiser)
+        {
+            case LBFGSB:
+                str << "LBFGSB\n";
+                str << "  LBFGSB Convergence: " << std::scientific << std::setprecision(2)
+                << bsplineLBFGSBCostConvergence << "\n";
+                break;
+            case LBFGS:
+                str << "LBFGS\n";
+                str << "  LBFGS Convergence: " << std::scientific << std::setprecision(2)
+                    << bsplineLBFGSGradientConvergence << "\n";
+                break;
+            case RSGD:
+                str << "RSGD\n";
+                str << "  RSGD Min. step size: " << std::scientific << std::setprecision(2)
+                    << bsplineRSGDMinStepSize << "\n";
+                str << "  RSGD Max. step size: " << std::scientific << std::setprecision(2)
+                    << bsplineRSGDMaxStepSize << "\n";
+                str << "  RSGD Relaxation factor: " << std::fixed << std::setprecision(2)
+                    << bsplineRSGDRelaxationFactor << "\n";
+                break;
+            default:;
         }
     }
     else
     {
-        str << "Deformable registration disabled.\n";
+        str << "B-spline deformable registration disabled.\n";
+    }
+
+    if (isDemonsRegEnabled())
+    {
+        str << "Demons registration enabled.\n";
+        if (deformShowField)
+            str << "  Showing deformation field.\n";
+        str << "  Pyramid levels: " << demonsLevels << "\n";
+        str << "  Max. iterations: " << demonsMaxIter << "\n";
+        str << "  Max. RMS error: " << demonsMaxRMSError << "\n";
+        str << "  Histogram bins: " << demonsHistogramBins << "\n";
+        str << "  Histogram match points: " << demonsHistogramMatchPoints << "\n";
+        str << "  Standard deviations: " << demonsStandardDeviations << "\n";
+    }
+    else
+    {
+        str << "Demons registration disabled.\n";
     }
 
     return str.str();
@@ -333,3 +340,20 @@ void ItkRegistrationParams::createFixedImageMask(Image2D::Pointer image)
 
     return;
 }
+
+bool ItkRegistrationParams::isRigidRegEnabled() const
+{
+    return ((regSequence == Rigid) || (regSequence == RigidBSpline));
+}
+
+bool ItkRegistrationParams::isBSplineRegEnabled() const
+{
+    return ((regSequence == BSpline) || (regSequence == RigidBSpline));
+}
+
+bool ItkRegistrationParams::isDemonsRegEnabled() const
+{
+    return (regSequence == Demons);
+}
+
+

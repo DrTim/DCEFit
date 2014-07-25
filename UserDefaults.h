@@ -17,11 +17,12 @@ extern NSString* const LoggerLevelKey;
 extern NSString* const NumberOfThreadsKey;
 extern NSString* const UseDefaultNumberOfThreadsKey;
 
+extern NSString* const RegistrationSequenceKey;
 extern NSString* const FixedImageNumberKey;
 extern NSString* const SeriesDescriptionKey;
 
 // rigid registration parameters
-extern NSString* const RigidRegEnabledKey;
+//extern NSString* const RigidRegEnabledKey;
 extern NSString* const RigidRegMultiresLevelsKey;
 extern NSString* const RigidRegMetricKey;
 extern NSString* const RigidRegOptimizerKey;
@@ -44,7 +45,7 @@ extern NSString* const RigidRegMaxIterKey;
 extern NSString* const DeformRegShowFieldKey;
 
 // Bspline
-extern NSString* const BsplineRegEnabledKey;
+//extern NSString* const BsplineRegEnabledKey;
 extern NSString* const BsplineRegMaxIterKey;
 extern NSString* const BsplineRegMultiresLevelsKey;
 extern NSString* const BsplineRegGridSizeArrayKey;
@@ -61,7 +62,7 @@ extern NSString* const BsplineRegRSGDMaxStepSizeKey;
 extern NSString* const BsplineRegRSGDRelaxationFactorKey;
 
 //Demons
-extern NSString* const DemonsRegEnabledKey;
+//extern NSString* const DemonsRegEnabledKey;
 extern NSString* const DemonsRegMaxIterKey;
 extern NSString* const DemonsRegMultiresLevelsKey;
 extern NSString* const DemonsRegMaxRMSErrorKey;

@@ -11,7 +11,9 @@
 #include "RegisterOneImageRigid2D.h"
 #include "RegisterOneImageRigid3D.h"
 #include "RegisterOneImageBSpline2D.h"
-#include "RegisterOneImageDeformable3D.h"
+#include "RegisterOneImageBSpline3D.h"
+#include "RegisterOneImageDemons2D.h"
+#include "RegisterOneImageDemons3D.h"
 
 #import "SeriesInfo.h"
 
@@ -174,7 +176,7 @@
         // image even if rigid registration is disabled.
         Image2D::Pointer regImage = movingImage;
 
-        if (params->rigidRegEnabled)
+        if (params->isRigidRegEnabled())
         {
             RegisterOneImageRigid2D rigidReg(progController, fixedImage, *params);
             regImage = rigidReg.registerImage(movingImage, resultCode);
@@ -190,10 +192,15 @@
         if ([self isCancelled])
             break;
 
-        if (params->deformRegEnabled)
+        if (params->isBSplineRegEnabled())
         {
-            RegisterOneImageBSpline2D deformReg(progController, fixedImage, *params);
-            regImage = deformReg.registerImage(regImage, resultCode);
+            RegisterOneImageBSpline2D bsplineReg(progController, fixedImage, *params);
+            regImage = bsplineReg.registerImage(regImage, resultCode);
+        }
+        else if (params->isDemonsRegEnabled())
+        {
+            RegisterOneImageDemons2D demonsReg(progController, fixedImage, *params);
+            regImage = demonsReg.registerImage(regImage, resultCode);
         }
 
         if (resultCode == DISASTER)
@@ -266,7 +273,7 @@
         // image even if rigid registration is disabled.
         Image3D::Pointer regImage = movingImage;
 
-        if (params->rigidRegEnabled)
+        if (params->isRigidRegEnabled())
         {
             RegisterOneImageRigid3D rigidReg(progController, fixedImage, *params);
             regImage = rigidReg.registerImage(movingImage, resultCode);
@@ -282,10 +289,15 @@
         if ([self isCancelled])
             break;
 
-        if (params->deformRegEnabled)
+        if (params->isBSplineRegEnabled())
         {
-            RegisterOneImageDeformable3D deformReg(progController, fixedImage, *params);
-            regImage = deformReg.registerImage(regImage, resultCode);
+            RegisterOneImageBSpline3D bsplineReg(progController, fixedImage, *params);
+            regImage = bsplineReg.registerImage(regImage, resultCode);
+        }
+        else if (params->isDemonsRegEnabled())
+        {
+            RegisterOneImageDemons3D demonsReg(progController, fixedImage, *params);
+            regImage = demonsReg.registerImage(regImage, resultCode);
         }
 
         if (resultCode == DISASTER)

@@ -174,17 +174,22 @@
     
     unsigned numImages = itkParams->numImages;
     [progressController_ setProgressMinimum:(double)0 andMaximum:(double)numImages];
-    
-    unsigned rigidLevels = itkParams->rigidLevels;
-    if (!itkParams->rigidRegEnabled)
-        rigidLevels = 0;
 
-    unsigned deformLevels = itkParams->deformLevels;
-    if (!itkParams->deformRegEnabled)
-        deformLevels = 0;
-
-    LOG4M_INFO(logger_, @"Registration with %u rigid and %u deformable levels.",
-             rigidLevels, deformLevels);
+    if (itkParams->regSequence == RigidBSpline)
+    {
+        LOG4M_INFO(logger_, @"Registration with %u rigid and %u B-spline deformable levels.",
+                   itkParams->rigidLevels, itkParams->bsplineLevels);
+    }
+    else if (itkParams->regSequence == Rigid)
+    {
+        LOG4M_INFO(logger_, @"Registration with %u rigid levels.",
+                   itkParams->rigidLevels);
+    }
+    else if (itkParams->regSequence == Demons)
+    {
+        LOG4M_INFO(logger_, @"Registration with %u Demons deformable levels.",
+                   itkParams->demonsLevels);
+    }
 
     // The operation.
     op = [[RegisterImageOp alloc] initWithManager:self ProgressController:progressController_];

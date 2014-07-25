@@ -1,28 +1,21 @@
 //
-//  RegistrationObserver.h
+//  RegistrationObserverBSpline.h
 //  DCEFit
 //
 //  Created by Tim Allman on 2013-04-25.
 //
 //
 
-#ifndef __DCEFit__RegistrationObserver__
-#define __DCEFit__RegistrationObserver__
+#ifndef __DCEFit__RegistrationObserverBSpline__
+#define __DCEFit__RegistrationObserverBSpline__
 
 #include "ItkRegistrationParams.h"
 
-#include <itkCommand.h>
+#include "RegistrationObserverBase.h"
 
 #include <log4cplus/logger.h>
 
 class MultiResRegistration;
-
-#ifdef __OBJC__
-@class ProgressWindowController;
-typedef ProgressWindowController* ProgressWindowControllerPtr;
-#else
-typedef void* ProgressWindowControllerPtr;
-#endif
 
 /**
  * Observer class for deformable registrations.
@@ -35,10 +28,10 @@ typedef void* ProgressWindowControllerPtr;
  * at each resolution change.
  */
 template <class TImage>
-class RegistrationObserver: public itk::Command
+class RegistrationObserverBSpline: public RegistrationObserverBase
 {
 public:
-    typedef RegistrationObserver Self;
+    typedef RegistrationObserverBSpline Self;
     typedef itk::Command Superclass;
     typedef itk::SmartPointer<Self> Pointer;
     itkNewMacro(Self);
@@ -57,23 +50,6 @@ public:
      */
     void Execute(itk::Object* caller, const itk::EventObject& event);
     
-    /**
-     * Const caller version of the above Execute function.
-     * @param caller Pointer to the caller
-     * @param event Reference to an EventObject. May be any kind of event.
-     */
-    void Execute(const itk::Object* caller, const itk::EventObject& event);
-
-
-    /**
-     * The number of levels in this registration.
-     * @param levels The number of levels in this registration.
-     */
-    void SetNumberOfLevels(unsigned levels)
-    {
-        numLevels = levels;
-    }
-
     /**
      * The schedule of grid sizes to use as the resolution increases in
      * multiresolution registrations.
@@ -203,53 +179,26 @@ public:
             versorOpt->SetNumberOfIterations(1);
     }
 
-    /**
-     * Use this to query whether the registration was cancelled.
-     * @return true if the registration was cancelled, false otherwise.
-     */
-    bool RegistrationWasCancelled()
-    {
-        return stopReg;
-    }
-        
-    /**
-     * Recalculates the registration parameters at each level of a
-     * multi-resolution registration.
-     * @param multiResReg The multi-resolution registration object.
-     */
-    void CalcMultiResRegistrationParameters(
-                        itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg);
-
-    /**
-     * Sets the pointer to the progress window controller.
-     * @param pointer to the ProgressWindowController instance.
-     */
-    void SetProgressWindowController(ProgressWindowController* controller)
-    {
-        progressWindowController = controller;
-    }
-
 protected:
    /**
     * Default constructor.
     * Constructor is not public to conform to ITK style.
     */
-    RegistrationObserver()
-    : DIMS(TImage::ImageDimension), stopReg(false), multiResReg(0), iteration(0), gradientCalls(0), numLevels(0)
+    RegistrationObserverBSpline()
+    : multiResReg(0), gradientCalls(0)
     {
-        std::string name = std::string(LOGGER_NAME) + ".RegistrationObserver";
+        std::string name = std::string(LOGGER_NAME) + ".RegistrationObserverBSpline";
         logger_ = log4cplus::Logger::getInstance(name);
         LOG4CPLUS_TRACE(logger_, "Enter");
     }
 
-private:
-    log4cplus::Logger logger_;
-
-    const unsigned DIMS;
+    /**
+     * Recalculates the registration parameters at each level of a
+     * multi-resolution registration.
+     */
+    void CalcMultiResRegistrationParameters();
     
-    /// Stops the registration when set.
-    bool stopReg;
-
+private:
     /// The registration method object
     itk::MultiResolutionImageRegistrationMethod<TImage, TImage>* multiResReg;
 
@@ -260,15 +209,9 @@ private:
     RSGDOptimizer* RSGDOpt;
     VersorOptimizer* versorOpt;
 
-    /// current iteration. The optimizer classes don't do this very well
-    unsigned iteration;
-
     // counts gradient evaluation calls between iterations.
     unsigned gradientCalls;
 
-    /// Number of levels for this registration.
-    unsigned numLevels;
-    
     /// schedule for multiresolution grid size
     ParamMatrix<unsigned> gridSizeSchedule;
     
@@ -300,18 +243,14 @@ private:
     ParamVector<float> versorScaleFactorSchedule;
 
     /// schedule for multiresolution maximum number of iterations for
-    /// Mattes mutual information metric
     ParamVector<unsigned> maxIterSchedule;
-
-    // Used for displaying progress in GUI
-    ProgressWindowControllerPtr progressWindowController;
 };
 
 // Explictly instantiate these classes
-template class RegistrationObserver<Image2D>;
-template class RegistrationObserver<Image3D>;
+template class RegistrationObserverBSpline<Image2D>;
+template class RegistrationObserverBSpline<Image3D>;
 
-typedef RegistrationObserver<Image2D> RegistrationObserver2D;
-typedef RegistrationObserver<Image3D> RegistrationObserver3D;
+typedef RegistrationObserverBSpline<Image2D> RegistrationObserverBSpline2D;
+typedef RegistrationObserverBSpline<Image3D> RegistrationObserverBSpline3D;
 
-#endif /* defined(__DCEFit__RegistrationObserver__) */
+#endif /* defined(__DCEFit__RegistrationObserverBSpline__) */

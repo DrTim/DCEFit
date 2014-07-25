@@ -10,13 +10,6 @@
 
 #include "RegisterOneImage.h"
 
-#ifdef __OBJC__
-@class ProgressWindowController;
-typedef ProgressWindowController* ProgressWindowControllerPtr;
-#else
-typedef void* ProgressWindowControllerPtr;
-#endif
-
 /**
  * Performs a multiresolution rigid registration of one image
  */

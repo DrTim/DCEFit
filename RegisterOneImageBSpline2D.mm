@@ -8,7 +8,7 @@
 #include "RegisterOneImageBSpline2D.h"
 #include "ItkTypedefs.h"
 #include "OptimizerUtils.h"
-#include "RegistrationObserver.h"
+#include "RegistrationObserverBSpline.h"
 #include "ParseITKException.h"
 #include "ImageTagger.h"
 
@@ -26,9 +26,9 @@ RegisterOneImageBSpline2D::RegisterOneImageBSpline2D(
     LOG4CPLUS_TRACE(logger_, "");
     
     // don't do anything if this is turned off
-    if (itkParams_.deformLevels == 0)
+    if (itkParams_.bsplineLevels == 0)
     {
-        LOG4CPLUS_FATAL(logger_, "Deformable registration levels == 0.");
+        LOG4CPLUS_FATAL(logger_, "B-spline deformable registration levels == 0.");
         throw itk::InvalidArgumentError();
     }
 }
@@ -41,9 +41,9 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     code = SUCCESS;
 
     // Set the resolution schedule
-    Registration2D::ScheduleType resolutionSchedule(itkParams_.deformLevels, 2u);
+    MultiResRegistrationMethod2D::ScheduleType resolutionSchedule(itkParams_.bsplineLevels, 2u);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
-                double>(std::pow(2.0, static_cast<double>(itkParams_.deformLevels - 1)));
+                double>(std::pow(2.0, static_cast<double>(itkParams_.bsplineLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
     {
         for (unsigned dim = 0; dim < resolutionSchedule.cols(); ++dim)
@@ -61,8 +61,8 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    RegistrationObserver2D::Pointer observer = RegistrationObserver2D::New();
-    observer->SetNumberOfLevels(itkParams_.deformLevels);
+    RegistrationObserverBSpline2D::Pointer observer = RegistrationObserverBSpline2D::New();
+    observer->SetNumberOfLevels(itkParams_.bsplineLevels);
     observer->SetGridSizeSchedule(itkParams_.bsplineGridSizes);
     observer->SetProgressWindowController(progController_);
     [progController_ setObserver:observer];
@@ -128,20 +128,20 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
             optimizer = GetLBFGSBOptimizer(transform->GetNumberOfParameters(), 1e9, 0.0, 300, 100);
             observer->SetLBFGSBSchedules(itkParams_.bsplineLBFGSBCostConvergence,
                                          itkParams_.bsplineLBFGSBGradientTolerance,
-                                         itkParams_.deformMaxIter);
+                                         itkParams_.bsplineMaxIter);
             break;
         case LBFGS:
             optimizer = GetLBFGSOptimizer(1e-5, 0.1, 300);
             observer->SetLBFGSSchedules(itkParams_.bsplineLBFGSGradientConvergence,
                                         itkParams_.bsplineLBFGSDefaultStepSize,
-                                        itkParams_.deformMaxIter);
+                                        itkParams_.bsplineMaxIter);
             break;
         case RSGD:
             optimizer = GetRSGDOptimizer(1.0, 1.0, 0.5, 1e-4, 300);
             observer->SetRSGDSchedules(itkParams_.bsplineRSGDMinStepSize,
                                        itkParams_.bsplineRSGDMaxStepSize,
                                        itkParams_.bsplineRSGDRelaxationFactor,
-                                       itkParams_.deformMaxIter);
+                                       itkParams_.bsplineMaxIter);
         default:
             break;
     }
@@ -160,13 +160,13 @@ Image2D::Pointer RegisterOneImageBSpline2D::registerImage(Image2D::Pointer movin
     // The image pyramids
     // These will be set up by the registration object.
     ImagePyramid2D::Pointer fixedImagePyramid = ImagePyramid2D::New();
-    fixedImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
+    fixedImagePyramid->SetNumberOfLevels(itkParams_.bsplineLevels);
 
     ImagePyramid2D::Pointer movingImagePyramid = ImagePyramid2D::New();
-    movingImagePyramid->SetNumberOfLevels(itkParams_.deformLevels);
+    movingImagePyramid->SetNumberOfLevels(itkParams_.bsplineLevels);
 
     // Set up the registration
-    Registration2D::Pointer registration = Registration2D::New();
+    MultiResRegistrationMethod2D::Pointer registration = MultiResRegistrationMethod2D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     registration->SetInterpolator(interpolator);
     registration->SetMetric(metric);

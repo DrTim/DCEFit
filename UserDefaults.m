@@ -18,11 +18,12 @@ NSString* const NumberOfThreadsKey = @"NumberOfThreads";
 NSString* const UseDefaultNumberOfThreadsKey = @"UseDefaultNumberOfThreads";
 
 // general registration parameters
+NSString* const RegistrationSequenceKey = @"RegistrationSequence";
 NSString* const FixedImageNumberKey = @"FixedImageNumber";
 NSString* const SeriesDescriptionKey = @"SeriesDescription";
 
 // rigid registration parameters
-NSString* const RigidRegEnabledKey = @"RigidRegEnabled";
+//NSString* const RigidRegEnabledKey = @"RigidRegEnabled";
 NSString* const RigidRegMultiresLevelsKey = @"RigidRegMultiresLevels";
 NSString* const RigidRegMetricKey = @"RigidRegMetric";
 NSString* const RigidRegOptimizerKey = @"RigidRegOptimizer";
@@ -45,7 +46,7 @@ NSString* const RigidRegMaxIterKey = @"RigidRegMaxIter";
 NSString* const DeformRegShowFieldKey = @"DeformRegShowField";
 
 // BSpline specific
-NSString* const BsplineRegEnabledKey = @"BsplineRegEnabled";
+//NSString* const BsplineRegEnabledKey = @"BsplineRegEnabled";
 NSString* const BsplineRegMaxIterKey = @"BsplineRegMaxIter";
 NSString* const BsplineRegMultiresLevelsKey = @"BsplineRegMultiresLevels";
 NSString* const BsplineRegGridSizeArrayKey = @"BsplineRegGridSizeArray";
@@ -62,7 +63,7 @@ NSString* const BsplineRegRSGDMaxStepSizeKey = @"BsplineRegRSGDMaxStepSize";
 NSString* const BsplineRegRSGDRelaxationFactorKey = @"BsplineRegRSGDRelaxationFactor";
 
 // Demons specific
-NSString* const DemonsRegEnabledKey = @"DemonsRegEnabled";
+//NSString* const DemonsRegEnabledKey = @"DemonsRegEnabled";
 NSString* const DemonsRegMaxIterKey = @"DemonsRegMaxIter";
 NSString* const DemonsRegMultiresLevelsKey = @"DemonsRegMultiresLevels";
 NSString* const DemonsRegMaxRMSErrorKey = @"DemonsRegMaxRMSError";
@@ -121,10 +122,11 @@ static UserDefaults* sharedInstance;
      [NSNumber numberWithInt:LOG4M_LEVEL_DEBUG], LoggerLevelKey,
      [NSNumber numberWithInt:MAX_32BIT_THREADS], NumberOfThreadsKey,
      [NSNumber numberWithBool:YES], UseDefaultNumberOfThreadsKey,
+     [NSNumber numberWithInt:Demons], RegistrationSequenceKey,
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 
-     [NSNumber numberWithBool:YES], RigidRegEnabledKey,
+     //[NSNumber numberWithBool:YES], RigidRegEnabledKey,
      [NSNumber numberWithUnsignedInt:2], RigidRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], RigidRegMetricKey,
      [NSNumber numberWithInt:LBFGSB], RigidRegOptimizerKey,
@@ -146,7 +148,7 @@ static UserDefaults* sharedInstance;
 
      [NSNumber numberWithBool:NO], DeformRegShowFieldKey,
 
-     [NSNumber numberWithBool:YES], BsplineRegEnabledKey,
+     //[NSNumber numberWithBool:YES], BsplineRegEnabledKey,
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], BsplineRegMaxIterKey,
      [NSNumber numberWithUnsignedInt:3], BsplineRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], BsplineRegMetricKey,
@@ -166,7 +168,7 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], BsplineRegRSGDMaxStepSizeKey,
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], BsplineRegRSGDRelaxationFactorKey,
 
-     [NSNumber numberWithBool:YES], DemonsRegEnabledKey,
+     //[NSNumber numberWithBool:YES], DemonsRegEnabledKey,
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DemonsRegMaxIterKey,
      [NSNumber numberWithUnsignedInt:3], DemonsRegMultiresLevelsKey,
      [NSArray arrayWithObjects:@0.8, @0.75, @0.4, @0.2, nil], DemonsRegMaxRMSErrorKey,
@@ -222,16 +224,18 @@ static UserDefaults* sharedInstance;
                      forKey:LoggerLevelKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.numberOfThreads]
                      forKey:NumberOfThreadsKey];
-    [defaultsDict setObject:[NSNumber numberWithBool:data.useDefaultNumberOfThreads]
-                     forKey:UseDefaultNumberOfThreadsKey];
 
+    [defaultsDict setObject:[NSNumber numberWithInt:data.regSequence]
+                     forKey:RegistrationSequenceKey];
+    [defaultsDict setObject:[NSNumber numberWithInt:data.fixedImageNumber]
+                     forKey:FixedImageNumberKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.fixedImageNumber]
                      forKey:FixedImageNumberKey];
     [defaultsDict setObject:data.seriesDescription
                      forKey:SeriesDescriptionKey];
 
-    [defaultsDict setObject:[NSNumber numberWithBool:data.rigidRegEnabled]
-                     forKey:RigidRegEnabledKey];
+    //[defaultsDict setObject:[NSNumber numberWithBool:data.rigidRegEnabled]
+    //                 forKey:RigidRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.rigidRegMultiresLevels]
                      forKey:RigidRegMultiresLevelsKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.rigidRegMetric]
@@ -272,8 +276,8 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSNumber numberWithBool:data.deformShowField]
                      forKey:DeformRegShowFieldKey];
 
-    [defaultsDict setObject:[NSNumber numberWithBool:data.bsplineRegEnabled]
-                     forKey:BsplineRegEnabledKey];
+    //    [defaultsDict setObject:[NSNumber numberWithBool:data.bsplineRegEnabled]
+    //                     forKey:BsplineRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.bsplineRegMultiresLevels]
                      forKey:BsplineRegMultiresLevelsKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegMaxIter]
@@ -303,8 +307,8 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDRelaxationFactor]
                      forKey:BsplineRegRSGDRelaxationFactorKey];
 
-    [defaultsDict setObject:[NSNumber numberWithBool:data.demonsRegEnabled]
-                     forKey:DemonsRegEnabledKey];
+//    [defaultsDict setObject:[NSNumber numberWithBool:data.demonsRegEnabled]
+//                     forKey:DemonsRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegMultiresLevels]
                      forKey:DemonsRegMultiresLevelsKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.demonsRegMaxIter]

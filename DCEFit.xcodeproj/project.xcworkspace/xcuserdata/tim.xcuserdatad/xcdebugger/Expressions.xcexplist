@@ -13,5 +13,16 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "itk::FixedArray&lt;unsigned int, 4u&gt;::GetDataPointer():itkFixedArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "RegisterOneImageDemons2D::registerImage(itk::SmartPointer&lt;itk::Image&lt;float, 2u&gt; &gt;, ResultCode&amp;):RegisterOneImageDemons2D.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "(unsigned int)*(nIter.data)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

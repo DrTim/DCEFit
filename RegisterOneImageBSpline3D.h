@@ -1,5 +1,5 @@
 /*
- * File:   RegisterOneImageDeformable3D.h
+ * File:   RegisterOneImageBSpline3D.h
  * Author: tim
  *
  * Created on January 25, 2013, 9:13 AM
@@ -13,7 +13,7 @@
 /**
  * Performs a multiresolution deformable registration of one image
  */
-class RegisterOneImageDeformable3D : public RegisterOneImage<Image3D>
+class RegisterOneImageBSpline3D : public RegisterOneImage<Image3D>
 {
   public:
     /**
@@ -22,7 +22,7 @@ class RegisterOneImageDeformable3D : public RegisterOneImage<Image3D>
      * @param fixedImage The fixed image.
      * @param params The registration parameters.
      */
-    RegisterOneImageDeformable3D(ProgressWindowController* progressController,
+    RegisterOneImageBSpline3D(ProgressWindowController* progressController,
                 Image3D::Pointer fixedImage, const ItkRegistrationParams& params);
 
     /**

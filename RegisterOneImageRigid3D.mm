@@ -8,7 +8,7 @@
 #include "RegisterOneImageRigid3D.h"
 #include "ItkTypedefs.h"
 #include "OptimizerUtils.h"
-#include "RegistrationObserver.h"
+#include "RegistrationObserverBSpline.h"
 #include "ParseITKException.h"
 #include "ImageTagger.h"
 
@@ -44,7 +44,7 @@ Image3D::Pointer RegisterOneImageRigid3D::registerImage(Image3D::Pointer movingI
     // Set the resolution schedule
     // We use reduced resolution in the plane of the slices but not in the other dimension
     // because it is small to begin with in DCE images.
-    Registration3D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image3D::ImageDimension);
+    MultiResRegistrationMethod3D::ScheduleType resolutionSchedule(itkParams_.rigidLevels, Image3D::ImageDimension);
     itk::SizeValueType factor = itk::Math::Round<itk::SizeValueType,
                     double>(std::pow(2.0, static_cast<double>(itkParams_.rigidLevels - 1)));
     for (unsigned level = 0; level < resolutionSchedule.rows(); ++level)
@@ -67,7 +67,7 @@ Image3D::Pointer RegisterOneImageRigid3D::registerImage(Image3D::Pointer movingI
     LOG4CPLUS_DEBUG(logger_, "Shrink factors = " << resolutionSchedule);
 
     // Set up the observer
-    RegistrationObserver<Image3D>::Pointer observer = RegistrationObserver<Image3D>::New();
+    RegistrationObserverBSpline<Image3D>::Pointer observer = RegistrationObserverBSpline<Image3D>::New();
     observer->SetProgressWindowController(progController_);
     observer->SetNumberOfLevels(itkParams_.rigidLevels);
     [progController_ setObserver:observer];
@@ -187,7 +187,7 @@ Image3D::Pointer RegisterOneImageRigid3D::registerImage(Image3D::Pointer movingI
     Image3D::RegionType region = fixedImage_->GetLargestPossibleRegion();
     Image3D::RegionType regRegion = Create3DRegion(itkParams_.fixedImageRegion, region.GetSize(2u));
 
-    Registration3D::Pointer registration = Registration3D::New();
+    MultiResRegistrationMethod3D::Pointer registration = MultiResRegistrationMethod3D::New();
     registration->AddObserver(itk::IterationEvent(), observer);
     //registration->SetNumberOfThreads(1);
     registration->SetInterpolator(interpolator);

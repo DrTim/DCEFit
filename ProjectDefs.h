@@ -15,16 +15,16 @@
  * module be it C, C++, Obj-C or Obj-C++.
  */
 
-// Which type of deformable registration to do.
+// Which type of registration to do.
 // These values must be synchronised with the values of the
 // tags of the radio button cells.
-/*
- enum DeformableRegistrationType
+ enum RegistrationSequenceType
 {
-    BSpline = 0,
-    Demons = 1
+    Rigid = 0,
+    RigidBSpline = 1,
+    BSpline = 2,
+    Demons = 3
 };
-*/
 
 // These values must be synchronised with the values of the
 // tags of the radio button cells.

@@ -1,12 +1,12 @@
 /*
- * File:   RegisterOneImageDemons2D.mm
+ * File:   RegisterOneImageDemons3D.mm
  * Author: tim
  *
  * Created on January 28, 2013, 12:47 PM
  */
 
 #include "ProjectDefs.h"
-#include "RegisterOneImageDemons2D.h"
+#include "RegisterOneImageDemons3D.h"
 #include "ItkTypedefs.h"
 #include "RegistrationObserverDemons.h"
 #include "ParseITKException.h"
@@ -16,12 +16,12 @@
 
 #include <log4cplus/loggingmacros.h>
 
-RegisterOneImageDemons2D::RegisterOneImageDemons2D(
-    ProgressWindowController* progressController, Image2D::Pointer fixedImage,
+RegisterOneImageDemons3D::RegisterOneImageDemons3D(
+    ProgressWindowController* progressController, Image3D::Pointer fixedImage,
     const ItkRegistrationParams& params)
-    : RegisterOneImage<Image2D>(progressController, fixedImage, params)
+    : RegisterOneImage<Image3D>(progressController, fixedImage, params)
 {
-    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDemons2D";
+    std::string name = std::string(LOGGER_NAME) + ".RegisterOneImageDemons3D";
     logger_ = log4cplus::Logger::getInstance(name);
     LOG4CPLUS_TRACE(logger_, "");
     
@@ -33,7 +33,7 @@ RegisterOneImageDemons2D::RegisterOneImageDemons2D(
     }
 }
 
-Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer movingImage, ResultCode& code)
+Image3D::Pointer RegisterOneImageDemons3D::registerImage(Image3D::Pointer movingImage, ResultCode& code)
 {
     LOG4CPLUS_TRACE(logger_, "Enter");
 
@@ -41,7 +41,7 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
     code = SUCCESS;
 
     // Set up the observer
-    typedef RegistrationObserverDemons<Image2D, DemonsDisplacementField2D> ObserverType;
+    typedef RegistrationObserverDemons<Image3D, DemonsDisplacementField3D> ObserverType;
     ObserverType::Pointer observer = ObserverType::New();
     observer->SetNumberOfLevels(itkParams_.demonsLevels);
     observer->SetOptimizerSchedule(itkParams_.demonsMaxRMSError);
@@ -50,7 +50,7 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
     [progController_ setObserver:observer];
 
     // Match the histograms between source and target
-    MatchingFilterType2D::Pointer matcher = MatchingFilterType2D::New();
+    MatchingFilterType3D::Pointer matcher = MatchingFilterType3D::New();
     matcher->SetInput(movingImage);
     matcher->SetReferenceImage(fixedImage_);
     matcher->SetNumberOfHistogramLevels(itkParams_.demonsHistogramBins);
@@ -58,12 +58,12 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
     matcher->ThresholdAtMeanIntensityOn();
 
     // setup the deformation filter
-    DemonsRegistrationFilter2D::Pointer filter = DemonsRegistrationFilter2D::New();
+    DemonsRegistrationFilter3D::Pointer filter = DemonsRegistrationFilter3D::New();
     filter->SetStandardDeviations(itkParams_.demonsStandardDeviations);
     filter->AddObserver(itk::IterationEvent(), observer);
     observer->SetRegistrationFilter(filter);
 
-    DemonsMultiResRegistration2D::Pointer multires = DemonsMultiResRegistration2D::New();
+    DemonsMultiResRegistration3D::Pointer multires = DemonsMultiResRegistration3D::New();
     multires->SetRegistrationFilter(filter);
     multires->SetNumberOfLevels(itkParams_.demonsLevels);
     multires->SetFixedImage(fixedImage_);
@@ -106,8 +106,8 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
         
     }
     // compute the output (warped) image
-    DemonsWarper2D::Pointer warper = DemonsWarper2D::New();
-    LinearInterpolator2D::Pointer interpolator = LinearInterpolator2D::New();
+    DemonsWarper3D::Pointer warper = DemonsWarper3D::New();
+    LinearInterpolator3D::Pointer interpolator = LinearInterpolator3D::New();
 
     warper->SetInput(movingImage);
     warper->SetInterpolator(interpolator);
@@ -118,7 +118,7 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
 
     if (itkParams_.deformShowField)
     {
-        ImageTagger<Image2D> tagImage(10);
+        ImageTagger<Image3D> tagImage(10);
         tagImage(*(movingImage.GetPointer()));
     }
 
@@ -135,9 +135,10 @@ Image2D::Pointer RegisterOneImageDemons2D::registerImage(Image2D::Pointer moving
     {
         code = DISASTER;
         LOG4CPLUS_ERROR(logger_, "Severe error in Demons warper. " << ParseITKException(err));
+        return movingImage;
     }
 
-    Image2D::Pointer result = warper->GetOutput();
+    Image3D::Pointer result = warper->GetOutput();
 
     return result;
 }

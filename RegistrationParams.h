@@ -22,6 +22,7 @@
     BOOL useDefaultNumberOfThreads;
 
     // General registration parameters
+    enum RegistrationSequenceType regSequence;
     unsigned numImages;
     unsigned fixedImageNumber;
     unsigned slicesPerImage;
@@ -41,7 +42,7 @@
     NSMutableArray* fixedImageMask;
 
     // rigid registration parameters
-    BOOL rigidRegEnabled;
+    //BOOL rigidRegEnabled;
     unsigned rigidRegMultiresLevels;
     enum MetricType rigidRegMetric;
     enum OptimizerType rigidRegOptimizer;
@@ -64,7 +65,7 @@
     BOOL deformShowField;
 
     // B-spline specific parameters
-    BOOL bsplineRegEnabled;
+    //BOOL bsplineRegEnabled;
     enum MetricType bsplineRegMetric;
     enum OptimizerType bsplineRegOptimizer;
     NSMutableArray* bsplineRegGridSizeArray;     // contains arrays of NSNumbers (unsigned)
@@ -81,7 +82,7 @@
     NSMutableArray* bsplineRegMaxIter;           // contains NSNumbers (unsigned)
 
     // Demons specific parameters
-    BOOL demonsRegEnabled;
+    //BOOL demonsRegEnabled;
     NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
     unsigned demonsRegHistogramBins;
     unsigned demonsRegHistogramMatchPoints;
@@ -97,6 +98,7 @@
 @property (assign) BOOL useDefaultNumberOfThreads;
 
 // General registration parameters
+@property (assign) enum RegistrationSequenceType regSequence; ///<
 @property (assign) unsigned numImages;          ///< The number of images (2D or 3D) in the series.
 @property (assign) unsigned fixedImageNumber;   ///< What the user sees, ie 1,2,3.
 @property (assign) unsigned slicesPerImage;     ///< Number of 2D slices in each image.
@@ -106,7 +108,7 @@
 @property (retain) NSMutableArray* fixedImageMask;  ///< Spatial object registration. mask.
 
 // rigid registration parameters
-@property (assign) BOOL rigidRegEnabled;             /**< Rigid registration enabled if true. */
+//@property (assign) BOOL rigidRegEnabled;             /**< Rigid registration enabled if true. */
 @property (assign) unsigned rigidRegMultiresLevels;  /**< Number of levels to use (0 - 4). */
 @property (assign) enum MetricType rigidRegMetric;   /**< The metric to use. (enum value) */
 @property (assign) enum OptimizerType rigidRegOptimizer;     /**< The optimizer to use. (enum value) */
@@ -129,7 +131,7 @@
 @property (assign) BOOL deformShowField;               /**< Show the displacement field. */
 
 // B-spline specific deformable registration parameters
-@property (assign) BOOL bsplineRegEnabled;              /**< B-spline registration enabled if true. */
+//@property (assign) BOOL bsplineRegEnabled;              /**< B-spline registration enabled if true. */
 @property (assign) unsigned bsplineRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
 @property (assign) enum MetricType bsplineRegMetric;    /**< The metric to use. (enum value) */
 @property (assign) enum OptimizerType bsplineRegOptimizer; /**< The optimizer to use. (enum value) */
@@ -146,7 +148,7 @@
 @property (retain) NSMutableArray* bsplineRegMaxIter;             /**< Last resort termination criterion. */
 
 // Demons specific parameters
-@property (assign) BOOL demonsRegEnabled;              /**< Demons registration enabled if true. */
+//@property (assign) BOOL demonsRegEnabled;              /**< Demons registration enabled if true. */
 @property (assign) unsigned demonsRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
 @property (retain) NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
 @property (assign) unsigned demonsRegHistogramBins;
@@ -175,5 +177,11 @@
  * the user sees in osirix.
  */
 - (unsigned)indexToSliceNumber:(unsigned)index;
+
+- (BOOL)isRigidRegEnabled;
+
+- (BOOL)isBsplineRegEnabled;
+
+- (BOOL)isDemonsRegEnabled;
 
 @end
