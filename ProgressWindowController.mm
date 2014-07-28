@@ -32,6 +32,7 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 @synthesize levelTextField;
 @synthesize iterationTextField;
 @synthesize metricTextField;
+@synthesize metricLabel;
 @synthesize stepSizeTextField;
 @synthesize stepSizeLabel;
 @synthesize numImagesLabel;

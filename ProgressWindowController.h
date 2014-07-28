@@ -36,6 +36,7 @@ extern NSString* CloseProgressPanelNotification;
     NSTextField *levelTextField;
     NSTextField *iterationTextField;
     NSTextField *metricTextField;
+    NSTextField *metricLabel;
     NSTextField *stepSizeTextField;
     NSTextField *stepSizeLabel;
     NSTextField *numImagesLabel;
@@ -53,6 +54,7 @@ extern NSString* CloseProgressPanelNotification;
 @property (assign) IBOutlet NSTextField *levelTextField;
 @property (assign) IBOutlet NSTextField *iterationTextField;
 @property (assign) IBOutlet NSTextField *metricTextField;
+@property (assign) IBOutlet NSTextField *metricLabel;
 @property (assign) IBOutlet NSTextField *stepSizeTextField;
 @property (assign) IBOutlet NSTextField *stepSizeLabel;
 @property (assign) IBOutlet NSTextField *numImagesLabel;
@@ -86,6 +88,8 @@ extern NSString* CloseProgressPanelNotification;
 - (void)incrCurImage;
 
 - (void)setCurLevel:(NSNumber*)level;
+
+- (void)setMetricLabel:(NSTextField *)metricLabel;
 
 - (void)setCurMetric:(NSNumber*)metric;
 

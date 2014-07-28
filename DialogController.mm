@@ -55,10 +55,9 @@
 @synthesize bsplineRegOptimizerRadioMatrix;
 //@synthesize deformShowFieldCheckBox;
 @synthesize regCloseButton;
+@synthesize regStartButton;
 @synthesize loggingLevelComboBox;
 @synthesize numberOfThreadsComboBox;
-@synthesize useDefaultNumberOfThreadsCheckBox;
-@synthesize regStartButton;
 
 /**
  * Tags for the tables in the parameter panels.
@@ -752,9 +751,12 @@ enum TableTags
     [self disableControls];
 
     progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
-    
     [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
     [progressWindowController showWindow:self];
+    if (regParams.regSequence == Demons)
+        [progressWindowController.metricLabel setStringValue:@"RMS Diff."];
+    else
+        [progressWindowController.metricLabel setStringValue:@"Metric"];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(progressPanelWillClose:)
@@ -883,11 +885,6 @@ enum TableTags
 
     [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
        didEndSelector:nil contextInfo:nil];
-}
-
-- (IBAction)useDefaultNumberOfThreadsCheckBoxPressed:(NSButton *)sender
-{
-    // TODO
 }
 
 - (void)closeSheet

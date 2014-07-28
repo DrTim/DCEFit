@@ -28,6 +28,7 @@ void SetupLogger(const char* name, int level)
     // The logger is set to log all messages. We use the appenders to restrict the output(s).
     log4cplus::Logger logger = log4cplus::Logger::getInstance(loggerName);
     logger.setLogLevel(level);
+    logger.setAdditivity(true);
 
     // The console appender
     log4cplus::SharedAppenderPtr consoleAppender(new log4cplus::ConsoleAppender);
@@ -55,7 +56,7 @@ void SetupLogger(const char* name, int level)
     logFileApp->setThreshold(log4cplus::TRACE_LOG_LEVEL);
     logger.addAppender(logFileApp);
 
-    // Force this to the console.
+    // Send this to the console.
     LOG4CPLUS_INFO(logger, "Logging to file: " << logFilePath << ", Level: " << LogLevelToString(level));
 }
 

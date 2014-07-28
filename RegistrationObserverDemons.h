@@ -47,6 +47,7 @@ public:
     typedef float CoordinateRepType;
     typedef TImage ImageType;
     typedef itk::DemonsRegistrationFilter<TImage, TImage, TDisplacementField> RegistrationFilter;
+    //typedef itk::SymmetricForcesDemonsRegistrationFilter<TImage, TImage, TDisplacementField> RegistrationFilter;
     typedef itk::MultiResolutionPDEDeformableRegistration<TImage, TImage, TDisplacementField> RegistrationMethod;
     
     /**

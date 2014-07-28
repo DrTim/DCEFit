@@ -55,7 +55,6 @@
                 <outlet property="rigidRegVersorOptimizerTableView" destination="QO2-CE-7zj" id="5oS-mQ-R4f"/>
                 <outlet property="rigidVersorOptimizerConfigPanel" destination="d0a-EX-YBo" id="t4e-At-nBK"/>
                 <outlet property="seriesDescriptionTextField" destination="14" id="597"/>
-                <outlet property="useDefaultNumberOfThreadsCheckBox" destination="eXj-1t-2q9" id="Bhf-7N-80y"/>
                 <outlet property="window" destination="1" id="836"/>
             </connections>
         </customObject>
@@ -740,18 +739,6 @@ DQ
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <button id="eXj-1t-2q9">
-                                                        <rect key="frame" x="273" y="15" width="93" height="18"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <buttonCell key="cell" type="check" title="Use default" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="oDN-Ih-MBo">
-                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
-                                                        </buttonCell>
-                                                        <connections>
-                                                            <action selector="useDefaultNumberOfThreadsCheckBoxPressed:" target="-2" id="UfM-8g-dMn"/>
-                                                            <binding destination="630" name="value" keyPath="self.useDefaultNumberOfThreads" id="Yal-iN-8aA"/>
-                                                        </connections>
-                                                    </button>
                                                 </subviews>
                                             </view>
                                             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -1915,7 +1902,7 @@ DQ
                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                 <tableColumns>
                                                     <tableColumn identifier="convergence" width="116" minWidth="40" maxWidth="1000" headerToolTip="The RMS difference between images that indicates convergence." id="wxu-WH-4bS">
-                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="RMS Convergence">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="RMS Difference">
                                                             <font key="font" metaFont="smallSystem"/>
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>

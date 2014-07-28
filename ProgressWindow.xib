@@ -349,7 +349,7 @@
 										<object class="NSTextField" id="13435948">
 											<reference key="NSNextResponder" ref="109622601"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{208, 325}, {49, 14}}</string>
+											<string key="NSFrame">{{208, 326}, {49, 14}}</string>
 											<reference key="NSSuperview" ref="109622601"/>
 											<reference key="NSNextKeyView" ref="514799756"/>
 											<string key="NSReuseIdentifierKey">_NS:1535</string>
@@ -566,7 +566,7 @@
 										<object class="NSTextField" id="140056973">
 											<reference key="NSNextResponder" ref="109622601"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{67, 193}, {363, 22}}</string>
+											<string key="NSFrame">{{69, 193}, {361, 22}}</string>
 											<reference key="NSSuperview" ref="109622601"/>
 											<reference key="NSNextKeyView" ref="587216189"/>
 											<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -588,7 +588,7 @@
 										<object class="NSTextField" id="512695875">
 											<reference key="NSNextResponder" ref="109622601"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{16, 198}, {45, 17}}</string>
+											<string key="NSFrame">{{16, 198}, {47, 17}}</string>
 											<reference key="NSSuperview" ref="109622601"/>
 											<reference key="NSNextKeyView" ref="140056973"/>
 											<string key="NSReuseIdentifierKey">_NS:1535</string>
@@ -1174,6 +1174,14 @@
 						<reference key="destination" ref="140056973"/>
 					</object>
 					<string key="id">hY5-5e-FGe</string>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">metricLabel</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="606033417"/>
+					</object>
+					<string key="id">L3u-IV-eW6</string>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -2781,7 +2789,7 @@
 						<reference key="object" ref="512695875"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="647955043"/>
-							<object class="IBNSLayoutConstraint" id="260975036">
+							<object class="IBNSLayoutConstraint" id="857191030">
 								<reference key="firstItem" ref="512695875"/>
 								<int key="firstAttribute">7</int>
 								<int key="relation">0</int>
@@ -2790,7 +2798,7 @@
 								<float key="multiplier">1</float>
 								<string key="multiplierString">1</string>
 								<object class="IBLayoutConstant" key="constant">
-									<double key="value">41</double>
+									<double key="value">43</double>
 								</object>
 								<float key="priority">1000</float>
 								<reference key="containingView" ref="512695875"/>
@@ -3035,11 +3043,6 @@
 						<reference key="parent" ref="215169822"/>
 					</object>
 					<object class="IBObjectRecord">
-						<string key="id">TCW-Kj-9Jp</string>
-						<reference key="object" ref="243383454"/>
-						<reference key="parent" ref="215169822"/>
-					</object>
-					<object class="IBObjectRecord">
 						<string key="id">uPZ-n0-r96</string>
 						<reference key="object" ref="122695321"/>
 						<reference key="parent" ref="215169822"/>
@@ -3220,11 +3223,6 @@
 						<reference key="parent" ref="1054367292"/>
 					</object>
 					<object class="IBObjectRecord">
-						<string key="id">cQs-FE-bx1</string>
-						<reference key="object" ref="841304161"/>
-						<reference key="parent" ref="606033417"/>
-					</object>
-					<object class="IBObjectRecord">
 						<string key="id">Joc-9M-jWh</string>
 						<reference key="object" ref="548077238"/>
 						<reference key="parent" ref="495022943"/>
@@ -3285,11 +3283,6 @@
 						<reference key="parent" ref="215169822"/>
 					</object>
 					<object class="IBObjectRecord">
-						<string key="id">wDH-an-gUQ</string>
-						<reference key="object" ref="260975036"/>
-						<reference key="parent" ref="512695875"/>
-					</object>
-					<object class="IBObjectRecord">
 						<string key="id">0FX-vE-cpT</string>
 						<reference key="object" ref="180661082"/>
 						<reference key="parent" ref="215169822"/>
@@ -3323,6 +3316,21 @@
 						<string key="id">Neq-EN-IFA</string>
 						<reference key="object" ref="51058609"/>
 						<reference key="parent" ref="215169822"/>
+					</object>
+					<object class="IBObjectRecord">
+						<string key="id">cQs-FE-bx1</string>
+						<reference key="object" ref="841304161"/>
+						<reference key="parent" ref="606033417"/>
+					</object>
+					<object class="IBObjectRecord">
+						<string key="id">TCW-Kj-9Jp</string>
+						<reference key="object" ref="243383454"/>
+						<reference key="parent" ref="215169822"/>
+					</object>
+					<object class="IBObjectRecord">
+						<string key="id">KoS-7j-FCE</string>
+						<reference key="object" ref="857191030"/>
+						<reference key="parent" ref="512695875"/>
 					</object>
 				</array>
 			</object>
@@ -3446,7 +3454,7 @@
 				<string key="69.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="692.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<array class="NSMutableArray" key="697.IBNSViewMetadataConstraints">
-					<reference ref="260975036"/>
+					<reference ref="857191030"/>
 				</array>
 				<boolean value="NO" key="697.IBNSViewMetadataTranslatesAutoresizingMaskIntoConstraints"/>
 				<string key="697.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3543,6 +3551,7 @@
 				<string key="Joc-9M-jWh.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="KAz-xg-xy2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="KIk-of-xEH.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="KoS-7j-FCE.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="KuK-4t-gs6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="MJV-j1-6b2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="MVs-A3-iAY.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3604,7 +3613,6 @@
 				<string key="v5u-OO-oOe.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="vfG-FZ-mI6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="w9D-6M-dVY.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="wDH-an-gUQ.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="ya5-Zt-92X.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>

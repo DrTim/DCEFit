@@ -17,6 +17,7 @@
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
 		2217E9231732DE4300769974 /* RegistrationManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E9211732DE4200769974 /* RegistrationManager.mm */; };
 		221F7BA4183A77AA00D9F9E7 /* DCEFit.osirixplugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */; };
+		2239315F1982A5B000BF2BBA /* Log4m.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2239315E1982A5B000BF2BBA /* Log4m.framework */; };
 		224073B51979D51A002F4091 /* RegisterOneImageDemons3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */; };
 		224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */; };
 		225843181721931700F9346C /* RegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 225843161721931700F9346C /* RegistrationParams.h */; };
@@ -107,7 +108,6 @@
 		226371EF1978119B00AF9276 /* liblog4cplusS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226371EE1978119B00AF9276 /* liblog4cplusS.a */; };
 		22637A1F1959B2D7000D888A /* RegisterOneImageDemons2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22637A1D1959B2D7000D888A /* RegisterOneImageDemons2D.h */; };
 		22637A201959B2D7000D888A /* RegisterOneImageDemons2D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22637A1E1959B2D7000D888A /* RegisterOneImageDemons2D.mm */; };
-		2266463E19796D8400103CD4 /* Log4m.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2266463D19796D8400103CD4 /* Log4m.framework */; };
 		22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22664EAD17294FC6008B7961 /* ProgressWindow.xib */; };
 		22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 22664EAF172959BA008B7961 /* ProgressWindowController.h */; };
 		22664EB2172959BA008B7961 /* ProgressWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22664EB0172959BA008B7961 /* ProgressWindowController.mm */; };
@@ -181,6 +181,7 @@
 		2217E91D1732C56C00769974 /* ImageImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageImporter.mm; sourceTree = "<group>"; };
 		2217E9201732DE4200769974 /* RegistrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RegistrationManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2217E9211732DE4200769974 /* RegistrationManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegistrationManager.mm; sourceTree = "<group>"; };
+		2239315E1982A5B000BF2BBA /* Log4m.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Log4m.framework; path = ../Log4m/build/Debug/Log4m.framework; sourceTree = "<group>"; };
 		224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageDemons3D.h; sourceTree = "<group>"; };
 		224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageDemons3D.mm; sourceTree = "<group>"; };
 		225843161721931700F9346C /* RegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationParams.h; sourceTree = "<group>"; };
@@ -272,7 +273,6 @@
 		226371EE1978119B00AF9276 /* liblog4cplusS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4cplusS.a; path = ../../../../usr/local/lib/liblog4cplusS.a; sourceTree = "<group>"; };
 		22637A1D1959B2D7000D888A /* RegisterOneImageDemons2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageDemons2D.h; sourceTree = "<group>"; };
 		22637A1E1959B2D7000D888A /* RegisterOneImageDemons2D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = RegisterOneImageDemons2D.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		2266463D19796D8400103CD4 /* Log4m.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Log4m.framework; path = ../../Library/Frameworks/Log4m.framework; sourceTree = "<group>"; };
 		22664EAD17294FC6008B7961 /* ProgressWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressWindow.xib; sourceTree = "<group>"; };
 		22664EAF172959BA008B7961 /* ProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressWindowController.h; sourceTree = "<group>"; };
 		22664EB0172959BA008B7961 /* ProgressWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = ProgressWindowController.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -351,6 +351,7 @@
 				226371A11976EAA500AF9276 /* libITKBiasCorrection-4.6.a in Frameworks */,
 				226371C61976EAA600AF9276 /* libITKIOSpatialObjects-4.6.a in Frameworks */,
 				226371CF1976EAA600AF9276 /* libitkjpeg-4.6.a in Frameworks */,
+				2239315F1982A5B000BF2BBA /* Log4m.framework in Frameworks */,
 				226371EF1978119B00AF9276 /* liblog4cplusS.a in Frameworks */,
 				226371D01976EAA600AF9276 /* libITKKLMRegionGrowing-4.6.a in Frameworks */,
 				226371CE1976EAA600AF9276 /* libITKIOXML-4.6.a in Frameworks */,
@@ -392,7 +393,6 @@
 				226371B91976EAA600AF9276 /* libITKIOGIPL-4.6.a in Frameworks */,
 				226371E51976EAA600AF9276 /* libITKVideoCore-4.6.a in Frameworks */,
 				226371AF1976EAA600AF9276 /* libitkgdcmMSFF-4.6.a in Frameworks */,
-				2266463E19796D8400103CD4 /* Log4m.framework in Frameworks */,
 				226371B61976EAA600AF9276 /* libITKIOCSV-4.6.a in Frameworks */,
 				226371E01976EAA600AF9276 /* libitksys-4.6.a in Frameworks */,
 				226371D91976EAA600AF9276 /* libITKOptimizersv4-4.6.a in Frameworks */,
@@ -433,7 +433,7 @@
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				2266463D19796D8400103CD4 /* Log4m.framework */,
+				2239315E1982A5B000BF2BBA /* Log4m.framework */,
 				22C326A41892C02D00E8A071 /* Osirix Frameworks */,
 				22AF44A117CE48250091644F /* Logger */,
 				229793FD17248441004CCBC6 /* ITK */,

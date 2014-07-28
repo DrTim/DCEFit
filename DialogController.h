@@ -74,12 +74,11 @@
 
     // Bottom box buttons
     IBOutlet NSButton *regCloseButton;
-    IBOutlet NSComboBox *loggingLevelComboBox;
+    IBOutlet NSButton *regStartButton;
 
     //
     IBOutlet NSComboBox *numberOfThreadsComboBox;
-    NSButton *useDefaultNumberOfThreadsCheckBox;
-    IBOutlet NSButton *regStartButton;
+    IBOutlet NSComboBox *loggingLevelComboBox;
 
     // Optimizer and metric configuration sheets
     IBOutlet NSPanel *rigidRegRSGDOptimizerConfigPanel;
@@ -131,7 +130,6 @@
 // Program defaults
 @property (assign) IBOutlet NSComboBox *loggingLevelComboBox;
 @property (assign) IBOutlet NSComboBox *numberOfThreadsComboBox;
-@property (assign) IBOutlet NSButton *useDefaultNumberOfThreadsCheckBox;
 
 // Actions
 //
@@ -148,8 +146,6 @@
 - (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender;
 
 - (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender;
-
-- (IBAction)useDefaultNumberOfThreadsCheckBoxPressed:(NSButton *)sender;
 
 - (IBAction)regStartButtonPressed:(NSButton *)sender;
 - (IBAction)regCloseButtonPressed:(NSButton *)sender;
