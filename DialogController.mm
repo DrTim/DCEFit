@@ -1567,8 +1567,8 @@ enum TableTags
 //    [bsplineRegMetricRadioMatrix setEnabled:NO];
 //    [bsplineRegMetricConfigButton setEnabled:NO];
 //
-//    [regCloseButton setEnabled:NO];
-//    [regStartButton setEnabled:NO];
+    [regCloseButton setEnabled:NO];
+    [regStartButton setEnabled:NO];
 }
 
 - (void)enableControls
@@ -1581,8 +1581,8 @@ enum TableTags
 //    // These are always enabled
 //    [seriesDescriptionTextField setEnabled:YES];
 //    [fixedImageComboBox setEnabled:YES];
-//    [regCloseButton setEnabled:YES];
-//    [regStartButton setEnabled:YES];
+    [regCloseButton setEnabled:YES];
+    [regStartButton setEnabled:YES];
 //
 //    // selectively turn things on as needed
 //    [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
