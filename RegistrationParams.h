@@ -42,7 +42,6 @@
     NSMutableArray* fixedImageMask;
 
     // rigid registration parameters
-    //BOOL rigidRegEnabled;
     unsigned rigidRegMultiresLevels;
     enum MetricType rigidRegMetric;
     enum OptimizerType rigidRegOptimizer;
@@ -65,7 +64,6 @@
     BOOL deformShowField;
 
     // B-spline specific parameters
-    //BOOL bsplineRegEnabled;
     enum MetricType bsplineRegMetric;
     enum OptimizerType bsplineRegOptimizer;
     NSMutableArray* bsplineRegGridSizeArray;     // contains arrays of NSNumbers (unsigned)
@@ -82,7 +80,6 @@
     NSMutableArray* bsplineRegMaxIter;           // contains NSNumbers (unsigned)
 
     // Demons specific parameters
-    //BOOL demonsRegEnabled;
     NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
     unsigned demonsRegHistogramBins;
     unsigned demonsRegHistogramMatchPoints;

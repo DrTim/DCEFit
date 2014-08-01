@@ -150,7 +150,7 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
     [iterationTextField setIntegerValue:progressValues.curIteration];
 }
 
-- (void)setObserver:(void *)observer
+- (void)setObserver:(void*)observer
 {
     // observer may be 0 so we catch this first.
     if (observer == 0)
@@ -260,6 +260,7 @@ NSString* CloseProgressPanelNotification = @"CloseProgressPanelNotification";
 {
 	LOG4M_TRACE(logger_, @"Enter");
 	LOG4M_DEBUG(logger_, @"minVal = %f, maxVal = %f.", minVal, maxVal);
+
     [progressIndicator setMinValue:minVal];
     [progressIndicator setMaxValue:maxVal];
 }

@@ -48,7 +48,7 @@ void SetupLogger(const char* name, int level)
 
     std::string logFileAppName = loggerName + ".file";
     log4cplus::SharedAppenderPtr
-    logFileApp(new log4cplus::RollingFileAppender(logFilePath, 1000000, 5, false));
+    logFileApp(new log4cplus::RollingFileAppender(logFilePath, 1000000, 3, false));
     logFileApp->setName(logFileAppName);
     std::string filePattern = "%-5p [%d{%y-%m-%d %H:%M:%S:%q}][%b:%L] %m%n";
     std::auto_ptr<log4cplus::Layout> fileLayout(new log4cplus::PatternLayout(filePattern));

@@ -106,7 +106,7 @@ enum TableTags
     // Get the version from the bundle that contains this class
     NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
     NSDictionary* infoDict = [bundle infoDictionary];
-    NSString* bundleVersion = [infoDict objectForKey:@"CFBundleVersion"];
+    NSString* bundleVersion = [infoDict objectForKey:@"CFBundleShortVersionString"];
     NSString* bundleName = [infoDict objectForKey:@"CFBundleName"];
 
     // Put the version onto the main window.
@@ -180,25 +180,17 @@ enum TableTags
     // number and we will use this as the default and maximum.
     UserDefaults* defaults = [UserDefaults sharedInstance];
 
-    // Cap the number of threads at ITK's best guess
-#ifdef __x86_64__
-    unsigned maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
-    LOG4M_INFO(logger_, @"64 bit environment. Max threads = %u", maxThreads);
-#else
-#ifdef __i386__
-    unsigned maxThreads = MAX_32BIT_THREADS;
-    LOG4M_INFO(logger_, @"32 bit environment. Max threads = %u", maxThreads);
-#endif
-#endif
-
-#ifdef __x86_64__
-    unsigned defaultThreads = itk::MultiThreader::GetGlobalDefaultNumberOfThreads();
-    LOG4M_INFO(logger_, @"64 bit environment. Default threads = %u", defaultThreads);
-#else
+    // Cap the number of threads at ITK's best guess or our 32 bit limits
 #ifdef __i386__
     unsigned defaultThreads = DEFAULT_32BIT_THREADS;
-    LOG4M_INFO(logger_, @"32 bit environment. Default threads = %u", defaultThreads);
-#endif
+    unsigned maxThreads = MAX_32BIT_THREADS;
+    LOG4M_INFO(logger_, @"32 bit environment. Default threads = %u; Max threads = %u",
+               defaultThreads, maxThreads);
+#else
+    unsigned defaultThreads = itk::MultiThreader::GetGlobalDefaultNumberOfThreads();
+    unsigned maxThreads = itk::MultiThreader::GetGlobalMaximumNumberOfThreads();
+    LOG4M_INFO(logger_, @"64 bit environment. Default threads = %u; Max threads = %u",
+               defaultThreads, maxThreads);
 #endif
 
     // First guess at the number we will use, ensuring it is not too many.
@@ -280,10 +272,6 @@ enum TableTags
             // DCMPix instance containing this slice
             DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
 
-            // The DicomImage instance containing this slice.
-            //DicomImage* curSlice = [fileList objectAtIndex:sliceIdx];
-
-            // Image may be displayed flipped. We need the real index.
             // The list of ROIs in this slice. Pick out either the first one named "DCEFit"
             // or the first one in the list
             NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
@@ -295,18 +283,18 @@ enum TableTags
                     NSString* name = r.name;
                     if ((!found) &&
                         ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
-                        {
-                            found = YES;
-                            info.regROI = r;
-                            info.roiSliceIdx = sliceIdx;
-                            info.roiImageIdx = timeIdx;
-                            LOG4M_DEBUG(logger_, @"ROI image index: %u (slice index %u)",
-                                        info.roiImageIdx, info.roiSliceIdx);
-                        }
+                    {
+                        found = YES;
+                        info.regROI = r;
+                        info.roiSliceIdx = sliceIdx;
+                        info.roiImageIdx = timeIdx;
+                        LOG4M_DEBUG(logger_, @"ROI image index: %u (slice index %u)",
+                                    info.roiImageIdx, info.roiSliceIdx);
+                    }
                 }
 
                 LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
-                                [info.regROI name]);
+                            [info.regROI name]);
                 LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.regROI points]);
             }
 
@@ -451,7 +439,7 @@ enum TableTags
         [zCol setHidden:YES];
     }
 
-    // Find the first key image and assume that it is the desired fixed slice.
+    // Find the first image with an ROI and assume that it is the desired fixed slice.
     if (seriesInfo.roiImageIdx == -1)
     {
         if (regParams.fixedImageNumber > regParams.numImages)
@@ -885,6 +873,15 @@ enum TableTags
 
     [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
        didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)currentImageAsFixed:(NSButton *)sender
+{
+    NSInteger idx = self.viewerController1.curMovieIndex;
+    [fixedImageComboBox selectItemAtIndex:idx];
+    [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
+                            objectValueForItemAtIndex:idx]];
+    [fixedImageComboBox reloadData];
 }
 
 - (void)closeSheet

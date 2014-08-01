@@ -146,6 +146,7 @@
 - (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender;
 
 - (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender;
+- (IBAction)currentImageAsFixed:(NSButton *)sender;
 
 - (IBAction)regStartButtonPressed:(NSButton *)sender;
 - (IBAction)regCloseButtonPressed:(NSButton *)sender;

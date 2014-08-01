@@ -16,7 +16,6 @@
 		2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E91D1732C56C00769974 /* ImageImporter.mm */; };
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
 		2217E9231732DE4300769974 /* RegistrationManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E9211732DE4200769974 /* RegistrationManager.mm */; };
-		221F7BA4183A77AA00D9F9E7 /* DCEFit.osirixplugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */; };
 		2239315F1982A5B000BF2BBA /* Log4m.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2239315E1982A5B000BF2BBA /* Log4m.framework */; };
 		224073B51979D51A002F4091 /* RegisterOneImageDemons3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */; };
 		224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */; };
@@ -154,19 +153,6 @@
 		ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABA48A640680BB600089EB4F /* DCEFitFilter.h */; };
 		ABA48A670680BB690089EB4F /* DCEFitFilter.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABA48A660680BB690089EB4F /* DCEFitFilter.mm */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		22AF449617CE3E520091644F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /shared;
-			dstSubfolderSpec = 0;
-			files = (
-				221F7BA4183A77AA00D9F9E7 /* DCEFit.osirixplugin in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -718,7 +704,6 @@
 				8D5B49B1048680CD000E48DA /* Sources */,
 				8D5B49B3048680CD000E48DA /* Frameworks */,
 				8D5B49B5048680CD000E48DA /* Rez */,
-				22AF449617CE3E520091644F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -844,11 +829,11 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.3;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUGGING_SYMBOLS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/tim/devel/Log4m/build/Debug,
+					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -875,14 +860,14 @@
 					"~/usr/local/ITK/Universal/Release/include/ITK-4.6",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application\\ Support/OsiriX/Plugins\"";
+				INSTALL_PATH = "@executable_path/../Plug-ins";
 				LD_GENERATE_MAP_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Debug/lib,
 				);
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-undefined",
@@ -893,6 +878,7 @@
 				PRODUCT_NAME = DCEFit;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = osirixplugin;
 				ZERO_LINK = NO;
 			};
@@ -908,10 +894,10 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 0.3;
+				CURRENT_PROJECT_VERSION = 2;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/tim/devel/Log4m/build/Debug,
+					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -935,14 +921,14 @@
 					"~/usr/local/ITK/Universal/Release/include/ITK-4.6",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application\\ Support/OsiriX/Plugins\"";
+				INSTALL_PATH = "@executable_path/../Plug-ins";
 				LD_GENERATE_MAP_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Release/lib,
 				);
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-undefined",
@@ -953,6 +939,7 @@
 				PRODUCT_NAME = DCEFit;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = osirixplugin;
 				ZERO_LINK = NO;
 			};
@@ -973,7 +960,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CURRENT_PROJECT_VERSION = 0.1;
+				CURRENT_PROJECT_VERSION = 2;
 				FRAMEWORK_SEARCH_PATHS = /Users/tim/devel/osirix/build/Development;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -988,12 +975,13 @@
 					/opt/local/include,
 					"~/usr/local/include",
 				);
+				INSTALL_PATH = "@executable_path/../Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"~/usr/local/lib",
 					/opt/local/lib,
 					/Users/tim/usr/local/ITK/Universal/Debug/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
@@ -1015,7 +1003,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CURRENT_PROJECT_VERSION = 0.1;
+				CURRENT_PROJECT_VERSION = 2;
 				FRAMEWORK_SEARCH_PATHS = /Users/tim/devel/osirix/build/Development;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_VERSION = "";
@@ -1029,12 +1017,13 @@
 					/opt/local/include,
 					"~/usr/local/include",
 				);
+				INSTALL_PATH = "@executable_path/../Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"~/usr/local/lib",
 					/opt/local/lib,
 					/Users/tim/usr/local/ITK/Universal/Release/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

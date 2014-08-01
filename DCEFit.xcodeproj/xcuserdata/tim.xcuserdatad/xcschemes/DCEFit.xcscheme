@@ -35,7 +35,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
@@ -54,18 +54,18 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--LoadPlugin /Users/tim/devel/DCEFit/build/Release/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--LoadPlugin /Users/tim/devel/DCEFit/build/Debug/$(PRODUCT_NAME).$(WRAPPER_EXTENSION)"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS"
             value = "1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSZombieEnabled"

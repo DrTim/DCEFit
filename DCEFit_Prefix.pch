@@ -12,35 +12,35 @@
 
 #endif
 
-#ifdef __cplusplus__
-#include <itkMacro.h>
-#include <itkImage.h>
-#include <itkGDCMSeriesFileNames.h>
-#include <itkImageSeriesReader.h>
-#include <itkImageToImageMetric.h>
-#include <itkMattesMutualInformationImageToImageMetric.h>
-#include <itkMeanSquaresImageToImageMetric.h>
-#include <itkSingleValuedNonLinearOptimizer.h>
-#include <itkLBFGSOptimizer.h>
-#include <itkLBFGSBOptimizer.h>
-#include <itkGradientDescentOptimizer.h>
-#include <itkRegularStepGradientDescentOptimizer.h>
-#include <itkVersorRigid3DTransformOptimizer.h>
-#include <itkBSplineTransform.h>
-#include <itkCenteredRigid2DTransform.h>
-#include <itkVersorRigid3DTransform.h>
-#include <itkCenteredTransformInitializer.h>
-#include <itkCenteredVersorTransformInitializer.h>
-#include <itkBSplineTransformInitializer.h>
-#include <itkBSplineInterpolateImageFunction.h>
-#include <itkMultiResolutionImageRegistrationMethod.h>
-#include <itkMultiResolutionPyramidImageFilter.h>
-#include <itkImportImageFilter.h>
-#include <itkExtractImageFilter.h>
-#include <itkPolygonSpatialObject.h>
-#include <itkHistogramMatchingImageFilter.h>
-#include <itkDemonsRegistrationFilter.h>
-#include <itkMultiResolutionPDEDeformableRegistration.h>
-#include <itkWarpImageFilter.h>
-#endif
+//#ifdef __cplusplus__
+//#include <itkMacro.h>
+//#include <itkImage.h>
+//#include <itkGDCMSeriesFileNames.h>
+//#include <itkImageSeriesReader.h>
+//#include <itkImageToImageMetric.h>
+//#include <itkMattesMutualInformationImageToImageMetric.h>
+//#include <itkMeanSquaresImageToImageMetric.h>
+//#include <itkSingleValuedNonLinearOptimizer.h>
+//#include <itkLBFGSOptimizer.h>
+//#include <itkLBFGSBOptimizer.h>
+//#include <itkGradientDescentOptimizer.h>
+//#include <itkRegularStepGradientDescentOptimizer.h>
+//#include <itkVersorRigid3DTransformOptimizer.h>
+//#include <itkBSplineTransform.h>
+//#include <itkCenteredRigid2DTransform.h>
+//#include <itkVersorRigid3DTransform.h>
+//#include <itkCenteredTransformInitializer.h>
+//#include <itkCenteredVersorTransformInitializer.h>
+//#include <itkBSplineTransformInitializer.h>
+//#include <itkBSplineInterpolateImageFunction.h>
+//#include <itkMultiResolutionImageRegistrationMethod.h>
+//#include <itkMultiResolutionPyramidImageFilter.h>
+//#include <itkImportImageFilter.h>
+//#include <itkExtractImageFilter.h>
+//#include <itkPolygonSpatialObject.h>
+//#include <itkHistogramMatchingImageFilter.h>
+//#include <itkDemonsRegistrationFilter.h>
+//#include <itkMultiResolutionPDEDeformableRegistration.h>
+//#include <itkWarpImageFilter.h>
+//#endif
 

@@ -19,7 +19,15 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.4</string>
+	<string>1.2.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.2.0d</string>
+	<key>Application Category</key>
+	<string></string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 2013 Tim Allman</string>
+	<key>CFBundleGetInfoString</key>
+	<string>DCEFit version 1.2, Copyright (c) 2013 Tim Allman</string>
 	<key>MenuTitles</key>
 	<array>
 		<string>DCEFit</string>

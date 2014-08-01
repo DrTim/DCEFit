@@ -126,7 +126,6 @@ static UserDefaults* sharedInstance;
      [NSNumber numberWithUnsignedInt:1], FixedImageNumberKey,
      @"Registered with DCEFit", SeriesDescriptionKey,
 
-     //[NSNumber numberWithBool:YES], RigidRegEnabledKey,
      [NSNumber numberWithUnsignedInt:2], RigidRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], RigidRegMetricKey,
      [NSNumber numberWithInt:LBFGSB], RigidRegOptimizerKey,
@@ -148,7 +147,6 @@ static UserDefaults* sharedInstance;
 
      [NSNumber numberWithBool:NO], DeformRegShowFieldKey,
 
-     //[NSNumber numberWithBool:YES], BsplineRegEnabledKey,
      [NSArray arrayWithObjects:@300, @200, @100, @100, nil], BsplineRegMaxIterKey,
      [NSNumber numberWithUnsignedInt:3], BsplineRegMultiresLevelsKey,
      [NSNumber numberWithInt:MattesMutualInformation], BsplineRegMetricKey,
@@ -168,10 +166,9 @@ static UserDefaults* sharedInstance;
      [NSArray arrayWithObjects:@1e-1, @1e-1, @1e-1, @1e-1, nil], BsplineRegRSGDMaxStepSizeKey,
      [NSArray arrayWithObjects:@0.5, @0.5, @0.5, @0.5, nil], BsplineRegRSGDRelaxationFactorKey,
 
-     //[NSNumber numberWithBool:YES], DemonsRegEnabledKey,
-     [NSArray arrayWithObjects:@300, @200, @100, @100, nil], DemonsRegMaxIterKey,
-     [NSNumber numberWithUnsignedInt:3], DemonsRegMultiresLevelsKey,
-     [NSArray arrayWithObjects:@0.8, @0.75, @0.4, @0.2, nil], DemonsRegMaxRMSErrorKey,
+     [NSArray arrayWithObjects:@100, @80, @60, @50, nil], DemonsRegMaxIterKey,
+     [NSNumber numberWithUnsignedInt:2], DemonsRegMultiresLevelsKey,
+     [NSArray arrayWithObjects:@1.0, @0.6, @0.4, @0.2, nil], DemonsRegMaxRMSErrorKey,
      [NSNumber numberWithUnsignedInt:1000], DemonsRegHistogramBinsKey,
      [NSNumber numberWithUnsignedInt:10], DemonsRegHistogramMatchPointsKey,
      [NSNumber numberWithFloat:1.0], DemonsRegStandardDeviationsKey,

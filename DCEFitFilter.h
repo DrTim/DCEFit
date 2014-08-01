@@ -15,7 +15,7 @@
  * This is the class that OsiriX will load. It is this class which provides the link
  * between OsiriX and DCEFit.
  */
-@interface DCEFitFilter : PluginFilter
+@interface DCEFitFilter:PluginFilter
 {
     DialogController* dialogController;
 }
