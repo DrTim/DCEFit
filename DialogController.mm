@@ -1551,22 +1551,26 @@ enum TableTags
 {
     LOG4M_TRACE(logger_, @"Enter");
 
-//    [seriesDescriptionTextField setEnabled:NO];
-//    [fixedImageComboBox setEnabled:NO];
-//
-//    [rigidRegLevelsComboBox setEnabled:NO];
-//    [rigidRegOptimizerLabel setEnabled:NO];
-//    [rigidRegOptimizerConfigButton setEnabled:NO];
-//    [rigidRegMetricRadioMatrix setEnabled:NO];
-//    [rigidRegMetricConfigButton setEnabled:NO];
-//
-//    [bsplineRegLevelsComboBox setEnabled:NO];
-//    [bsplineRegGridSizeTableView setEnabled:NO];
-//    [bsplineRegOptimizerRadioMatrix setEnabled:NO];
-//    [bsplineRegOptimizerConfigButton setEnabled:NO];
-//    [bsplineRegMetricRadioMatrix setEnabled:NO];
-//    [bsplineRegMetricConfigButton setEnabled:NO];
-//
+    [seriesDescriptionTextField setEnabled:NO];
+    [fixedImageComboBox setEnabled:NO];
+    [registrationSelectionRadioMatrix setEnabled:NO];
+
+    [rigidRegLevelsComboBox setEnabled:NO];
+    [rigidRegOptimizerLabel setEnabled:NO];
+    [rigidRegOptimizerConfigButton setEnabled:NO];
+    [rigidRegMetricRadioMatrix setEnabled:NO];
+    [rigidRegMetricConfigButton setEnabled:NO];
+
+    [bsplineRegLevelsComboBox setEnabled:NO];
+    [bsplineRegGridSizeTableView setEnabled:NO];
+    [bsplineRegOptimizerRadioMatrix setEnabled:NO];
+    [bsplineRegOptimizerConfigButton setEnabled:NO];
+    [bsplineRegMetricRadioMatrix setEnabled:NO];
+    [bsplineRegMetricConfigButton setEnabled:NO];
+
+    [demonsRegLevelsComboBox setEnabled:NO];
+    [demonsRegOptimizerConfigButton setEnabled:NO];
+
     [regCloseButton setEnabled:NO];
     [regStartButton setEnabled:NO];
 }
@@ -1576,50 +1580,56 @@ enum TableTags
     LOG4M_TRACE(logger_, @"Enter");
 
     // turn off everything to start
-//    [self disableControls];
-//
-//    // These are always enabled
-//    [seriesDescriptionTextField setEnabled:YES];
-//    [fixedImageComboBox setEnabled:YES];
+    [self disableControls];
+
+    // These are always enabled
+    [seriesDescriptionTextField setEnabled:YES];
+    [fixedImageComboBox setEnabled:YES];
+    [registrationSelectionRadioMatrix setEnabled:NO];
     [regCloseButton setEnabled:YES];
     [regStartButton setEnabled:YES];
-//
-//    // selectively turn things on as needed
-//    [rigidRegLevelsComboBox setEnabled:regParams.rigidRegEnabled];
-//    [rigidRegMetricRadioMatrix setEnabled:regParams.rigidRegEnabled];
-//    [rigidRegOptimizerConfigButton setEnabled:regParams.rigidRegEnabled];
-//    [rigidRegOptimizerLabel setEnabled:regParams.rigidRegEnabled];
-//    [rigidRegMetricConfigButton setEnabled:regParams.rigidRegEnabled];
-//    if (regParams.rigidRegEnabled)
-//    {
-//        switch (regParams.rigidRegMetric)
-//        {
-//            case MattesMutualInformation:
-//                [rigidRegMetricConfigButton setEnabled:YES];
-//                break;
-//            default:
-//                [rigidRegMetricConfigButton setEnabled:NO];
-//        }
-//    }
-//
-//    [bsplineRegLevelsComboBox setEnabled:regParams.bsplineRegEnabled];
-//    //[deformShowFieldCheckBox setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegGridSizeTableView setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegOptimizerRadioMatrix setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegMetricRadioMatrix setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegOptimizerConfigButton setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegMetricConfigButton setEnabled:regParams.bsplineRegEnabled];
-//    if (regParams.bsplineRegEnabled)
-//    {
-//        if (regParams.bsplineRegMetric == MattesMutualInformation)
-//        {
-//            [bsplineRegMetricConfigButton setEnabled:YES];
-//        }
-//        else
-//        {
-//            [bsplineRegMetricConfigButton setEnabled:NO];
-//        }
-//    }
+
+    // selectively turn things on as needed
+    BOOL rigidEnabled = [regParams isRigidRegEnabled];
+    [rigidRegLevelsComboBox setEnabled:rigidEnabled];
+    [rigidRegMetricRadioMatrix setEnabled:rigidEnabled];
+    [rigidRegOptimizerConfigButton setEnabled:rigidEnabled];
+    [rigidRegOptimizerLabel setEnabled:rigidEnabled];
+    [rigidRegMetricConfigButton setEnabled:rigidEnabled];
+    if (rigidEnabled)
+    {
+        switch (regParams.rigidRegMetric)
+        {
+            case MattesMutualInformation:
+                [rigidRegMetricConfigButton setEnabled:YES];
+                break;
+            default:
+                [rigidRegMetricConfigButton setEnabled:NO];
+        }
+    }
+
+    BOOL bsplineEnabled = [regParams isBsplineRegEnabled];
+    [bsplineRegLevelsComboBox setEnabled:bsplineEnabled];
+    [bsplineRegGridSizeTableView setEnabled:bsplineEnabled];
+    [bsplineRegOptimizerRadioMatrix setEnabled:bsplineEnabled];
+    [bsplineRegMetricRadioMatrix setEnabled:bsplineEnabled];
+    [bsplineRegOptimizerConfigButton setEnabled:bsplineEnabled];
+    [bsplineRegMetricConfigButton setEnabled:bsplineEnabled];
+    if (bsplineEnabled)
+    {
+        if (regParams.bsplineRegMetric == MattesMutualInformation)
+        {
+            [bsplineRegMetricConfigButton setEnabled:YES];
+        }
+        else
+        {
+            [bsplineRegMetricConfigButton setEnabled:NO];
+        }
+    }
+
+    BOOL demonsEnabled = [regParams isDemonsRegEnabled];
+    [demonsRegLevelsComboBox setEnabled:demonsEnabled];
+    [demonsRegOptimizerConfigButton setEnabled:demonsEnabled];
 }
 
 - (void)registrationEnded:(BOOL)saveData
