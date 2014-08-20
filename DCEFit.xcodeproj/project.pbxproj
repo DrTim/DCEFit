@@ -829,7 +829,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1.2;
 				DEBUGGING_SYMBOLS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -894,7 +894,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1.2;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/tim/devel/Log4m/build/Release,
@@ -929,7 +929,7 @@
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-undefined",
 					dynamic_lookup,
