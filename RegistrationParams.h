@@ -105,7 +105,6 @@
 @property (retain) NSMutableArray* fixedImageMask;  ///< Spatial object registration. mask.
 
 // rigid registration parameters
-//@property (assign) BOOL rigidRegEnabled;             /**< Rigid registration enabled if true. */
 @property (assign) unsigned rigidRegMultiresLevels;  /**< Number of levels to use (0 - 4). */
 @property (assign) enum MetricType rigidRegMetric;   /**< The metric to use. (enum value) */
 @property (assign) enum OptimizerType rigidRegOptimizer;     /**< The optimizer to use. (enum value) */
@@ -128,7 +127,6 @@
 @property (assign) BOOL deformShowField;               /**< Show the displacement field. */
 
 // B-spline specific deformable registration parameters
-//@property (assign) BOOL bsplineRegEnabled;              /**< B-spline registration enabled if true. */
 @property (assign) unsigned bsplineRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
 @property (assign) enum MetricType bsplineRegMetric;    /**< The metric to use. (enum value) */
 @property (assign) enum OptimizerType bsplineRegOptimizer; /**< The optimizer to use. (enum value) */
@@ -145,7 +143,6 @@
 @property (retain) NSMutableArray* bsplineRegMaxIter;             /**< Last resort termination criterion. */
 
 // Demons specific parameters
-//@property (assign) BOOL demonsRegEnabled;              /**< Demons registration enabled if true. */
 @property (assign) unsigned demonsRegMultiresLevels;   /**< Number of levels to use (0 - 4). */
 @property (retain) NSMutableArray* demonsRegMaxRMSError;     // contains NSNumbers (float)
 @property (assign) unsigned demonsRegHistogramBins;
