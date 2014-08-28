@@ -12,11 +12,11 @@
 		2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */; };
 		2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */; };
 		22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 22098EC917AD2D7600428C86 /* RegisterOneImage.h */; };
+		2213FE0819AF604300B9EF4F /* libLog4m.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2213FE0719AF604300B9EF4F /* libLog4m.a */; };
 		2217E91E1732C56C00769974 /* ImageImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E91C1732C56C00769974 /* ImageImporter.h */; };
 		2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E91D1732C56C00769974 /* ImageImporter.mm */; };
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
 		2217E9231732DE4300769974 /* RegistrationManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E9211732DE4200769974 /* RegistrationManager.mm */; };
-		2239315F1982A5B000BF2BBA /* Log4m.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2239315E1982A5B000BF2BBA /* Log4m.framework */; };
 		224073B51979D51A002F4091 /* RegisterOneImageDemons3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */; };
 		224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */; };
 		225843181721931700F9346C /* RegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 225843161721931700F9346C /* RegistrationParams.h */; };
@@ -150,9 +150,20 @@
 		22ED12BE17847FC60047AF58 /* Region2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 22ED12BC17847FC60047AF58 /* Region2D.m */; };
 		8D5B49AE048680CD000E48DA /* DCEFit_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
-		ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABA48A640680BB600089EB4F /* DCEFitFilter.h */; };
 		ABA48A670680BB690089EB4F /* DCEFitFilter.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABA48A660680BB690089EB4F /* DCEFitFilter.mm */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		226EA03619A5127E006CA311 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -163,11 +174,11 @@
 		22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItkRegistrationParams.h; sourceTree = "<group>"; };
 		22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ItkRegistrationParams.mm; sourceTree = "<group>"; };
 		22098EC917AD2D7600428C86 /* RegisterOneImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImage.h; sourceTree = "<group>"; };
+		2213FE0719AF604300B9EF4F /* libLog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLog4m.a; path = ../../usr/local/lib/libLog4m.a; sourceTree = "<group>"; };
 		2217E91C1732C56C00769974 /* ImageImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageImporter.h; sourceTree = "<group>"; };
 		2217E91D1732C56C00769974 /* ImageImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageImporter.mm; sourceTree = "<group>"; };
 		2217E9201732DE4200769974 /* RegistrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RegistrationManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2217E9211732DE4200769974 /* RegistrationManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegistrationManager.mm; sourceTree = "<group>"; };
-		2239315E1982A5B000BF2BBA /* Log4m.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Log4m.framework; path = ../Log4m/build/Debug/Log4m.framework; sourceTree = "<group>"; };
 		224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImageDemons3D.h; sourceTree = "<group>"; };
 		224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageDemons3D.mm; sourceTree = "<group>"; };
 		225843161721931700F9346C /* RegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationParams.h; sourceTree = "<group>"; };
@@ -286,7 +297,6 @@
 		22A40D901972DA1A00B97C21 /* RegistrationObserverDemons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationObserverDemons.h; sourceTree = "<group>"; };
 		22A40D911972DA1A00B97C21 /* RegistrationObserverDemons.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegistrationObserverDemons.mm; sourceTree = "<group>"; };
 		22AF448217CE3C990091644F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		22AF448617CE3C990091644F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		22B0AEB8174E6D2100D85184 /* RegProgressValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegProgressValues.h; sourceTree = "<group>"; };
 		22B0AEB9174E6D2100D85184 /* RegProgressValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegProgressValues.m; sourceTree = "<group>"; };
 		22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadingImagesWindowController.h; sourceTree = "<group>"; };
@@ -307,7 +317,6 @@
 		32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCEFit_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DCEFit.osirixplugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABA48A640680BB600089EB4F /* DCEFitFilter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DCEFitFilter.h; sourceTree = "<group>"; };
 		ABA48A660680BB690089EB4F /* DCEFitFilter.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = DCEFitFilter.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -316,6 +325,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22C326A61892C0DB00E8A071 /* OsiriXAPI.framework in Frameworks */,
+				226371EF1978119B00AF9276 /* liblog4cplusS.a in Frameworks */,
 				226371C21976EAA600AF9276 /* libITKIONIFTI-4.6.a in Frameworks */,
 				226371CD1976EAA600AF9276 /* libITKIOVTK-4.6.a in Frameworks */,
 				226371C01976EAA600AF9276 /* libITKIOMeta-4.6.a in Frameworks */,
@@ -337,8 +348,6 @@
 				226371A11976EAA500AF9276 /* libITKBiasCorrection-4.6.a in Frameworks */,
 				226371C61976EAA600AF9276 /* libITKIOSpatialObjects-4.6.a in Frameworks */,
 				226371CF1976EAA600AF9276 /* libitkjpeg-4.6.a in Frameworks */,
-				2239315F1982A5B000BF2BBA /* Log4m.framework in Frameworks */,
-				226371EF1978119B00AF9276 /* liblog4cplusS.a in Frameworks */,
 				226371D01976EAA600AF9276 /* libITKKLMRegionGrowing-4.6.a in Frameworks */,
 				226371CE1976EAA600AF9276 /* libITKIOXML-4.6.a in Frameworks */,
 				226371DE1976EAA600AF9276 /* libITKSpatialObjects-4.6.a in Frameworks */,
@@ -351,7 +360,6 @@
 				226371C71976EAA600AF9276 /* libITKIOStimulate-4.6.a in Frameworks */,
 				226371B81976EAA600AF9276 /* libITKIOGE-4.6.a in Frameworks */,
 				226371BF1976EAA600AF9276 /* libITKIOMesh-4.6.a in Frameworks */,
-				22C326A61892C0DB00E8A071 /* OsiriXAPI.framework in Frameworks */,
 				226371A41976EAA500AF9276 /* libITKDICOMParser-4.6.a in Frameworks */,
 				226371D31976EAA600AF9276 /* libITKMetaIO-4.6.a in Frameworks */,
 				226371ED1976EAA600AF9276 /* libITKznz-4.6.a in Frameworks */,
@@ -368,6 +376,7 @@
 				226371D41976EAA600AF9276 /* libitkNetlibSlatec-4.6.a in Frameworks */,
 				226371A31976EAA500AF9276 /* libITKCommon-4.6.a in Frameworks */,
 				226371DA1976EAA600AF9276 /* libITKPath-4.6.a in Frameworks */,
+				2213FE0819AF604300B9EF4F /* libLog4m.a in Frameworks */,
 				226371D51976EAA600AF9276 /* libITKniftiio-4.6.a in Frameworks */,
 				226371D11976EAA600AF9276 /* libITKLabelMap-4.6.a in Frameworks */,
 				226371B31976EAA600AF9276 /* libitkhdf5-4.6.a in Frameworks */,
@@ -406,6 +415,7 @@
 			isa = PBXGroup;
 			children = (
 				22DC09F317D4C30F00814825 /* symbolList */,
+				226EA02919A50626006CA311 /* Plotting */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				22664EC41729AADC008B7961 /* Functions */,
 				089C167CFE841241C02AAC07 /* Resources */,
@@ -419,7 +429,6 @@
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				2239315E1982A5B000BF2BBA /* Log4m.framework */,
 				22C326A41892C02D00E8A071 /* Osirix Frameworks */,
 				22AF44A117CE48250091644F /* Logger */,
 				229793FD17248441004CCBC6 /* ITK */,
@@ -444,7 +453,6 @@
 		08FB77AFFE84173DC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				ABA48A640680BB600089EB4F /* DCEFitFilter.h */,
 				ABA48A660680BB690089EB4F /* DCEFitFilter.mm */,
 				229367CA17204AEF00F1C1EF /* DialogController.h */,
 				229367CB17204AEF00F1C1EF /* DialogController.mm */,
@@ -503,6 +511,8 @@
 		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				089C1672FE841209C02AAC07 /* Foundation.framework */,
+				089C167FFE841241C02AAC07 /* AppKit.framework */,
 				22AF448217CE3C990091644F /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
@@ -511,9 +521,6 @@
 		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				22AF448617CE3C990091644F /* CoreData.framework */,
-				089C1672FE841209C02AAC07 /* Foundation.framework */,
-				089C167FFE841241C02AAC07 /* AppKit.framework */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
@@ -541,6 +548,13 @@
 				22664ECD1729ADC7008B7961 /* LoggerUtils.cpp */,
 			);
 			name = Functions;
+			sourceTree = "<group>";
+		};
+		226EA02919A50626006CA311 /* Plotting */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Plotting;
 			sourceTree = "<group>";
 		};
 		229793FD17248441004CCBC6 /* ITK */ = {
@@ -630,6 +644,7 @@
 		22AF44A117CE48250091644F /* Logger */ = {
 			isa = PBXGroup;
 			children = (
+				2213FE0719AF604300B9EF4F /* libLog4m.a */,
 				226371EE1978119B00AF9276 /* liblog4cplusS.a */,
 			);
 			name = Logger;
@@ -660,7 +675,6 @@
 			files = (
 				225F6FEE187F280A00558EF7 /* RegisterOneImageRigid3D.h in Headers */,
 				8D5B49AE048680CD000E48DA /* DCEFit_Prefix.pch in Headers */,
-				ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */,
 				229367CC17204AEF00F1C1EF /* DialogController.h in Headers */,
 				22C326A21892B59A00E8A071 /* ViewerController+ExportTimeSeries.h in Headers */,
 				22C3137F189D676E00ECDEE6 /* LoadingImagesWindowController.h in Headers */,
@@ -704,6 +718,7 @@
 				8D5B49B1048680CD000E48DA /* Sources */,
 				8D5B49B3048680CD000E48DA /* Frameworks */,
 				8D5B49B5048680CD000E48DA /* Rez */,
+				226EA03619A5127E006CA311 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -835,6 +850,10 @@
 					"$(inherited)",
 					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
+					/Users/tim/devel/CorePlot_1.5.1/Binaries/MacOS,
+					"/Users/tim/devel/core-plot-release_1.4/build/Release",
+					/Users/tim/devel/Log4m/build/Debug,
+					/Users/tim/devel/osirix/build/Development,
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -865,6 +884,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Debug/lib,
+					/Users/tim/usr/local/lib,
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -899,6 +919,10 @@
 					"$(inherited)",
 					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
+					/Users/tim/devel/CorePlot_1.5.1/Binaries/MacOS,
+					"/Users/tim/devel/core-plot-release_1.4/build/Release",
+					/Users/tim/devel/Log4m/build/Debug,
+					/Users/tim/devel/osirix/build/Development,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DCEFit_Prefix.pch;
@@ -926,6 +950,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Release/lib,
+					/Users/tim/usr/local/lib,
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;

@@ -112,10 +112,14 @@ typedef itk::PolygonSpatialObject<3u> SpatialMask3D;
 // Demons registration filter and needed accessories
 typedef itk::Vector<float, Image2D::ImageDimension> DemonsVectorPixel2D;
 typedef itk::Image<DemonsVectorPixel2D, Image2D::ImageDimension> DemonsDisplacementField2D;
+
+// Symmetric filter does not work well with multiresolution registration - Aug 2014
 //typedef itk::SymmetricForcesDemonsRegistrationFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsRegistrationFilter2D;
 typedef itk::DemonsRegistrationFilter<Image2D, Image2D, DemonsDisplacementField2D> DemonsRegistrationFilter2D;
 typedef itk::Vector<float, Image3D::ImageDimension> DemonsVectorPixel3D;
 typedef itk::Image<DemonsVectorPixel3D, Image3D::ImageDimension> DemonsDisplacementField3D;
+
+// Symmetric filter does not work well with multiresolution registration - Aug 2014
 //typedef itk::SymmetricForcesDemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField3D> DemonsRegistrationFilter3D;
 typedef itk::DemonsRegistrationFilter<Image3D, Image3D, DemonsDisplacementField3D> DemonsRegistrationFilter3D;
 
