@@ -12,7 +12,7 @@
 		2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */; };
 		2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */; };
 		22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 22098EC917AD2D7600428C86 /* RegisterOneImage.h */; };
-		2213FE0819AF604300B9EF4F /* libLog4m.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2213FE0719AF604300B9EF4F /* libLog4m.a */; };
+		2213FE1A19AF65B900B9EF4F /* liblog4m.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2213FE1919AF65B900B9EF4F /* liblog4m.a */; };
 		2217E91E1732C56C00769974 /* ImageImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E91C1732C56C00769974 /* ImageImporter.h */; };
 		2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E91D1732C56C00769974 /* ImageImporter.mm */; };
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
@@ -174,7 +174,7 @@
 		22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItkRegistrationParams.h; sourceTree = "<group>"; };
 		22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ItkRegistrationParams.mm; sourceTree = "<group>"; };
 		22098EC917AD2D7600428C86 /* RegisterOneImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImage.h; sourceTree = "<group>"; };
-		2213FE0719AF604300B9EF4F /* libLog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLog4m.a; path = ../../usr/local/lib/libLog4m.a; sourceTree = "<group>"; };
+		2213FE1919AF65B900B9EF4F /* liblog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4m.a; path = ../Log4m/build/Release/liblog4m.a; sourceTree = "<group>"; };
 		2217E91C1732C56C00769974 /* ImageImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageImporter.h; sourceTree = "<group>"; };
 		2217E91D1732C56C00769974 /* ImageImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageImporter.mm; sourceTree = "<group>"; };
 		2217E9201732DE4200769974 /* RegistrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RegistrationManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -376,7 +376,7 @@
 				226371D41976EAA600AF9276 /* libitkNetlibSlatec-4.6.a in Frameworks */,
 				226371A31976EAA500AF9276 /* libITKCommon-4.6.a in Frameworks */,
 				226371DA1976EAA600AF9276 /* libITKPath-4.6.a in Frameworks */,
-				2213FE0819AF604300B9EF4F /* libLog4m.a in Frameworks */,
+				2213FE1A19AF65B900B9EF4F /* liblog4m.a in Frameworks */,
 				226371D51976EAA600AF9276 /* libITKniftiio-4.6.a in Frameworks */,
 				226371D11976EAA600AF9276 /* libITKLabelMap-4.6.a in Frameworks */,
 				226371B31976EAA600AF9276 /* libitkhdf5-4.6.a in Frameworks */,
@@ -644,7 +644,7 @@
 		22AF44A117CE48250091644F /* Logger */ = {
 			isa = PBXGroup;
 			children = (
-				2213FE0719AF604300B9EF4F /* libLog4m.a */,
+				2213FE1919AF65B900B9EF4F /* liblog4m.a */,
 				226371EE1978119B00AF9276 /* liblog4cplusS.a */,
 			);
 			name = Logger;
@@ -885,6 +885,7 @@
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Debug/lib,
 					/Users/tim/usr/local/lib,
+					/Users/tim/devel/Log4m/build/Release,
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -951,6 +952,7 @@
 					"$(inherited)",
 					/Users/tim/usr/local/ITK/Universal/Release/lib,
 					/Users/tim/usr/local/lib,
+					/Users/tim/devel/Log4m/build/Release,
 				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -985,7 +987,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1.2.1;
 				FRAMEWORK_SEARCH_PATHS = /Users/tim/devel/osirix/build/Development;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1028,7 +1030,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1.2.1;
 				FRAMEWORK_SEARCH_PATHS = /Users/tim/devel/osirix/build/Development;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_VERSION = "";
