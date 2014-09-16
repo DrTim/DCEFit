@@ -13,6 +13,8 @@
 		2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */; };
 		22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 22098EC917AD2D7600428C86 /* RegisterOneImage.h */; };
 		2213FE1A19AF65B900B9EF4F /* liblog4m.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2213FE1919AF65B900B9EF4F /* liblog4m.a */; };
+		221538D119C8803900C25D62 /* DCEFitManual.odt in Resources */ = {isa = PBXBuildFile; fileRef = 221538CF19C8803900C25D62 /* DCEFitManual.odt */; };
+		221538D219C8803900C25D62 /* Release Notes.odt in Resources */ = {isa = PBXBuildFile; fileRef = 221538D019C8803900C25D62 /* Release Notes.odt */; };
 		2217E91E1732C56C00769974 /* ImageImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E91C1732C56C00769974 /* ImageImporter.h */; };
 		2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2217E91D1732C56C00769974 /* ImageImporter.mm */; };
 		2217E9221732DE4300769974 /* RegistrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2217E9201732DE4200769974 /* RegistrationManager.h */; };
@@ -175,6 +177,8 @@
 		22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ItkRegistrationParams.mm; sourceTree = "<group>"; };
 		22098EC917AD2D7600428C86 /* RegisterOneImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterOneImage.h; sourceTree = "<group>"; };
 		2213FE1919AF65B900B9EF4F /* liblog4m.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4m.a; path = ../Log4m/build/Release/liblog4m.a; sourceTree = "<group>"; };
+		221538CF19C8803900C25D62 /* DCEFitManual.odt */ = {isa = PBXFileReference; lastKnownFileType = file; name = DCEFitManual.odt; path = Documentation/DCEFitManual.odt; sourceTree = "<group>"; };
+		221538D019C8803900C25D62 /* Release Notes.odt */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Release Notes.odt"; path = "Documentation/Release Notes.odt"; sourceTree = "<group>"; };
 		2217E91C1732C56C00769974 /* ImageImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageImporter.h; sourceTree = "<group>"; };
 		2217E91D1732C56C00769974 /* ImageImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageImporter.mm; sourceTree = "<group>"; };
 		2217E9201732DE4200769974 /* RegistrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RegistrationManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -421,6 +425,7 @@
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
 				32C88E010371C26100C91783 /* Other Sources */,
+				221538D319C880FA00C25D62 /* Documentation */,
 				19C28FB8FE9D52D311CA2CBB /* Products */,
 			);
 			name = DCEFit;
@@ -531,6 +536,15 @@
 				AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		221538D319C880FA00C25D62 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				221538CF19C8803900C25D62 /* DCEFitManual.odt */,
+				221538D019C8803900C25D62 /* Release Notes.odt */,
+			);
+			name = Documentation;
 			sourceTree = "<group>";
 		};
 		22664EC41729AADC008B7961 /* Functions */ = {
@@ -765,8 +779,10 @@
 			files = (
 				22C31381189D676E00ECDEE6 /* LoadingImagesWindow.xib in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
+				221538D119C8803900C25D62 /* DCEFitManual.odt in Resources */,
 				22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */,
 				22DC09F417D4C30F00814825 /* symbolList in Resources */,
+				221538D219C8803900C25D62 /* Release Notes.odt in Resources */,
 				22CAD0D718043E7F00351867 /* MainDialog.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
