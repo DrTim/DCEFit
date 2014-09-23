@@ -15,16 +15,16 @@ template <class TImage>
 class ImageTagger
 {
 public:
-    ImageTagger(unsigned gridSize)
-    : gridSize_(gridSize), PIXEL_VALUE(2048.0)
+    ImageTagger(unsigned gridSize, float pixelValue = 2048.0)
+    : mGridSize(gridSize), mPixelValue(pixelValue)
     {
     }
 
     void operator()(TImage& image);
 
 private:
-    unsigned gridSize_;
-    const float PIXEL_VALUE;
+    unsigned mGridSize;
+    const float mPixelValue;
 };
 
 #endif /* defined(__DCEFit__ImageTagger__) */

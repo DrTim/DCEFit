@@ -14,8 +14,8 @@ void ImageTagger<Image2D>::operator()(Image2D& image)
 {
     Image2D::SizeType dims = image.GetLargestPossibleRegion().GetSize();
 
-    unsigned gridRows = dims[0] / gridSize_;
-    unsigned gridCols = dims[1] / gridSize_;
+    unsigned gridRows = dims[0] / mGridSize;
+    unsigned gridCols = dims[1] / mGridSize;
 
     for (unsigned row = 0; row < dims[0]; ++row)
     {
@@ -26,9 +26,9 @@ void ImageTagger<Image2D>::operator()(Image2D& image)
         {
             index[1] = col;
             if (row % gridRows == 0)             // set all pixels in row
-                image.SetPixel(index, PIXEL_VALUE);
+                image.SetPixel(index, mPixelValue);
             else if (col % gridCols == 0)        // set only pixels in the grid columns
-                image.SetPixel(index, PIXEL_VALUE);
+                image.SetPixel(index, mPixelValue);
         }
     }
 }
@@ -38,8 +38,8 @@ void ImageTagger<Image3D>::operator()(Image3D& image)
 {
     Image3D::SizeType dims = image.GetLargestPossibleRegion().GetSize();
 
-    unsigned gridRows = dims[0] / gridSize_;
-    unsigned gridCols = dims[1] / gridSize_;
+    unsigned gridRows = dims[0] / mGridSize;
+    unsigned gridCols = dims[1] / mGridSize;
 
     for (unsigned slice = 0; slice < dims[2]; ++slice)
     {
@@ -53,9 +53,9 @@ void ImageTagger<Image3D>::operator()(Image3D& image)
             {
                 index[1] = col;
                 if (row % gridRows == 0)             // set all pixels in row
-                    image.SetPixel(index, PIXEL_VALUE);
+                    image.SetPixel(index, mPixelValue);
                 else if (col % gridCols == 0)        // set only pixels in the grid columns
-                    image.SetPixel(index, PIXEL_VALUE);
+                    image.SetPixel(index, mPixelValue);
             }
         }
     }

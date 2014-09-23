@@ -143,6 +143,13 @@
 		22C8753617E1F6FD00CD3308 /* ImageSlicer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */; };
 		22C8753717E1F6FD00CD3308 /* ImageSlicer.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C8753517E1F6FD00CD3308 /* ImageSlicer.h */; };
 		22CAD0D718043E7F00351867 /* MainDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22CAD0D618043E7F00351867 /* MainDialog.xib */; };
+		22D4B39D19D0985300949BD3 /* Princomp.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B39719D0985300949BD3 /* Princomp.h */; };
+		22D4B39E19D0985300949BD3 /* printArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D4B39819D0985300949BD3 /* printArray.cpp */; };
+		22D4B39F19D0985300949BD3 /* printArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B39919D0985300949BD3 /* printArray.h */; };
+		22D4B3A019D0985300949BD3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 22D4B39A19D0985300949BD3 /* README.md */; };
+		22D4B3A119D0985300949BD3 /* Svd.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B39B19D0985300949BD3 /* Svd.h */; };
+		22D4B3A519D09B1800949BD3 /* Pca3TpAnal.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */; };
+		22D4B3A619D09B1800949BD3 /* Pca3TpAnal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */; };
 		22D6C5F51743AC9E002EA2AB /* UserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D6C5F31743AC9E002EA2AB /* UserDefaults.h */; };
 		22D6C5F61743AC9E002EA2AB /* UserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D6C5F41743AC9E002EA2AB /* UserDefaults.m */; };
 		22DC09F417D4C30F00814825 /* symbolList in Resources */ = {isa = PBXBuildFile; fileRef = 22DC09F317D4C30F00814825 /* symbolList */; };
@@ -298,6 +305,13 @@
 		22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSlicer.cpp; sourceTree = "<group>"; };
 		22C8753517E1F6FD00CD3308 /* ImageSlicer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSlicer.h; sourceTree = "<group>"; };
 		22CAD0D618043E7F00351867 /* MainDialog.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainDialog.xib; sourceTree = "<group>"; };
+		22D4B39719D0985300949BD3 /* Princomp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Princomp.h; sourceTree = "<group>"; };
+		22D4B39819D0985300949BD3 /* printArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = printArray.cpp; sourceTree = "<group>"; };
+		22D4B39919D0985300949BD3 /* printArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = printArray.h; sourceTree = "<group>"; };
+		22D4B39A19D0985300949BD3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		22D4B39B19D0985300949BD3 /* Svd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Svd.h; sourceTree = "<group>"; };
+		22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pca3TpAnal.h; sourceTree = "<group>"; };
+		22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Pca3TpAnal.mm; sourceTree = "<group>"; };
 		22D6C5F31743AC9E002EA2AB /* UserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDefaults.h; sourceTree = "<group>"; };
 		22D6C5F41743AC9E002EA2AB /* UserDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaults.m; sourceTree = "<group>"; };
 		22DC09F317D4C30F00814825 /* symbolList */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbolList; sourceTree = "<group>"; };
@@ -432,6 +446,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				22D4B39A19D0985300949BD3 /* README.md */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				22CAD0D618043E7F00351867 /* MainDialog.xib */,
@@ -450,15 +465,20 @@
 				229367CB17204AEF00F1C1EF /* DialogController.mm */,
 				2217E91C1732C56C00769974 /* ImageImporter.h */,
 				2217E91D1732C56C00769974 /* ImageImporter.mm */,
-				22C8753517E1F6FD00CD3308 /* ImageSlicer.h */,
 				22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */,
-				2284DDBF181561960008B134 /* ImageTagger.h */,
+				22C8753517E1F6FD00CD3308 /* ImageSlicer.h */,
 				2284DDBE181561960008B134 /* ImageTagger.cpp */,
+				2284DDBF181561960008B134 /* ImageTagger.h */,
 				22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */,
 				22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */,
 				22664EB31729A73D008B7961 /* ItkTypedefs.h */,
 				22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */,
 				22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */,
+				22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */,
+				22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */,
+				22D4B39719D0985300949BD3 /* Princomp.h */,
+				22D4B39819D0985300949BD3 /* printArray.cpp */,
+				22D4B39919D0985300949BD3 /* printArray.h */,
 				22664EAF172959BA008B7961 /* ProgressWindowController.h */,
 				22664EB0172959BA008B7961 /* ProgressWindowController.mm */,
 				22F2DD8E172AA06800F75C06 /* ProjectDefs.h */,
@@ -469,12 +489,12 @@
 				22098EC917AD2D7600428C86 /* RegisterOneImage.h */,
 				22664ED61729AED2008B7961 /* RegisterOneImageBSpline2D.h */,
 				22664ED51729AED2008B7961 /* RegisterOneImageBSpline2D.mm */,
+				225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */,
+				225F6FE9187F280A00558EF7 /* RegisterOneImageBSpline3D.mm */,
 				22637A1D1959B2D7000D888A /* RegisterOneImageDemons2D.h */,
 				22637A1E1959B2D7000D888A /* RegisterOneImageDemons2D.mm */,
 				224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */,
 				224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */,
-				225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */,
-				225F6FE9187F280A00558EF7 /* RegisterOneImageBSpline3D.mm */,
 				22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */,
 				22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */,
 				225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */,
@@ -492,6 +512,7 @@
 				22B0AEB9174E6D2100D85184 /* RegProgressValues.m */,
 				2293D970188DC0FC00619245 /* SeriesInfo.h */,
 				2293D971188DC0FC00619245 /* SeriesInfo.m */,
+				22D4B39B19D0985300949BD3 /* Svd.h */,
 				22D6C5F31743AC9E002EA2AB /* UserDefaults.h */,
 				22D6C5F41743AC9E002EA2AB /* UserDefaults.m */,
 				22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */,
@@ -666,6 +687,8 @@
 				22C3137F189D676E00ECDEE6 /* LoadingImagesWindowController.h in Headers */,
 				225843181721931700F9346C /* RegistrationParams.h in Headers */,
 				22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */,
+				22D4B3A119D0985300949BD3 /* Svd.h in Headers */,
+				22D4B39D19D0985300949BD3 /* Princomp.h in Headers */,
 				22664EB71729A864008B7961 /* CopyMetaDataDictionary.h in Headers */,
 				225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */,
 				22664EBB1729A95D008B7961 /* DumpDicomMetaDataDictionary.h in Headers */,
@@ -683,8 +706,10 @@
 				22B0AEBA174E6D2200D85184 /* RegProgressValues.h in Headers */,
 				22004546175E55BA001A8EF2 /* RegisterImageOp.h in Headers */,
 				2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */,
+				22D4B39F19D0985300949BD3 /* printArray.h in Headers */,
 				22ED12BD17847FC60047AF58 /* Region2D.h in Headers */,
 				22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */,
+				22D4B3A519D09B1800949BD3 /* Pca3TpAnal.h in Headers */,
 				225F6FEC187F280A00558EF7 /* RegisterOneImageBSpline3D.h in Headers */,
 				22A40D921972DA1A00B97C21 /* RegistrationObserverDemons.h in Headers */,
 				22C8753717E1F6FD00CD3308 /* ImageSlicer.h in Headers */,
@@ -748,6 +773,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22D4B3A019D0985300949BD3 /* README.md in Resources */,
 				22C31381189D676E00ECDEE6 /* LoadingImagesWindow.xib in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
 				22664EAE17294FC6008B7961 /* ProgressWindow.xib in Resources */,
@@ -778,6 +804,7 @@
 				225843191721931700F9346C /* RegistrationParams.m in Sources */,
 				22664EB2172959BA008B7961 /* ProgressWindowController.mm in Sources */,
 				22664EB61729A864008B7961 /* CopyMetaDataDictionary.cpp in Sources */,
+				22D4B3A619D09B1800949BD3 /* Pca3TpAnal.mm in Sources */,
 				22C326A31892B59A00E8A071 /* ViewerController+ExportTimeSeries.m in Sources */,
 				224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */,
 				22664EBA1729A95D008B7961 /* DumpDicomMetaDataDictionary.cpp in Sources */,
@@ -786,6 +813,7 @@
 				22664ED91729AED2008B7961 /* RegisterOneImageBSpline2D.mm in Sources */,
 				22664EDB1729AED2008B7961 /* RegisterOneImageRigid2D.mm in Sources */,
 				22664EDF1729AFF8008B7961 /* RegistrationObserverBSpline.mm in Sources */,
+				22D4B39E19D0985300949BD3 /* printArray.cpp in Sources */,
 				2293D973188DC0FC00619245 /* SeriesInfo.m in Sources */,
 				22637A201959B2D7000D888A /* RegisterOneImageDemons2D.mm in Sources */,
 				2217E91F1732C56C00769974 /* ImageImporter.mm in Sources */,
@@ -969,7 +997,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					/opt/local/include,
@@ -1011,7 +1039,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					/opt/local/include,
