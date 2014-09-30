@@ -10,28 +10,25 @@
 #define __princomp__Princomp__
 
 #include "printArray.h"
-#include "Svd.h"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <Eigen/Dense>
 
-#include <Accelerate/Accelerate.h>
+#include <iostream>
 
 /**
  * Calculate the principle components (PC) of a matrix. The logic is based upon Octave's
  * princomp.m https://www.gnu.org/software/octave . This is Matlab compatible. See
  * http://www.mathworks.com/help/stats/princomp.html for more information.
  */
-//namespace ublas = boost::numeric::ublas;
 
 class Princomp
 {
 public:
     /**
-     * Convenient typedef for the matrices we will use.
+     * Convenient typedef for the matrices we will use. By default the matrices are column major order.
      */
-    typedef boost::numeric::ublas::matrix<double, boost::numeric::ublas::column_major> MatrixType;
-    typedef boost::numeric::ublas::vector<double> VectorType;
+    typedef Eigen::MatrixXf MatrixType;
+    typedef Eigen::VectorXf VectorType;
     /**
      * Constructor with matrix. The constructor will do all of the calculations
      * the results of which can be accessed with the accessors. The matrix is n
@@ -41,41 +38,41 @@ public:
      * copy is modified.
      */
     Princomp(const MatrixType& data)
-    : mRows(data.size1()), mCols(data.size2()), mCentredData(data), mCoeffs(mCols, mCols),
-      mScores(mRows, mCols), mEigenValues(std::min(mRows, mCols)), mTSquare(mRows),
-      mSingVals(std::min(mRows, mCols))
+    : mRows(data.rows()), mCols(data.cols()), mCentredData(data), mCoeffs(mCols, mCols),
+    mScores(mRows, mCols), mEigenValues(std::min(mRows, mCols)), mTSquare(mRows),
+    mSingVals(std::min(mRows, mCols))
     {
 
         std::cerr << printArray(data, "data");
 
         // Subtract the mean of each column
-        for (MatrixType::size_type col = 0; col < mCols; ++col)
+        for (MatrixType::Index col = 0; col < mCols; ++col)
         {
-            boost::numeric::ublas::matrix_column<MatrixType> column(mCentredData, col);
-            double sum = boost::numeric::ublas::norm_1(column);
-            double mean = sum / mRows;
-            for (VectorType::size_type idx = 0; idx < column.size(); ++idx)
-                column(idx) -= mean;
+            float mean = mCentredData.col(col).mean();
+            for (MatrixType::Index idx = 0; idx < mRows; ++idx)
+                mCentredData(idx, col) -= mean;
         }
 
-        std::cerr << printArray(mCentredData, "data zero mean");\
-        
+        std::cerr << printArray(mCentredData, "data zero mean");
+
+        int opts = Eigen::ComputeThinU | Eigen::ComputeThinV;
+
         if (mCols >= mRows)  // The case where there are more variables than observations
         {
-            Svd svd(boost::numeric::ublas::trans(mCentredData), Svd::All, Svd::All);
-            mU = svd.getU();
-            mSingVals = svd.getS();
-            mCoeffs = boost::numeric::ublas::trans(svd.getVt());
+            Eigen::JacobiSVD<MatrixType> svd(mCentredData, opts);
+            mU = svd.matrixU();
+            mSingVals = svd.singularValues();
+            mCoeffs = svd.matrixV();
         }
         else
         {
-            Svd svd(boost::numeric::ublas::trans(mCentredData), Svd::Some, Svd::Some);
-            mCoeffs = svd.getU();
-            mSingVals = svd.getS();
-            mV = boost::numeric::ublas::trans(svd.getVt());
+            Eigen::JacobiSVD<MatrixType> svd(mCentredData.transpose(), opts);
+            mCoeffs = svd.matrixU();
+            mSingVals = svd.singularValues();
+            mV = svd.matrixV();
         }
 
-        for (VectorType::size_type idx = 0; idx < mSingVals.size(); ++idx)
+        for (VectorType::Index idx = 0; idx < mSingVals.size(); ++idx)
         {
             double val = mSingVals(idx);
             mEigenValues(idx) = (val * val) / (mRows - 1);
@@ -89,7 +86,7 @@ public:
         std::cout << printArray(mV, "mV");
         std::cout << printArray(mU, "mU");
 
-        mScores = boost::numeric::ublas::prod(mCentredData, mCoeffs);
+        mScores = mCentredData * mCoeffs;
         std::cout << printArray(mScores, "mScores");
     }
 
@@ -114,7 +111,7 @@ public:
     }
 
     /**
-     * Get the principal component variances. That is the eigenvalues of the 
+     * Get the principal component variances. That is the eigenvalues of the
      * covariance matrix Data.
      * @return
      */
@@ -133,8 +130,8 @@ public:
     }
 
 private:
-    unsigned mRows;
-    unsigned mCols;
+    MatrixType::Index mRows;
+    MatrixType::Index mCols;
 
     MatrixType mCentredData;
     MatrixType mCoeffs;

@@ -55,7 +55,6 @@
         }
 
         opQueue = [[NSOperationQueue alloc] init];
-        //[opQueue setMaxConcurrentOperationCount:1];
 
         [progController setManager:self];
     }

@@ -99,6 +99,12 @@
     IBOutlet NSTableView *bsplineRegRSGDOptimizerTableView;
     IBOutlet NSTableView *bsplineRegMMIMetricTableView;
     IBOutlet NSTableView *demonsRegOptimizerTableView;
+
+    // PCA related controls
+    IBOutlet NSComboBox *pcaRoiComboBox;
+    IBOutlet NSButton *pcaSelectedRoiButton;
+    IBOutlet NSComboBox *pcaSliceComboBox;
+    IBOutlet NSButton *pcaCurrentSliceButton;
 }
 
 // properties associated with non-outlet members
@@ -134,36 +140,44 @@
 // Actions
 //
 // Main dialog
+// ** Registration control actions
+- (IBAction)registrationSelectionRadioMatrixChanged:(NSMatrix*)sender;
 
-- (IBAction)registrationSelectionRadioMatrixChanged:(NSMatrix *)sender;
+- (IBAction)rigidRegMetricChanged:(NSMatrix*)sender;
+- (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton*)sender;
+- (IBAction)rigidRegMetricConfigButtonPressed:(NSButton*)sender;
 
-- (IBAction)rigidRegMetricChanged:(NSMatrix *)sender;
-- (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton *)sender;
-- (IBAction)rigidRegMetricConfigButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegMetricChanged:(NSMatrix*)sender;
+- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton*)sender;
+- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton*)sender;
 
-- (IBAction)bsplineRegMetricChanged:(NSMatrix *)sender;
-- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton *)sender;
-- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender;
+- (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton*)sender;
+- (IBAction)currentImageAsFixed:(NSButton*)sender;
 
-- (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender;
-- (IBAction)currentImageAsFixed:(NSButton *)sender;
+- (IBAction)regStartButtonPressed:(NSButton*)sender;
+- (IBAction)regCloseButtonPressed:(NSButton*)sender;
 
-- (IBAction)regStartButtonPressed:(NSButton *)sender;
-- (IBAction)regCloseButtonPressed:(NSButton *)sender;
+// ** PCA control actions
+- (IBAction)pcaSelectedRoiButtonPressed:(NSButton *)sender;
+- (IBAction)pcaCurrentSliceButtonPressed:(NSButton *)sender;
 
-// Configuration sheets
+- (IBAction)pcaCloseButtonPressed:(NSButton*)sender;
+- (IBAction)pcaAnalyseButtonPressed:(NSButton*)sender;
+
+// Registration Configuration sheets
 //
 // Close buttons
-- (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton*)sender;
 - (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton*)sender;
-- (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender;
+- (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton*)sender;
 
-- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton *)sender;
-- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton *)sender;
+- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton*)sender;
+- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton*)sender;
+- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton*)sender;
+- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton*)sender;
 
-- (IBAction)demonsRegOptimizerCloseButtonPressed:(NSButton *)sender;
+- (IBAction)demonsRegOptimizerCloseButtonPressed:(NSButton*)sender;
+
 
 // Class methods
 /**
@@ -178,7 +192,7 @@
 - (void)registrationEnded:(BOOL)saveData;
 
 // NSTabViewDelegate methods
-- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
 
 // NSTextFieldDelegate methods
 //
@@ -194,20 +208,20 @@
 - (void)textDidEndEditing:(NSNotification*)aNotification;
 
 // NSTableDataSource methods
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;
+- (NSInteger)numberOfRowsInTableView:(NSTableView*)tableView;
 
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn
+- (id)tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn
             row:(NSInteger)row;
 
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object
-   forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row;
+- (void)tableView:(NSTableView*)tableView setObjectValue:(id)object
+   forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row;
 
 // NSComboboxDelegate methods
-- (void)comboBoxSelectionDidChange:(NSNotification *)notification;
+- (void)comboBoxSelectionDidChange:(NSNotification*)notification;
 
 // NSComboboxDatasource methods
-- (id)comboBox:(NSComboBox *)comboBox objectValueForItemAtIndex:(NSInteger)index;
+- (id)comboBox:(NSComboBox*)comboBox objectValueForItemAtIndex:(NSInteger)index;
 
-- (NSInteger)numberOfItemsInComboBox:(NSComboBox *)comboBox;
+- (NSInteger)numberOfItemsInComboBox:(NSComboBox*)comboBox;
 
 @end

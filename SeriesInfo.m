@@ -18,6 +18,8 @@
 @synthesize roiImageIdx;
 @synthesize roiSliceIdx;
 @synthesize regROI;
+@synthesize selROI;
+@synthesize selROIs;
 
 - (id)init
 {

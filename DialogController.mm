@@ -77,6 +77,23 @@ enum TableTags
     DemonsOptimizerTag = 10
 };
 
+/**
+ * Tags for the comboboxes.
+ * This is to help keep track of the tags for the parameter tables.
+ * They must be coordinated with the tags in the DCEFitDialog.xib file.
+ */
+enum ComboBoxTags
+{
+    RegFixedImageTag = 0,
+    RigidRegLevelsTag = 1,
+    BsplineRegLevelsTag = 2,
+    LoggerLevelTag = 3,
+    NumberOfThreadsTag = 4,
+    DemonsRegLevelsTag = 5,
+    PcaRoiTag = 6,
+    PcaSliceTag = 7
+};
+
 - (id)initWithViewerController:(ViewerController *)viewerController
                         Filter:(DCEFitFilter *)filter;
 {
@@ -114,10 +131,58 @@ enum TableTags
     [self.window setTitle:title];
 
     // Catch the viewer closing event. We cannot continue without the viewer.
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(viewerWillClose:)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewerWillClose:)
                                                  name:OsirixCloseViewerNotification
                                                object:viewerController1];
+
+    // There has been a change in the selected ROI(s)
+    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixROISelectedNotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixROIChangeNotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixRecomputeROINotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixRemoveROINotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixROIRemovedFromArrayNotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:OsirixAddROINotification
+             object:nil];
+
+    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+               name:nil
+             object:nil];
+
+    [nc addObserver: self
+           selector: @selector(roiSelectionChanged:)
+               name: OsirixROIChangeNotification
+             object: nil];
+    [nc addObserver: self
+           selector: @selector(roiSelectionChanged:)
+               name: OsirixRemoveROINotification
+             object: nil];
+    [nc addObserver: self
+           selector: @selector(roiSelectionChanged:)
+               name: OsirixDCMUpdateCurrentImageNotification
+             object: nil];
+    [nc addObserver: self
+           selector: @selector(roiSelectionChanged:)
+               name: OsirixROISelectedNotification
+             object: nil];
+
+
 
     [self setupSystemLogger];
     [self setupLogger];
@@ -250,6 +315,9 @@ enum TableTags
     LOG4M_DEBUG(logger_, @"Slice height = %u, width = %u, size = %u pixels.",
                 info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
 
+    info.selROI = viewerController1.selectedROI;
+    info.selROIs = viewerController1.selectedROIs;
+
     for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
     {
         LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
@@ -337,12 +405,13 @@ enum TableTags
 
     if (numTimeImages == 1)  // we have a 2D viewer
     {
-        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************", slicesPerImage);
+        LOG4M_DEBUG(logger_, @"******** 2D viewer with %u slices. ***************",
+                    slicesPerImage);
     }
     else // we have a 4D viewer
     {
-        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image. ***************",
-                    numTimeImages, slicesPerImage);
+        LOG4M_DEBUG(logger_, @"******** 4D viewer with %u images and %u slices per image."
+                    "***************", numTimeImages, slicesPerImage);
     }
 
     NSArray* firstImage = [viewerController1 pixList:0];
@@ -350,8 +419,8 @@ enum TableTags
     unsigned sliceHeight = [firstPix pheight];
     unsigned sliceWidth = [firstPix pwidth];
     unsigned sliceSize = sliceHeight * sliceWidth;
-    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels. ***************",
-                sliceHeight, sliceWidth, sliceSize);
+    LOG4M_DEBUG(logger_, @"******** Slice height = %u, width = %u, size = %u pixels."
+                " ***************", sliceHeight, sliceWidth, sliceSize);
 
     for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
     {
@@ -702,6 +771,20 @@ enum TableTags
     }
 }
 
+- (void) roiSelectionChanged:(NSNotification*)notification
+{
+    self.seriesInfo.selROI = viewerController1.selectedROI;
+    self.seriesInfo.selROIs = viewerController1.selectedROIs;
+
+    if ([notification.name hasPrefix:@"Osiri"])
+    {
+        LOG4M_INFO(logger_, @"ROI notification %@.", notification.name);
+        LOG4M_INFO(logger_, @"ROI selection change. %d ROIs selected.", self.seriesInfo.selROIs.count);
+    }
+//    else
+//        LOG4M_INFO(logger_, @"ROI notification %@.", notification.name);
+}
+
 // Alert panel delegate methods
 - (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
          contextInfo:(void *)contextInfo
@@ -786,6 +869,14 @@ enum TableTags
     parentFilter.dialogController = nil;
     [self.window close];
     [self autorelease];
+}
+
+- (IBAction)pcaCloseButtonPressed:(NSButton *)sender
+{
+    [self regCloseButtonPressed:sender];
+}
+
+- (IBAction)pcaAnalyseButtonPressed:(id)sender {
 }
 
 - (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton *)sender
@@ -882,6 +973,14 @@ enum TableTags
     [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
                             objectValueForItemAtIndex:idx]];
     [fixedImageComboBox reloadData];
+}
+
+- (IBAction)pcaSelectedRoiButtonPressed:(NSButton *)sender
+{
+}
+
+- (IBAction)pcaCurrentSliceButtonPressed:(NSButton *)sender
+{
 }
 
 - (void)closeSheet
@@ -1269,24 +1368,24 @@ enum TableTags
     id value = [self comboBox:cb objectValueForItemAtIndex:idx];
 
     LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld, idx = %ld, value = %@", tag, idx, value);
-    
+
     // Use the tag of the combo box to select the parameter to set
     // These tags are hard wired in the XIB file.
     switch (tag)
     {
-        case 0:
+        case RegFixedImageTag:
             regParams.fixedImageNumber = idx+1;
             //regParams.fixedImageNumber = [value unsignedIntValue];
             break;
 
-        case 1:
+        case RigidRegLevelsTag:
             regParams.rigidRegMultiresLevels = [value unsignedIntValue];
             [rigidRegRSGDOptOptimizerTableView reloadData];
             [rigidRegVersorOptimizerTableView reloadData];
             [rigidRegMMIMetricTableView reloadData];
             break;
 
-        case 2:
+        case BsplineRegLevelsTag:
             regParams.bsplineRegMultiresLevels = [value unsignedIntValue];
             [bsplineRegLBFGSBOptimizerTableView reloadData];
             [bsplineRegLBFGSOptimizerTableView reloadData];
@@ -1295,21 +1394,27 @@ enum TableTags
             [bsplineRegGridSizeTableView reloadData];
             break;
 
-        case 3:
+        case LoggerLevelTag:
             // This depends upon the enum in ProjectDefs.h.
             // value is a string, we need the index to set the level
             regParams.loggerLevel = idx * 10000;
             ResetLoggerLevel(LOGGER_NAME, regParams.loggerLevel);
             break;
 
-        case 4:
+        case NumberOfThreadsTag:
             regParams.numberOfThreads = [value intValue];
             [self setNumberOfThreads:regParams.numberOfThreads];
             break;
 
-        case 5:
+        case DemonsRegLevelsTag:
             regParams.demonsRegMultiresLevels = [value unsignedIntValue];
             [demonsRegOptimizerTableView reloadData];
+            break;
+
+        case PcaRoiTag:
+            break;
+
+        case PcaSliceTag:
             break;
 
         default:
@@ -1333,20 +1438,19 @@ enum TableTags
     
     switch (tag)
     {
-        case 0:  // fixed image number
+        case RegFixedImageTag:  // fixed image number
             retVal = [NSString stringWithFormat:@"%3u - [%@]", idx + 1, [seriesInfo acqTimeString:idx]];
-            //retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
-        case 1:  // rigid levels
+        case RigidRegLevelsTag:  // rigid levels
             retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
-        case 2:  // B-spline deformable levels
+        case BsplineRegLevelsTag:  // B-spline deformable levels
             retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
-        case 3: // Logging level
+        case LoggerLevelTag: // Logging level
             switch (idx)
             {
                 case 0:
@@ -1378,14 +1482,20 @@ enum TableTags
             }
             break;
 
-        case 4:  // number of threads
+        case NumberOfThreadsTag:  // number of threads
             retVal = [NSNumber numberWithInt:idx + 1];
             break;
 
-        case 5:  // demons levels
+        case DemonsRegLevelsTag:  // demons levels
             retVal = [NSNumber numberWithUnsignedInt:idx + 1];
             break;
 
+        case PcaRoiTag:
+            break;
+
+        case PcaSliceTag:
+            break;
+            
         default:
             LOG4M_FATAL(logger_, @"Invalid tag %ld.", (long)tag);
             [NSException raise:NSInternalInconsistencyException
@@ -1409,28 +1519,35 @@ enum TableTags
 
     switch (tag)
     {
-        case 0:  // fixed image number
+        case RegFixedImageTag:  // fixed image number
             retVal = (NSInteger)seriesInfo.numTimeSamples;
             break;
 
-        case 1:  // rigid levels
+        case RigidRegLevelsTag:  // rigid levels
             retVal = (NSInteger)MAX_REGISTRATION_LEVELS;
             break;
 
-        case 2:  // B-spline deformable levels
+        case BsplineRegLevelsTag:  // B-spline deformable levels
             retVal = (NSInteger)MAX_REGISTRATION_LEVELS;
             break;
 
-        case 3:  // logging level
+        case LoggerLevelTag:  // logging level
             retVal = 7;  // There are 7 logging levels.
             break;
 
-        case 4: // number of threads
+        case NumberOfThreadsTag: // number of threads
             retVal = regParams.maxNumberOfThreads;
             break;
 
-        case 5:  // demons deformable levels
+        case DemonsRegLevelsTag:  // demons deformable levels
             retVal = (NSInteger)MAX_REGISTRATION_LEVELS;
+            break;
+
+        case PcaRoiTag:
+            retVal = seriesInfo.
+            break;
+
+        case PcaSliceTag:
             break;
 
          default:
@@ -1446,30 +1563,7 @@ enum TableTags
 }
 
 // Actions
-//- (IBAction)rigidRegEnableChanged:(NSButton *)sender
-//{
-//    LOG4M_TRACE(logger_, @"rigidRegEnableChanged: %ld", (long)[sender state]);
-//    
-//    [rigidRegLevelsComboBox setEnabled:regParams.isRigidRegEnabled];
-//    [rigidRegMetricRadioMatrix setEnabled:regParams.isRigidRegEnabled];
-//    [rigidRegMetricConfigButton setEnabled:regParams.isRigidRegEnabled];
-//    [rigidRegOptimizerLabel setEnabled:regParams.isRigidRegEnabled];
-//    [rigidRegOptimizerConfigButton setEnabled:regParams.isRigidRegEnabled];
-//
-//    if (regParams.isRigidRegEnabled)
-//    {
-//        switch (regParams.rigidRegMetric)
-//        {
-//            case MattesMutualInformation:
-//                [rigidRegMetricConfigButton setEnabled:YES];
-//                break;
-//            default:
-//                [rigidRegMetricConfigButton setEnabled:NO];
-//                break;
-//        }
-//    }
-//}
-
+////////////////
 - (IBAction)registrationSelectionRadioMatrixChanged:(NSMatrix *)sender
 {
     long tag = [[sender selectedCell] tag];

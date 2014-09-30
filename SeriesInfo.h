@@ -21,18 +21,22 @@
     int roiImageIdx;
     int roiSliceIdx;
     ROI* regROI;
+    ROI* selROI;
+    NSMutableArray* selROIs;
     NSMutableArray* acqTimeArray;
     NSMutableArray* acqTimeStringArray;
 }
 
-@property (assign) unsigned numTimeSamples; // The number of images in the time series.
-@property (assign) unsigned sliceHeight;    // The height in pixels of a slice.
-@property (assign) unsigned sliceWidth;     // The width in pixels of a slice.
-@property (assign) unsigned slicesPerImage; // The number of slices in an image.
-@property (assign) BOOL isFlipped;          // Osirix numbers images backwards if true.
-@property (assign) int roiImageIdx;         // The time image index containing the registration ROI.
-@property (assign) int roiSliceIdx;         // The slice index in the image of the registration ROI.
-@property (assign) ROI* regROI;             // The first ROI defining the registration region.
+@property (assign) unsigned numTimeSamples; ///< The number of images in the time series.
+@property (assign) unsigned sliceHeight;    ///< The height in pixels of a slice.
+@property (assign) unsigned sliceWidth;     ///< The width in pixels of a slice.
+@property (assign) unsigned slicesPerImage; ///< The number of slices in an image.
+@property (assign) BOOL isFlipped;          ///< Osirix numbers images backwards if true.
+@property (assign) int roiImageIdx;     ///< The time image index containing the registration ROI.
+@property (assign) int roiSliceIdx;     ///< The slice index in the image of the registration ROI.
+@property (assign) ROI* regROI;             ///< The first ROI defining the registration region.
+@property (assign) ROI* selROI;
+@property (assign) NSMutableArray* selROIs;
 
 /**
  * Append the normalised acquisition time for image.

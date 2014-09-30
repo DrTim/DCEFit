@@ -21,6 +21,8 @@
 		224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */ = {isa = PBXBuildFile; fileRef = 224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */; };
 		225843181721931700F9346C /* RegistrationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 225843161721931700F9346C /* RegistrationParams.h */; };
 		225843191721931700F9346C /* RegistrationParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 225843171721931700F9346C /* RegistrationParams.m */; };
+		2258AA5819D6F934008ECBF8 /* PCAParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258AA5619D6F934008ECBF8 /* PCAParams.h */; };
+		2258AA5919D6F934008ECBF8 /* PCAParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 2258AA5719D6F934008ECBF8 /* PCAParams.m */; };
 		225AA8D217EB58C900628ACB /* OptimizerUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */; };
 		225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA8D117EB58C900628ACB /* OptimizerUtils.h */; };
 		225F6FEC187F280A00558EF7 /* RegisterOneImageBSpline3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */; };
@@ -147,7 +149,6 @@
 		22D4B39E19D0985300949BD3 /* printArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22D4B39819D0985300949BD3 /* printArray.cpp */; };
 		22D4B39F19D0985300949BD3 /* printArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B39919D0985300949BD3 /* printArray.h */; };
 		22D4B3A019D0985300949BD3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 22D4B39A19D0985300949BD3 /* README.md */; };
-		22D4B3A119D0985300949BD3 /* Svd.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B39B19D0985300949BD3 /* Svd.h */; };
 		22D4B3A519D09B1800949BD3 /* Pca3TpAnal.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */; };
 		22D4B3A619D09B1800949BD3 /* Pca3TpAnal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */; };
 		22D6C5F51743AC9E002EA2AB /* UserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = 22D6C5F31743AC9E002EA2AB /* UserDefaults.h */; };
@@ -155,6 +156,8 @@
 		22DC09F417D4C30F00814825 /* symbolList in Resources */ = {isa = PBXBuildFile; fileRef = 22DC09F317D4C30F00814825 /* symbolList */; };
 		22ED12BD17847FC60047AF58 /* Region2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 22ED12BB17847FC60047AF58 /* Region2D.h */; };
 		22ED12BE17847FC60047AF58 /* Region2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 22ED12BC17847FC60047AF58 /* Region2D.m */; };
+		22FD059D19D303F0006C9F03 /* PixelPos.h in Headers */ = {isa = PBXBuildFile; fileRef = 22FD059B19D303F0006C9F03 /* PixelPos.h */; };
+		22FD059E19D303F0006C9F03 /* PixelPos.m in Sources */ = {isa = PBXBuildFile; fileRef = 22FD059C19D303F0006C9F03 /* PixelPos.m */; };
 		8D5B49AE048680CD000E48DA /* DCEFit_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		ABA48A650680BB600089EB4F /* DCEFitFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABA48A640680BB600089EB4F /* DCEFitFilter.h */; };
@@ -179,6 +182,8 @@
 		224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RegisterOneImageDemons3D.mm; sourceTree = "<group>"; };
 		225843161721931700F9346C /* RegistrationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationParams.h; sourceTree = "<group>"; };
 		225843171721931700F9346C /* RegistrationParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationParams.m; sourceTree = "<group>"; };
+		2258AA5619D6F934008ECBF8 /* PCAParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PCAParams.h; sourceTree = "<group>"; };
+		2258AA5719D6F934008ECBF8 /* PCAParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PCAParams.m; sourceTree = "<group>"; };
 		225AA8D017EB58C900628ACB /* OptimizerUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizerUtils.cpp; sourceTree = "<group>"; };
 		225AA8D117EB58C900628ACB /* OptimizerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptimizerUtils.h; sourceTree = "<group>"; };
 		225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RegisterOneImageBSpline3D.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -309,7 +314,6 @@
 		22D4B39819D0985300949BD3 /* printArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = printArray.cpp; sourceTree = "<group>"; };
 		22D4B39919D0985300949BD3 /* printArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = printArray.h; sourceTree = "<group>"; };
 		22D4B39A19D0985300949BD3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		22D4B39B19D0985300949BD3 /* Svd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Svd.h; sourceTree = "<group>"; };
 		22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pca3TpAnal.h; sourceTree = "<group>"; };
 		22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Pca3TpAnal.mm; sourceTree = "<group>"; };
 		22D6C5F31743AC9E002EA2AB /* UserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDefaults.h; sourceTree = "<group>"; };
@@ -318,6 +322,8 @@
 		22ED12BB17847FC60047AF58 /* Region2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Region2D.h; sourceTree = "<group>"; };
 		22ED12BC17847FC60047AF58 /* Region2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Region2D.m; sourceTree = "<group>"; };
 		22F2DD8E172AA06800F75C06 /* ProjectDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectDefs.h; sourceTree = "<group>"; };
+		22FD059B19D303F0006C9F03 /* PixelPos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelPos.h; sourceTree = "<group>"; };
+		22FD059C19D303F0006C9F03 /* PixelPos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PixelPos.m; sourceTree = "<group>"; };
 		32DBCF630370AF2F00C91783 /* DCEFit_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCEFit_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB5D36050680E57E00F4007A /* DCEFit.osirixplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DCEFit.osirixplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -459,64 +465,9 @@
 		08FB77AFFE84173DC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				ABA48A640680BB600089EB4F /* DCEFitFilter.h */,
-				ABA48A660680BB690089EB4F /* DCEFitFilter.mm */,
-				229367CA17204AEF00F1C1EF /* DialogController.h */,
-				229367CB17204AEF00F1C1EF /* DialogController.mm */,
-				2217E91C1732C56C00769974 /* ImageImporter.h */,
-				2217E91D1732C56C00769974 /* ImageImporter.mm */,
-				22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */,
-				22C8753517E1F6FD00CD3308 /* ImageSlicer.h */,
-				2284DDBE181561960008B134 /* ImageTagger.cpp */,
-				2284DDBF181561960008B134 /* ImageTagger.h */,
-				22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */,
-				22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */,
-				22664EB31729A73D008B7961 /* ItkTypedefs.h */,
-				22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */,
-				22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */,
-				22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */,
-				22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */,
-				22D4B39719D0985300949BD3 /* Princomp.h */,
-				22D4B39819D0985300949BD3 /* printArray.cpp */,
-				22D4B39919D0985300949BD3 /* printArray.h */,
-				22664EAF172959BA008B7961 /* ProgressWindowController.h */,
-				22664EB0172959BA008B7961 /* ProgressWindowController.mm */,
-				22F2DD8E172AA06800F75C06 /* ProjectDefs.h */,
-				22ED12BB17847FC60047AF58 /* Region2D.h */,
-				22ED12BC17847FC60047AF58 /* Region2D.m */,
-				22004544175E55B9001A8EF2 /* RegisterImageOp.h */,
-				22004545175E55B9001A8EF2 /* RegisterImageOp.mm */,
-				22098EC917AD2D7600428C86 /* RegisterOneImage.h */,
-				22664ED61729AED2008B7961 /* RegisterOneImageBSpline2D.h */,
-				22664ED51729AED2008B7961 /* RegisterOneImageBSpline2D.mm */,
-				225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */,
-				225F6FE9187F280A00558EF7 /* RegisterOneImageBSpline3D.mm */,
-				22637A1D1959B2D7000D888A /* RegisterOneImageDemons2D.h */,
-				22637A1E1959B2D7000D888A /* RegisterOneImageDemons2D.mm */,
-				224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */,
-				224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */,
-				22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */,
-				22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */,
-				225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */,
-				225F6FEB187F280A00558EF7 /* RegisterOneImageRigid3D.mm */,
-				2217E9201732DE4200769974 /* RegistrationManager.h */,
-				2217E9211732DE4200769974 /* RegistrationManager.mm */,
-				2263715319759AAF00AF9276 /* RegistrationObserverBase.h */,
-				22664EDE1729AFF8008B7961 /* RegistrationObserverBSpline.h */,
-				22664EDD1729AFF8008B7961 /* RegistrationObserverBSpline.mm */,
-				22A40D901972DA1A00B97C21 /* RegistrationObserverDemons.h */,
-				22A40D911972DA1A00B97C21 /* RegistrationObserverDemons.mm */,
-				225843161721931700F9346C /* RegistrationParams.h */,
-				225843171721931700F9346C /* RegistrationParams.m */,
-				22B0AEB8174E6D2100D85184 /* RegProgressValues.h */,
-				22B0AEB9174E6D2100D85184 /* RegProgressValues.m */,
-				2293D970188DC0FC00619245 /* SeriesInfo.h */,
-				2293D971188DC0FC00619245 /* SeriesInfo.m */,
-				22D4B39B19D0985300949BD3 /* Svd.h */,
-				22D6C5F31743AC9E002EA2AB /* UserDefaults.h */,
-				22D6C5F41743AC9E002EA2AB /* UserDefaults.m */,
-				22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */,
-				22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */,
+				22C4633D19D4BEA100D5C25C /* PCA */,
+				22C4633F19D4BF1400D5C25C /* Plugin */,
+				22C4633E19D4BED000D5C25C /* Registration */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -664,6 +615,88 @@
 			name = "Osirix Frameworks";
 			sourceTree = "<group>";
 		};
+		22C4633D19D4BEA100D5C25C /* PCA */ = {
+			isa = PBXGroup;
+			children = (
+				22D4B3A319D09B1800949BD3 /* Pca3TpAnal.h */,
+				22D4B3A419D09B1800949BD3 /* Pca3TpAnal.mm */,
+				2258AA5619D6F934008ECBF8 /* PCAParams.h */,
+				2258AA5719D6F934008ECBF8 /* PCAParams.m */,
+				22FD059B19D303F0006C9F03 /* PixelPos.h */,
+				22FD059C19D303F0006C9F03 /* PixelPos.m */,
+				22D4B39719D0985300949BD3 /* Princomp.h */,
+				22D4B39819D0985300949BD3 /* printArray.cpp */,
+				22D4B39919D0985300949BD3 /* printArray.h */,
+				2293D970188DC0FC00619245 /* SeriesInfo.h */,
+				2293D971188DC0FC00619245 /* SeriesInfo.m */,
+			);
+			name = PCA;
+			sourceTree = "<group>";
+		};
+		22C4633E19D4BED000D5C25C /* Registration */ = {
+			isa = PBXGroup;
+			children = (
+				22004548175E63BE001A8EF2 /* ItkRegistrationParams.h */,
+				22004549175E63BE001A8EF2 /* ItkRegistrationParams.mm */,
+				22664EB31729A73D008B7961 /* ItkTypedefs.h */,
+				22C3137C189D676E00ECDEE6 /* LoadingImagesWindowController.h */,
+				22C3137D189D676E00ECDEE6 /* LoadingImagesWindowController.m */,
+				22664EAF172959BA008B7961 /* ProgressWindowController.h */,
+				22664EB0172959BA008B7961 /* ProgressWindowController.mm */,
+				22F2DD8E172AA06800F75C06 /* ProjectDefs.h */,
+				22ED12BB17847FC60047AF58 /* Region2D.h */,
+				22ED12BC17847FC60047AF58 /* Region2D.m */,
+				22004544175E55B9001A8EF2 /* RegisterImageOp.h */,
+				22004545175E55B9001A8EF2 /* RegisterImageOp.mm */,
+				22098EC917AD2D7600428C86 /* RegisterOneImage.h */,
+				22664ED61729AED2008B7961 /* RegisterOneImageBSpline2D.h */,
+				22664ED51729AED2008B7961 /* RegisterOneImageBSpline2D.mm */,
+				225F6FE8187F280A00558EF7 /* RegisterOneImageBSpline3D.h */,
+				225F6FE9187F280A00558EF7 /* RegisterOneImageBSpline3D.mm */,
+				22637A1D1959B2D7000D888A /* RegisterOneImageDemons2D.h */,
+				22637A1E1959B2D7000D888A /* RegisterOneImageDemons2D.mm */,
+				224073B31979D51A002F4091 /* RegisterOneImageDemons3D.h */,
+				224073B41979D51A002F4091 /* RegisterOneImageDemons3D.mm */,
+				22664ED81729AED2008B7961 /* RegisterOneImageRigid2D.h */,
+				22664ED71729AED2008B7961 /* RegisterOneImageRigid2D.mm */,
+				225F6FEA187F280A00558EF7 /* RegisterOneImageRigid3D.h */,
+				225F6FEB187F280A00558EF7 /* RegisterOneImageRigid3D.mm */,
+				2217E9201732DE4200769974 /* RegistrationManager.h */,
+				2217E9211732DE4200769974 /* RegistrationManager.mm */,
+				2263715319759AAF00AF9276 /* RegistrationObserverBase.h */,
+				22664EDE1729AFF8008B7961 /* RegistrationObserverBSpline.h */,
+				22664EDD1729AFF8008B7961 /* RegistrationObserverBSpline.mm */,
+				22A40D901972DA1A00B97C21 /* RegistrationObserverDemons.h */,
+				22A40D911972DA1A00B97C21 /* RegistrationObserverDemons.mm */,
+				225843161721931700F9346C /* RegistrationParams.h */,
+				225843171721931700F9346C /* RegistrationParams.m */,
+				22B0AEB8174E6D2100D85184 /* RegProgressValues.h */,
+				22B0AEB9174E6D2100D85184 /* RegProgressValues.m */,
+			);
+			name = Registration;
+			sourceTree = "<group>";
+		};
+		22C4633F19D4BF1400D5C25C /* Plugin */ = {
+			isa = PBXGroup;
+			children = (
+				ABA48A640680BB600089EB4F /* DCEFitFilter.h */,
+				ABA48A660680BB690089EB4F /* DCEFitFilter.mm */,
+				229367CA17204AEF00F1C1EF /* DialogController.h */,
+				229367CB17204AEF00F1C1EF /* DialogController.mm */,
+				2217E91C1732C56C00769974 /* ImageImporter.h */,
+				2217E91D1732C56C00769974 /* ImageImporter.mm */,
+				22C8753417E1F6FD00CD3308 /* ImageSlicer.cpp */,
+				22C8753517E1F6FD00CD3308 /* ImageSlicer.h */,
+				2284DDBE181561960008B134 /* ImageTagger.cpp */,
+				2284DDBF181561960008B134 /* ImageTagger.h */,
+				22D6C5F31743AC9E002EA2AB /* UserDefaults.h */,
+				22D6C5F41743AC9E002EA2AB /* UserDefaults.m */,
+				22C326A01892B59A00E8A071 /* ViewerController+ExportTimeSeries.h */,
+				22C326A11892B59A00E8A071 /* ViewerController+ExportTimeSeries.m */,
+			);
+			name = Plugin;
+			sourceTree = "<group>";
+		};
 		32C88E010371C26100C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -687,10 +720,10 @@
 				22C3137F189D676E00ECDEE6 /* LoadingImagesWindowController.h in Headers */,
 				225843181721931700F9346C /* RegistrationParams.h in Headers */,
 				22664EB1172959BA008B7961 /* ProgressWindowController.h in Headers */,
-				22D4B3A119D0985300949BD3 /* Svd.h in Headers */,
 				22D4B39D19D0985300949BD3 /* Princomp.h in Headers */,
 				22664EB71729A864008B7961 /* CopyMetaDataDictionary.h in Headers */,
 				225AA8D317EB58C900628ACB /* OptimizerUtils.h in Headers */,
+				22FD059D19D303F0006C9F03 /* PixelPos.h in Headers */,
 				22664EBB1729A95D008B7961 /* DumpDicomMetaDataDictionary.h in Headers */,
 				22664ED01729ADC7008B7961 /* LoggerUtils.h in Headers */,
 				22664ED41729AE19008B7961 /* ParseITKException.h in Headers */,
@@ -708,6 +741,7 @@
 				2200454A175E63BE001A8EF2 /* ItkRegistrationParams.h in Headers */,
 				22D4B39F19D0985300949BD3 /* printArray.h in Headers */,
 				22ED12BD17847FC60047AF58 /* Region2D.h in Headers */,
+				2258AA5819D6F934008ECBF8 /* PCAParams.h in Headers */,
 				22098ECB17AD2D7600428C86 /* RegisterOneImage.h in Headers */,
 				22D4B3A519D09B1800949BD3 /* Pca3TpAnal.h in Headers */,
 				225F6FEC187F280A00558EF7 /* RegisterOneImageBSpline3D.h in Headers */,
@@ -746,7 +780,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0600;
 			};
 			buildConfigurationList = CE6A9A9408AC841300D0C1EE /* Build configuration list for PBXProject "DCEFit" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -804,6 +838,7 @@
 				225843191721931700F9346C /* RegistrationParams.m in Sources */,
 				22664EB2172959BA008B7961 /* ProgressWindowController.mm in Sources */,
 				22664EB61729A864008B7961 /* CopyMetaDataDictionary.cpp in Sources */,
+				22FD059E19D303F0006C9F03 /* PixelPos.m in Sources */,
 				22D4B3A619D09B1800949BD3 /* Pca3TpAnal.mm in Sources */,
 				22C326A31892B59A00E8A071 /* ViewerController+ExportTimeSeries.m in Sources */,
 				224073B61979D51A002F4091 /* RegisterOneImageDemons3D.mm in Sources */,
@@ -827,6 +862,7 @@
 				22A40D931972DA1A00B97C21 /* RegistrationObserverDemons.mm in Sources */,
 				225F6FEF187F280A00558EF7 /* RegisterOneImageRigid3D.mm in Sources */,
 				2200454B175E63BE001A8EF2 /* ItkRegistrationParams.mm in Sources */,
+				2258AA5919D6F934008ECBF8 /* PCAParams.m in Sources */,
 				22ED12BE17847FC60047AF58 /* Region2D.m in Sources */,
 				22C8753617E1F6FD00CD3308 /* ImageSlicer.cpp in Sources */,
 				2284DDC0181561960008B134 /* ImageTagger.cpp in Sources */,
@@ -851,7 +887,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
@@ -861,7 +896,6 @@
 				DEBUGGING_SYMBOLS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -895,7 +929,7 @@
 					/Users/tim/usr/local/ITK/Universal/Debug/lib,
 				);
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-undefined",
@@ -904,7 +938,7 @@
 					symbolList,
 				);
 				PRODUCT_NAME = DCEFit;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = osirixplugin;
@@ -916,7 +950,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
@@ -925,7 +958,6 @@
 				CURRENT_PROJECT_VERSION = 1.2;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/tim/devel/Log4m/build/Release,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -956,7 +988,7 @@
 					/Users/tim/usr/local/ITK/Universal/Release/lib,
 				);
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-undefined",
@@ -965,7 +997,7 @@
 					symbolList,
 				);
 				PRODUCT_NAME = DCEFit;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = osirixplugin;
@@ -1012,7 +1044,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 			};
 			name = Debug;
 		};
@@ -1054,7 +1086,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 			};
 			name = Release;
 		};
