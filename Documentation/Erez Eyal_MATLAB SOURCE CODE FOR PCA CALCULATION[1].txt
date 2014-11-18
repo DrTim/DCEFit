@@ -1,0 +1,638 @@
+﻿MATLAB SOURCE CODE FOR PCA CALCULATION
+	Bellow are the main Matlab scripts for loading a DICOM dataset, performing the PCA calculation, performing correlation tests, rotating the eigenvector database and projecting new datasets on a given case. Both prostate and breast DCE-MRI datasets can be analyzed using these scripts.  
+1. PCA_3TP.m
+% Function: PCA_3TP
+% Purpose: calculate eigen base and projection maps for a given dataset
+% Input:
+%   data: a 3D matrix m*n*p of p time points for the same slice of sixe m*n
+%   roi:         a 2D binary file containing '1' for the prostate ROI
+% Output:
+%   eigVec - the eigenvector arrange in columns from last to first 
+%   eigVal - the list of eigenvalues
+%   eig_maps_dest - projection maps
+% Example:
+%  [eigVec   eigVal eig_maps_dest]=PCA_3TP(data_gla219_s44,roi_gla219_s44)     
+function   [eigVec   eigVal eig_maps_dest] = PCA_3TP(data,roi)
+% Data dimension  
+[x y z] = size(data);
+% ROI location 
+[locx locy]=find(roi);
+%Reshape the data into a list of temporal vectors
+len = length(locx);
+for(ind1=1:len)
+       tmp = squeeze(data(locx(ind1),locy(ind1),:));
+       data_vec(ind1,:)=tmp;
+end
+data_mean=mean(data_vec);
+% Calculate eigen states for the list of vectors
+cov_mat = cov(data_vec);
+[eigVec, eigValM]= eig(cov_mat); 
+for(i=1:z)
+    eigVal(i)=eigValM(i,i);
+end
+% Present the most significant eigen states in size decreasing  order
+i=[1:1:z];
+%calculate projection of data on the eigen state space
+eigVecM = eigVec';
+%coeef - in rows, eigVec in rows, data in rows
+coeef = data_vec*eigVecM^-1;
+%inner test for decompostion
+sample_data_vec = data_vec(50,:);
+coeef_vec = coeef(50,:);
+ %subplot(2,2,3);plot(i,sample_data_vec);
+ re_build_vec = coeef_vec*eigVecM;
+ %subplot(2,2,4);plot(i,re_build_vec);
+ 
+ %reshape the coeffients into 2D maps (images)
+ eig_maps_dest = zeros(x,y,z); 
+  for(ind1=1:len)
+     for(ind2=1:z)
+       eig_maps_dest(  locx(ind1),locy(ind1),ind2 )= coeef(   ind1,z-ind2+1   );
+     end
+ end
+%Present the most significant maps of projection
+figure(3)
+ for(ind=1:5)
+    map =  eig_maps_dest(:,:,ind);
+    i=find(map);
+    down_limit = prctile(map(i),10);
+    up_limit = prctile(map(i),90);
+   % map=map(35:185,35:185); % zoom in
+    subplot(3,3,ind); imagesc(map(:,:)) ;axis  off image;colormap(hot);axis image
+    colorbar
+ end 
+i=[1 :1:z];
+% Present the eigen vector on a graph 
+figure(4);
+for(ind=1:5)
+    subplot(3,3,ind);plot(i,eigVec(:,z-ind+1));
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+2. data_projection1.m
+% Function: data_projection1
+% Purpose: create projection maps for a case using an eigen vector base
+% Input:
+%   data: 3D n*n*m dataset - composed of an image n*n over m time points
+%   roi: matrix n*n - the region to perform PCA analysis.
+%        a 2D binary file containing '1' for the breast/prostate ROI
+%   eigVec: eigen vector base a list of n vectors in columns sorted from last to first 
+% Output:
+%   eig_maps_dest - the eigenvector projection maps 
+% Example:
+%   [eigVec   eigVal eig_maps_dest]=PCA_3TP(data_tup669_s17,roi_tup669_s17);
+%   [eig_maps_dest] = data_projection1(data_align_coh833_s36,roi_coh833_s36, eVec_case3_s42_align);
+function   [    eig_maps_dest] = data_projection1(data,roi, eigVec)
+%
+lims=[0 8000 ;  0 700 ; 0 400 ; -300 300 ; -150 150; -150 150];
+%lims=[1.5 6 ;  0  0.7 ; -0.5 0.5 ; -0.2 0.2 ; -0.2 0.2; -0.2 0.2];
+%roi = ones(256,256);
+% Data dimension  
+[x y z] = size(data);
+% ROI location 
+[locx locy]=find(roi);
+%Reshape the data into a list of temporal vectors
+len = length(locx);
+for(ind1=1:len)
+       tmp = squeeze(data(locx(ind1),locy(ind1),:));
+       data_vec(ind1,:)=tmp;
+end
+ eigVecF = eigVec';
+ eigVecF =eigVecF^-1; 
+%coeef - in rows, eigVec in rows, data in rows
+coeef =  data_vec*eigVecF;
+ %reshape the coeffients into 2D maps (images)
+ eig_maps_dest = zeros(x,y,z); 
+ for(ind1=1:len)
+     for(ind2=1:z)
+       eig_maps_dest(  locx(ind1),locy(ind1),ind2 )= coeef(   ind1,z-ind2+1   );
+     end
+ end
+%Present the most significant maps of projection
+figure(1)
+ for(ind=1:6)
+    map =  eig_maps_dest(:,:,ind);
+    i=find(map);
+    down_limit = prctile(map(i),10);
+    up_limit = prctile(map(i),90);
+    subplot(2,3,ind); imagesc(map,lims(ind,:)) ;axis  off image;colormap(hot);axis image
+     camva(7);
+ end 
+
+
+3. filterImage.m
+% Function: filterImage
+% Purpose: creates a temporal set of fillter images based on specific 
+%          projection maps and eigenvalues 
+% Input:
+%   maps: a 3D projection maps for one slice
+%   evec:     eigenvector base
+%   range:    the eigenvector index range for the calculation
+% Output:
+%   out - a set temporal data for a slice after filteration 
+% Example:
+%   [eigVec   eigVal eig_maps_dest]=PCA_3TP(data_tup669_s17,roi_tup669_s17);
+%   out = filterImage (eig_maps_dest,eigVec,[1 2 3]);
+function out = filterImage ( maps,evec,range)
+[x y z]=size(maps);
+out=zeros(x,y,z);
+for(i=1:z)
+    for(j=range)
+        out(:,:,i)=out(:,:,i)+maps(:,:,j)*evec(i,z-j+1);
+    end
+end
+for(i=1:z)
+    subplot(3,3,i);
+    imagesc(out(:,:,i),[-200 400] );axis image off;colormap(gray);
+end
+
+
+4. plot_pca_val_with_3tp_enh.m
+% Function: plot_pca_val_with_3tp_enh
+% Purpose: plot the 2 eigenvector as a function of 3TP colors
+% Input:
+%   img: 3D rgb 3TP image of one slice
+%   map1: first projection map
+%   map2: second projection map
+%   roi: matrix n*n - the region to perfrom  analysis.
+%        a 2D binary file containing '1' for the breast/prostate ROI
+% Example:
+%plot_pca_val_with_3tp_enh(tp_tup669_s17,eig_maps_dest(:,:,1),-eig_maps_dest(:,:,2),roi_tup669_s17);
+function plot_pca_val_with_3tp_enh(img,map1,map2,roi)
+img = double(img);
+roi = double (roi); 
+img = img/255;
+img1 = img(:,:,1).* roi;
+img2 = img(:,:,2).* roi;
+img3 = img(:,:,3).* roi;
+%remove gray level voxels
+j=find(img1==img2 & img2 == img3  );
+img1(j)=0;img2(j)=0;img3(j)=0;
+img(:,:,1)=img1;img(:,:,2)=img2;img(:,:,3)=img3; 
+j=find(img);
+high = prctile(img(j),100);
+i = find(img>high);
+img(i)=high;
+emax=  max(max(max(img)));
+emin = min(min(min(img)));
+fact = 1/(emax-emin);
+img = fact*img -emin*fact;
+i=find(img>=1);
+img(i)=1;
+i=find(img==NaN);
+img(i)=0;
+ 
+img_i = img(:,:,1)+img(:,:,2)+img(:,:,3);
+[x y] = find (img_i);
+scrsz = get(0,'ScreenSize');
+figure('Position',[1 301 450 300]);
+ for(i=1:length(x))
+    voxel = squeeze(img(x(i),y(i),:));
+    x_cor=map1(x(i),y(i));
+    y_cor=map2(x(i),y(i));
+    h=plot(x_cor, y_cor,'.','MarkerEdgeColor',voxel, 'MarkerSize',14 );
+    hold on
+    %axis off;
+    %set(gca,'XTick',[0 2 4 6]);
+    %set(gca,'YTick',[-0.5 0 0.5 1 ]);
+    %set(gca,'ylim', [-2 2]);
+    %set(gca,'xlim', [-2 2]);
+ end
+ % axis([-2 2 0 8 ]);
+
+
+
+5. corr_eig1_enh.m
+% Function: corr_eig1_enh
+% Purpose: Calculate Pearson's correlation coefficient between ranks and 
+%          a linear fit between the first eigenvector map and the pre
+%          contrast image using the pixels defined in the ROI
+% Input:
+%   filter_data: a 2D image of the first eigen vector map
+%   enhanc:      a 2D image of the pre contrast image
+%   roi:         a 2D binary file containing '1' for the prostate ROI
+% Example:
+%  [eigVec   eigVal eig_maps_dest] =PCA_3TP(data_tup669_s17,roi_tup669_s17)
+%  [RHO,PVAL,p]=corr_eig1_enh(eig_maps_dest(:,:,1),
+%              data_tup669_s17(:,:,1),roi_tup669_s17);
+function  [RHO,PVAL,p]=corr_eig1_enh(filter_data,enhanc,roi)
+enhanc = double(enhanc);
+roi = double (roi);
+filter_data=double(filter_data);
+filter_data = filter_data.* roi;
+enhanc = enhanc.* roi;
+i=find(roi);
+tresh=prctile(enhanc(i),99);
+i=find(enhanc>tresh);
+roi(i)=0;
+[x y] = find (roi&filter_data);
+for(i=1:length(x))
+    voxel = enhanc(x(i),y(i));
+     x_cor=filter_data(x(i),y(i));
+    plot( voxel,x_cor,'r.', 'MarkerSize',6,'MarkerEdgeColor',[0 0 1] );
+    hold on
+end
+i=find(roi);
+tot=[enhanc(i) , filter_data(i)];
+[RHO,PVAL]  = corr(tot,'type','Spearman')
+p = polyfit(enhanc(i),filter_data(i),1)
+%plot(enhanc(i),polyval(p,enhanc(i)),'r'),
+set(gca,'xlim', [0 4000]);
+set(gca,'ylim', [0 8000]);
+set(gca,'XTick',0:1000:4000, 'XTicklabel', (0:1000:4000));
+set(gca,'YTick',0:2000:8000, 'YTicklabel', (0:2000:8000));
+
+
+
+6. corr_eig2_3tp_color.m
+% Function: corr_eig2_3tp_color
+% Purpose: plot and calculate the correlation between the PCA wash-in
+% wash-out eigenvector and the 3TP colors - red, green and blue
+% Input:
+%   map: a 2D image of the wash in and wash out eigen vector map
+%   img_3tp:     a 3D RGB image of the 3TP image
+%   roi:         a 2D binary file containing '1' for the prostate ROI
+% Output:
+%   3 histograms one per 3TP color showing the eigenvector projection values 
+%   res - a 3x2 matrix with the median and IQR values for the projection values
+%         for the colors red, green and blue (one row per color).
+% Example:
+%   [eigVec   eigVal eig_maps_dest]=PCA_3TP(data_tup669_s17,roi_tup669_s17);
+%   res=corr_eig2_3tp_color(eig_maps_dest(:,:,2),tp_tup669_s17,roi_tup669_s17);
+function res=corr_eig2_3tp_color(map,img_3tp,roi)
+map = double(map);
+roi = double (roi);
+img_3tp=double(img_3tp);
+ired = img_3tp(:,:,1).* roi;
+igreen = img_3tp(:,:,2).* roi;
+iblue = img_3tp(:,:,3).* roi;
+%remove gray level voxels
+j=find(ired==igreen & igreen == iblue  );
+ired(j)=0;igreen(j)=0;iblue(j)=0;
+img_3tp(:,:,1)=ired;img_3tp(:,:,2)=igreen;img_3tp(:,:,3)=iblue; 
+  [x y] = find (iblue);
+hist_arr=[];
+for(i=1:length(x))
+    voxel = iblue(x(i),y(i));
+    x_cor=map(x(i),y(i));
+    iblue_vec(i)=x_cor;
+    figure (1);plotImg(1,x_cor,'b.');
+    hist_arr=[hist_arr x_cor];
+end
+res(3,1)=prctile(iblue_vec,50);
+a=prctile(iblue_vec,25);
+b=prctile(iblue_vec,75);
+res(3,2)=(b-a);
+plotHist(hist_arr,'b');hist_arr=[];
+[RHO,PVAL]  = corr([ones(length(iblue_vec),1),iblue_vec'],'type','Pearson');
+plot(iblue_vec);
+[x y] = find (igreen);
+for(i=1:length(x))
+    voxel = igreen(x(i),y(i));
+    x_cor=map(x(i),y(i));
+    igreen_vec(i)=x_cor;
+    figure (1);plotImg(2,x_cor,'g.');
+    hist_arr=[hist_arr x_cor];
+ 
+end
+plotHist(hist_arr,'g');hist_arr=[];
+res(2,1)=prctile(igreen_vec,50);
+a=prctile(igreen_vec,25);
+b=prctile(igreen_vec,75);
+res(2,2)=(b-a);
+[x y] = find (ired);
+for(i=1:length(x))
+    voxel = ired(x(i),y(i));
+    x_cor=map(x(i),y(i));
+    ired_vec(i)=x_cor;
+    figure (1);plotImg(3,x_cor,'r.');
+    hist_arr=[hist_arr x_cor];
+end
+plotHist(hist_arr,'r')
+res(1,1)=prctile(ired_vec,50);
+a=prctile(ired_vec,25);
+b=prctile(ired_vec,75);
+res(1,2)=(b-a);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function plotHist(hist_arr,col)
+    figure;
+    x = -600:60:600;
+    n_elements = histc(hist_arr,x);
+     bar(x,n_elements)
+    %hist(hist_arr,400);
+    set(gca,'xlim', [-600 600]);
+    set(gca,'ylim', [0 300]);
+    h = findobj(gca,'Type','patch');
+    set(h,'FaceColor',col,'EdgeColor','w')
+    
+function plotImg(x_cor,y_cor,col)    
+%      plot( x_cor,y_cor,col, 'MarkerSize',6 ); hold on
+%      set(gca,'xlim', [0 4]);
+%      set(gca,'ylim', [-2000 2000]);
+
+
+
+
+7. corr_eig3_3tp_hue.m
+% Function: corr_eig3_3tp_hue
+% Purpose: plot and calculate the correlation between the PCA wash-in
+% follow by platue eigenvector and the 3TP hue for a specific 3TP color
+% Input:
+%   map: a 2D image of the wash in and wash out eigen vector map
+%   img_3tp:     a 3D RGB image of the 3TP image
+%   roi:         a 2D binary file containing '1' for the prostate ROI
+%   ref (inside the code):      color for the analysis - ired, iblue or igreen
+% Output:
+%   3 histograms one per 3TP color showing the eigenvector projection values 
+%   res - RHO-  the cross correlation values
+%         PVAL- the p values
+%         p - polynimial fit for the correlation 
+% Example:
+%   [eigVec   eigVal eig_maps_dest]=PCA_3TP(data_tup669_s17,roi_tup669_s17);
+%   [RHO,PVAL,p]=corr_eig3_3tp_hue(eig_maps_dest(:,:,3),tp_tup669_s17_scaled02_tp2_tp5,roi_tup669_s17)
+function  [RHO,PVAL,p]=corr_eig3_3tp_hue(map,img_3tp,roi)
+map = double(map);
+roi = double (roi);
+img_3tp=double(img_3tp);
+ired = img_3tp(:,:,1).* roi;
+igreen = img_3tp(:,:,2).* roi;
+iblue = img_3tp(:,:,3).* roi;
+%remove gray level voxels
+j=find(ired==igreen & igreen == iblue  );
+ired(j)=0;igreen(j)=0;iblue(j)=0;
+img_3tp(:,:,1)=ired;img_3tp(:,:,2)=igreen;img_3tp(:,:,3)=iblue; 
+iall=ired+igreen+iblue;
+j=1;
+ref=ired;
+[x y] = find (ref>=100 & ref<=255);
+for(i=1:length(x))
+    voxel = iall(x(i),y(i));
+     x_cor=map(x(i),y(i));
+     
+     if(j>=1)
+        plot( voxel,x_cor,'b.', 'MarkerSize',6 );
+        hold on
+        tmp(j,1)=voxel;
+        tmp(j,2)=x_cor;
+        j=j+1;
+     end
+end
+ 
+x_vec=tmp(:,1);
+[i j]=sort(x_vec);
+y_vec=tmp(:,2);
+y_vec_sort=y_vec(j);
+y_vec_sort_fil=medfilt1(y_vec_sort,100);
+ 
+  tot=[x_vec , y_vec];
+  [RHO,PVAL] = corr(tot(1:100,:),'type','Spearman')
+ [p s]= polyfit(x_vec,y_vec,1)
+ %plot(x_vec,polyval(p,x_vec),'r'),
+ %set(gca,'xlim', [-500 500]);
+ set(gca,'ylim', [-200 1200]);
+ set(gca,'XTick',100:50:260, 'XTicklabel', (100:50:260));
+ set(gca,'YTick',-200:400:1200, 'YTicklabel', (-200:400:1200));
+
+
+
+
+8. fitFncRotMain.m
+
+% Function: fitFncRotMain
+% Purpose: calculate the optimal rotation angle to find maximal correlation between
+%           PCA eigenvectors and 3TP parametric map 
+% Input:
+%   map1: 2D projection map 1
+%   map2: 2D projection map 2
+%   tp - 3D 3TP image of one slice
+%   alpha - intial guess for the angle in radians
+%   roi - the 2D binary file with '1' in the ROI for rotation
+% Output:
+%   res_alpha - rotation angle in radians
+%   err - the error of the fitting angle
+% Example:
+%[final_angle final_err tabl]=fitFncRotMain(-eig_maps_dest(:,:,2),
+%       eig_maps_dest(:,:,1), tp_tup669_s17, roi_tup669_s17, 10*pi/180)
+function  [final_angle final_err tabl]=fitFncRotMain(map1, map2, tp, roi, alpha)
+i=find(roi);
+%set map1 - washin and map2 - washout
+data(:,1)=map1(i);
+data(:,2)=map2(i);
+%set 3tp data
+tmp= tp(:,:,1)/255;
+data(:,3)= tmp(i);
+tmp= tp(:,:,2)/255;
+data(:,4)= tmp(i);
+tmp= tp(:,:,3)/255;
+data(:,5)= tmp(i);
+%plot the given data and the initial guess
+figure;
+make_plot_all(data);
+figure;
+new=data;
+new(:,1:2)=rotate_data(alpha,data(:,1:2));
+make_plot_all(new);
+figure
+[final_angle final_err tabl]=fitFncRotLoop(alpha,data);
+
+
+
+9. fitFncRotLoop.m
+% Function: fitFncRotLoop called by fitFncRotMain
+% Purpose: calculate the optimal rotation angle to find maximal correlation between
+%           PCA eigenvectors and 3TP parametric map .
+%           The function search angle for a range of starting angles:
+%           according to alpha, shift_angle and gap_angle 
+% Input:
+%   data_struct: is a n*5 table were n is a single pixel in the dataset
+%        eig1 projection, eig2 projection, 3TP-R channel, 3TP-G, 3TP-B
+%        alpha - intial guess for the angle
+% Output:
+%   final_angle - rotation angle in radians
+%   final_err - the error of the fitting angle
+%   tabl - a set of initla rotations angles, final angles and errors
+ 
+%[final_angle final_err tabl]=fitFncRotLoop(30*pi/180,all_carc_plot)
+ 
+function  [final_angle final_err tabl]=fitFncRotLoop(alpha,data_struct)
+ 
+shift_angle=30; %shift search
+gap_angle=5; % gap between search angles
+range=[alpha-shift_angle*pi/180 : gap_angle*pi/180 : alpha+shift_angle*pi/180];
+len=length(range);
+final_err=1e5;
+gess_alpha=alpha;
+for(i=1:len)
+    gess_alpha=range(i);
+    [curr_alpha curr_err]=fitFncRotfind(gess_alpha,data_struct);
+    if(curr_err<final_err)
+        final_err = curr_err;
+        final_angle= curr_alpha;
+    end
+    tabl(1,i)=gess_alpha;
+    tabl(2,i)=curr_alpha;
+    tabl(3,i)=curr_err;
+end
+ %extract const data
+pca_data=data_struct(:,1:2);
+data_struct(:,1:2)= rotate_data(final_angle,pca_data);
+make_plot_all(data_struct);
+%axis([0 9 -2 1]);
+
+10. fitFncRotfind.m
+% Function: fitFncRotfind called by fitFncRotLoop
+% Purpose: calculate the rotation angle to find maximal correlation between
+%           PCA eigenvectors and 3TP parametric map 
+% Input:
+%   data_struct: is a n*5 table were n is a single pixel in the dataset
+%        eig1 projection, eig2 projection, 3TP-R channel, 3TP-G, 3TP-B
+%        alpha - intial guess for the angle
+% Output:
+%   alpha - rotation angle in radians
+%   err - the error of the fitting angle
+% Example:
+% [alpha err]=fitFncRotfind(30*pi/180,all_carc_plot)
+function  [alpha err]=fitFncRotfind(alpha,data_struct)
+ 
+cut_tresh=1; %cut_tresh=2;
+eig1vals=squeeze(data_struct(:,1));
+eig2vals=squeeze(data_struct(:,2));
+i=find(sqrt(eig1vals.^2+eig2vals.^2)<cut_tresh);
+eig2vals(i)=0;  
+eig1vals(i)=0;  
+data_struct(:,1)=eig1vals;
+data_struct(:,2)=eig2vals;
+options=optimset('Display','off');
+[res err]=fminsearch('fitFncRotVec',alpha ,  options, data_struct);
+alpha = res;
+
+
+
+11. fitFncRotVec.m
+% Function: fitFncRotVec called by fitFncRotfind
+% Purpose: calculate erro for a rotation angle to find maximal correlation between
+%           PCA eigenvectors and 3TP parametric map . split so that green
+%           will be in the middle of the axis
+% Input:
+%   const_data: is a n*5 table were n is a single pixel in the dataset
+%   var_data - alpha - intial guess for the angle
+% Output:
+%   err - the diffrence in # of green pixel from left and right of axis
+% Example:
+%[final_angle final_err tabl]=fitFncRotMain(eig_maps_dest(:,:,2),
+%eig_maps_dest(:,:,3), tp_bou_s47_scaled02_tp2_tp5, roi_bou218_s47, 0);
+%err=fitFncRotVec(1.6239,all_carc_plot);
+function err=fitFncRotVec(var_data,const_data)
+ 
+%extract the guess
+alpha=var_data;
+%extract const data
+pca_data=const_data(:,1:2);
+tp_data=const_data(:,3:5);
+%rotate matrix
+pca_data_rot=rotate_data(alpha,pca_data);
+%find error
+eig1vals=squeeze(pca_data_rot(:,1));
+eig2vals=squeeze(pca_data_rot(:,2));
+r=tp_data(:,1);
+g=tp_data(:,2);
+b=tp_data(:,3);
+err=0;
+%i=find( r>0 & eig1vals<0 );
+%err=err+length(i);
+i=find( g>0 & eig1vals<0 );
+j=find( g>0 & eig1vals>0 );
+err=err+norm (length(i)-length(j));
+disp(err);
+%i=find( b>0 & eig1vals>0 );
+%err=err+length(i);
+
+
+12. make_plot_all.m
+% utility code for the  function fitFncRotfind
+function make_plot_all(plots_cell)
+% all_plot = [];
+% for ind=1:length(plots_cell)
+%     if ~isempty(plots_cell{ind,1})
+%         all_plot = [all_plot;plots_cell{ind,2}];
+%     end
+% end
+all_plot=plots_cell;
+for ind=1:length(all_plot)
+    voxel = squeeze(all_plot(ind,3:5));
+    if(sum(voxel)==0)
+           continue;
+    end
+    x_cor = all_plot(ind,1);
+    y_cor = all_plot(ind,2);
+    
+     h=plot(x_cor, y_cor,'.','MarkerEdgeColor',voxel, 'MarkerSize',14 );
+    hold on
+end
+
+
+
+13. rotate_data.m
+ % uility file for  fitFncRotMain
+function new=rotate_data(alpha,old)
+ 
+rot = [ cos(alpha) , -sin((alpha)) ; sin((alpha)) , cos((alpha))];
+new=rot*old';
+new = new';
+
+
+14. rotateBase.m
+%function: rotateBase
+% Purpose: create projection maps for a case using an eigen vector base
+% Input:
+%   vec: a vector database 
+%   angle: given the optimal rotation angle from fitFncRotMain function
+% output:
+%   eVec: the rotates eigen vector
+% Example:
+%[angle err tabl]=fitFncRotMain( ...see this function usage).
+% eVec_case3_s42_rot = rotateBase(eVec_case3_s42,  pi/8);
+% eMap_c9_s52 = data_projection (data_s52_case_9_align, roi_s52_case9, eVec_case3_s42_rot);
+% plot_pca_val_with_3tp(img_3tp_s52_case_9_tresh,eMap_c9_s52(:,:,2),eMap_c9_s52(:,:,3),[1 2 3],roi_s52_case9);
+ 
+function eVec = rotateBase(vec,angle);
+% cos -sin
+%sin cos
+v1 = vec(:,5)';
+v2 = vec(:,6)';
+v12 (1,:)=v1;
+v12 (2,:)=v2;
+rot = [ cos(angle) , -sin(angle) ; sin(angle) , cos(angle)];
+rot_v = rot*v12;
+eVec=  vec;
+eVec(:,5)=rot_v(1,:)';
+eVec(:,6)=rot_v(2,:)';
+
+
+15. make_enh.m
+
+% Function: make_enh 
+% Purpose: example for calculation of enhancement dataset, mark roi, 
+%           perform PCA and calculate projection maps
+% Input:
+%   data: a m*n*p matrix of p temporal points for a slice of size m*n
+% Output:
+%   err - the diffrence in # of green pixel from left and right of axis
+% Example:make_enh(data)
+ 
+function make_enh(data_align_gla219_s44)
+for(i=1:size(data,3)-1)
+    data_e(:,:,i)=data(:,:,i+1)./data(:,:,1);
+end
+imagesc( data_e(:,:,2));axis image off;colormap((gray));
+roi=roipoly%for tumor
+ 
+[eigVec   eigVal eig_maps_dest] = PCA_3TP(data_e,roi);
+figure;
+plot(eigVal,'rx');
+close all;
+ 
+[eig_maps_dest] = data_projection1(data_e,roi, eigVec);
+end
+

@@ -14,8 +14,6 @@
 #include <log4cplus/fileappender.h>
 #include <log4cplus/loggingmacros.h>
 
-std::string LogLevelToString(int level);
-
 void SetupLogger(const char* name, int level)
 {
     static bool setup = false;

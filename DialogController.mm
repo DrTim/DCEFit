@@ -28,10 +28,14 @@
 #import "RegistrationManager.h"
 #import "UserDefaults.h"
 #import "SeriesInfo.h"
+#import "ROIInfo.h"
+#import "ROIFinder.h"
 #import "LoadingImagesWindowController.h"
+#import "PcaParams.h"
+#import "Pca3TPManager.h"
+#import "IndexConverter.h"
 
-#import "LoggerUtils.h"
-
+#include "LoggerUtils.h"
 
 @implementation DialogController;
 
@@ -79,7 +83,7 @@ enum TableTags
 
 /**
  * Tags for the comboboxes.
- * This is to help keep track of the tags for the parameter tables.
+ * This is to help keep track of the tags for the comboboxes.
  * They must be coordinated with the tags in the DCEFitDialog.xib file.
  */
 enum ComboBoxTags
@@ -94,6 +98,18 @@ enum ComboBoxTags
     PcaSliceTag = 7
 };
 
+/**
+ * Tags for the tab view items.
+ * This is to help keep track of the tags for the tab view items.
+ * They must be coordinated with the tags in the DCEFitDialog.xib file.
+ */
+enum TabViewItemTags
+{
+    RegistrationTag = 0,
+    PcaAnalysisTag = 1,
+    ConfigurationTag = 2
+};
+
 - (id)initWithViewerController:(ViewerController *)viewerController
                         Filter:(DCEFitFilter *)filter;
 {
@@ -103,7 +119,8 @@ enum ComboBoxTags
         openSheet_ = nil;
         viewerController1 = viewerController;
         parentFilter = filter;
-        seriesInfo = [[SeriesInfo alloc] init];
+        seriesInfo = [[SeriesInfo alloc] initWithViewer:viewerController];
+        //roiFinder = [[ROIFinder alloc] initWithViewer:viewerController];
     }
     return self;
 }
@@ -112,6 +129,7 @@ enum ComboBoxTags
 {
     [logger_ release];
     [seriesInfo release];
+    //[roiFinder release];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -120,6 +138,13 @@ enum ComboBoxTags
 
 - (void)awakeFromNib
 {
+    // Set up logging ASAP
+    [self setupSystemLogger];
+    [self setupLogger];
+
+    //NSString* msg = formatMsg(format, ##__VA_ARGS__);
+    macro_force_log(logger_, LOG4M_LEVEL_ALL, @"A logging message", __FILE__, __LINE__, "awakeFromNib");
+
     // Get the version from the bundle that contains this class
     NSBundle* bundle = [NSBundle bundleForClass:[DialogController class]];
     NSDictionary* infoDict = [bundle infoDictionary];
@@ -131,67 +156,34 @@ enum ComboBoxTags
     [self.window setTitle:title];
 
     // Catch the viewer closing event. We cannot continue without the viewer.
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewerWillClose:)
-                                                 name:OsirixCloseViewerNotification
-                                               object:viewerController1];
-
-    // There has been a change in the selected ROI(s)
     NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
-               name:OsirixROISelectedNotification
+    [nc addObserver:self selector:@selector(viewerWillClose:)
+               name:OsirixCloseViewerNotification
              object:nil];
 
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+    // There has been a change in the selected ROI(s)
+    [nc addObserver:self selector:@selector(handleRoiChangeNotification:)
                name:OsirixROIChangeNotification
              object:nil];
 
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
-               name:OsirixRecomputeROINotification
+    [nc addObserver:self selector:@selector(handleRoiSelectedNotification:)
+               name:OsirixROISelectedNotification
              object:nil];
 
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+    [nc addObserver:self selector:@selector(handleRoiRemovedNotification:)
                name:OsirixRemoveROINotification
              object:nil];
 
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
-               name:OsirixROIRemovedFromArrayNotification
-             object:nil];
-
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
+    [nc addObserver:self selector:@selector(handleRoiAddedNotification:)
                name:OsirixAddROINotification
              object:nil];
 
-    [nc addObserver:self selector:@selector(roiSelectionChanged:)
-               name:nil
-             object:nil];
-
-    [nc addObserver: self
-           selector: @selector(roiSelectionChanged:)
-               name: OsirixROIChangeNotification
-             object: nil];
-    [nc addObserver: self
-           selector: @selector(roiSelectionChanged:)
-               name: OsirixRemoveROINotification
-             object: nil];
-    [nc addObserver: self
-           selector: @selector(roiSelectionChanged:)
-               name: OsirixDCMUpdateCurrentImageNotification
-             object: nil];
-    [nc addObserver: self
-           selector: @selector(roiSelectionChanged:)
-               name: OsirixROISelectedNotification
-             object: nil];
-
-
-
-    [self setupSystemLogger];
-    [self setupLogger];
     [self setupProgramDefaults];
 
     LoadingImagesWindowController* progressWindow =
         [[LoadingImagesWindowController alloc] initWithWindowNibName:@"LoadingImagesWindow"];
     [progressWindow.window makeKeyAndOrderFront:self];
-    [self extractSeriesInfo:seriesInfo withProgressWindow:progressWindow];
+    [seriesInfo extractSeriesInfo:progressWindow];
     [progressWindow close];
     [progressWindow release];
 
@@ -282,119 +274,6 @@ enum ComboBoxTags
     LOG4M_INFO(logger_, @"Number of ITK threads set to = %u", numThreads);
 }
 
-- (void)extractSeriesInfo:(SeriesInfo*)info withProgressWindow:(LoadingImagesWindowController*)progWindow
-{
-    LOG4M_TRACE(logger_, @"Enter");
-
-    unsigned numTimeImages = (unsigned)[viewerController1 maxMovieIndex];
-    NSTimeInterval firstTime = 0.0;
-
-    info.numTimeSamples = numTimeImages;
-    info.slicesPerImage = [[viewerController1 pixList] count];
-    info.isFlipped = [[viewerController1 imageView] flippedData];
-
-    if (numTimeImages == 1)  // we have a 2D viewer
-    {
-        LOG4M_DEBUG(logger_, @"2D viewer with %u slices.", info.slicesPerImage);
-    }
-    else // we have a 4D viewer
-    {
-        LOG4M_DEBUG(logger_, @"4D viewer with %u images and %u slices per image.",
-                    info.numTimeSamples, info.slicesPerImage);
-    }
-
-    // initialise the progress indicator
-    [progWindow setNumImages:info.numTimeSamples];
-
-    NSArray* firstImage = [viewerController1 pixList:0];
-    DCMPix* firstPix = [firstImage objectAtIndex:0];
-
-    info.sliceHeight = [firstPix pheight];
-    info.sliceWidth = [firstPix pwidth];
-
-    LOG4M_DEBUG(logger_, @"Slice height = %u, width = %u, size = %u pixels.",
-                info.sliceHeight, info.sliceWidth, info.sliceHeight * info.sliceWidth);
-
-    info.selROI = viewerController1.selectedROI;
-    info.selROIs = viewerController1.selectedROIs;
-
-    for (unsigned timeIdx = 0; timeIdx < numTimeImages; ++timeIdx)
-    {
-        LOG4M_DEBUG(logger_, @"******** timeIdx = %u ***************", timeIdx);
-
-        // Bump the progress indicator
-        [progWindow incrementIndicator];
-
-        // The ROIs for this image.
-        NSArray* roiList = [viewerController1 roiList:timeIdx];
-
-        // The array of slices in the image.
-        NSArray* pixList = [viewerController1 pixList:timeIdx];
-
-        // The list of DicomImage instances corresponding to the slices.
-        //NSArray* fileList = [viewerController1 fileList:timeIdx];
-
-        unsigned numSlices = info.slicesPerImage;
-        for (unsigned sliceIdx = 0; sliceIdx < numSlices; ++sliceIdx)
-        {
-            // DCMPix instance containing this slice
-            DCMPix* curPix = [pixList objectAtIndex:sliceIdx];
-
-            // The list of ROIs in this slice. Pick out either the first one named "DCEFit"
-            // or the first one in the list
-            NSArray* curRoiList = [roiList objectAtIndex:sliceIdx];
-            if ((curRoiList != nil) && ([curRoiList count] > 0))
-            {
-                BOOL found = NO;
-                for (ROI* r in curRoiList)
-                {
-                    NSString* name = r.name;
-                    if ((!found) &&
-                        ([name compare:@"DCEFit" options:NSCaseInsensitiveSearch] == NSOrderedSame))
-                    {
-                        found = YES;
-                        info.regROI = r;
-                        info.roiSliceIdx = sliceIdx;
-                        info.roiImageIdx = timeIdx;
-                        LOG4M_DEBUG(logger_, @"ROI image index: %u (slice index %u)",
-                                    info.roiImageIdx, info.roiSliceIdx);
-                    }
-                }
-
-                LOG4M_DEBUG(logger_, @"Using ROI named \'%@\' to generate registration region.",
-                            [info.regROI name]);
-                LOG4M_DEBUG(logger_, @"ROI points: \'%@\'.", [info.regROI points]);
-            }
-
-            NSString* filePath = [curPix sourceFile];
-            DCMObject* dcmObj = [DCMObject objectWithContentsOfFile:filePath decodingPixelData:NO];
-
-            DCMAttributeTag *tag = [DCMAttributeTag tagWithName:@"AcquisitionTime"];
-            DCMAttribute* attr = [dcmObj attributeForTag:tag];
-            DCMCalendarDate* dcmDate = attr.value;
-            NSTimeInterval acqTime = [dcmDate timeIntervalSinceReferenceDate];
-
-            // do this once per series
-            if ((timeIdx == 0) && (sliceIdx == 0))
-                firstTime = acqTime;
-
-            // do this once per time increment
-            if (sliceIdx == 0)
-            {
-                NSString* dateStr = [dcmDate descriptionWithCalendarFormat:@"%H:%M:%S"];
-                [info addAcqTimeString:dateStr];
-                LOG4M_DEBUG(logger_, @"Acquisition time = %@", dateStr);
-
-                NSTimeInterval normalisedTime = acqTime - firstTime;
-                [info addAcqTime:normalisedTime];
-                LOG4M_DEBUG(logger_, @"Normalised acquisition time = %fs", normalisedTime);
-            }
-        }
-    }
-    
-    [progWindow close];
-}
-
 - (void)parseDataSet
 {
     LOG4M_TRACE(logger_, @"Enter");
@@ -478,7 +357,7 @@ enum ComboBoxTags
     }
 }
 
-- (void)setupControlsFromParams
+- (void)setupConfigControlsFromParams
 {
     LOG4M_TRACE(logger_, @"Enter");
 
@@ -494,6 +373,11 @@ enum ComboBoxTags
     [numberOfThreadsComboBox setObjectValue:[self comboBox:numberOfThreadsComboBox
                                  objectValueForItemAtIndex:threadIdx]];
     [numberOfThreadsComboBox reloadData];
+}
+
+- (void)setupRegistrationControlsFromParams
+{
+    LOG4M_TRACE(logger_, @"Enter");
 
     // set things up based upon the image series information
     regParams.slicesPerImage = seriesInfo.slicesPerImage;
@@ -550,13 +434,13 @@ enum ComboBoxTags
     [bsplineRegLevelsComboBox setObjectValue:[self comboBox:bsplineRegLevelsComboBox
                                   objectValueForItemAtIndex:levelIdx]];
     [bsplineRegLevelsComboBox reloadData];
-    
+
     levelIdx = regParams.demonsRegMultiresLevels - 1;
     [demonsRegLevelsComboBox selectItemAtIndex:levelIdx];
     [demonsRegLevelsComboBox setObjectValue:[self comboBox:demonsRegLevelsComboBox
-                                  objectValueForItemAtIndex:levelIdx]];
+                                 objectValueForItemAtIndex:levelIdx]];
     [demonsRegLevelsComboBox reloadData];
-    
+
     // Set up label to reflect number of dimensions in images
     if (regParams.slicesPerImage == 1)
         [rigidRegOptimizerLabel setStringValue:@"Regular Step Gradient Descent"];
@@ -565,6 +449,50 @@ enum ComboBoxTags
 
     // enable the controls based upon the parameters
     [self enableControls];
+}
+
+- (void)setupPcaControlsFromParams
+{
+    // Set up the PcaParams instance here because we won't be storing it in the UserDefaults.
+    UserDefaults* def = [UserDefaults sharedInstance];
+    pcaParams.seriesDescription = [def stringForKey:SeriesDescriptionKey];
+
+    // We check to be sur that at least one ROI exists and that index is within range
+    if (seriesInfo.roiInfoArray.count != 0)
+    {
+        pcaParams.roiIndex = 0;
+        [pcaRoiComboBox noteNumberOfItemsChanged];
+        [pcaRoiComboBox selectItemAtIndex:0];
+        [pcaRoiComboBox setObjectValue:[self comboBox:pcaRoiComboBox objectValueForItemAtIndex:0]];
+    }
+    else
+    {
+        pcaParams.roiIndex = -1;
+        [pcaRoiComboBox setObjectValue:@"No ROI found in series."];
+    }
+
+    pcaParams.sliceIndex = 0;
+    [pcaSliceComboBox noteNumberOfItemsChanged];
+    [pcaSliceComboBox selectItemAtIndex:0];
+    [pcaSliceComboBox setObjectValue:[self comboBox:pcaSliceComboBox objectValueForItemAtIndex:0]];
+
+    pcaParams.numImages = seriesInfo.numTimeSamples;
+    pcaParams.slicesPerImage = seriesInfo.slicesPerImage;
+    pcaParams.flippedData = seriesInfo.flippedData;
+}
+
+- (void)setupControlsFromParams
+{
+    [self setupConfigControlsFromParams];
+    [self setupRegistrationControlsFromParams];
+    [self setupPcaControlsFromParams];
+}
+
+- (void)updateRoiInfoArray
+{
+    ROIFinder* rf = [[ROIFinder alloc]initWithViewer:viewerController1];
+    self.seriesInfo.roiInfoArray = [rf extractRoiInfoInSeries];
+    [rf release];
 }
 
 - (NSString*)makeSeriesName
@@ -723,6 +651,73 @@ enum ComboBoxTags
     return (DicomSeries*)[firstPix seriesObj];
 }
 
+// Alert panel delegate methods
+- (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
+         contextInfo:(void *)contextInfo
+{
+    LOG4M_TRACE(logger_, @"returnCode = %ld", (long)returnCode);
+    return;
+}
+
+- (void)closeSheet
+{
+    [NSApp endSheet:openSheet_];
+    [openSheet_ orderOut:self];
+    openSheet_ = nil;
+}
+
+// NSWindowDelegate methods
+
+- (BOOL)windowShouldClose:(id)sender
+{
+    LOG4M_TRACE(logger_, @"sender = %@", sender);
+    
+    return YES;
+}
+
+// NSTabViewDelegate methods
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    LOG4M_TRACE(logger_, @"tabViewItem = %@", [tabViewItem label]);
+
+//    NSString* itemIdent = [tabViewItem identifier];
+//
+//    if ([itemIdent isEqualToString:@"RegistrationTabItem"])
+//    {
+//        [self setupRegistrationControlsFromParams];
+//    }
+//    else if ([itemIdent isEqualToString:@"PcaAnalysisTabItem"])
+//    {
+//        [self setupPcaControlsFromParams:pcaParams.roiIndex];
+//    }
+//    else if ([itemIdent isEqualToString:@"ConfigurationTabItem"])
+//    {
+//        [self setupConfigControlsFromParams];
+//    }
+}
+
+- (BOOL)tabView:(NSTabView *)tabView shouldSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    return YES;
+}
+
+#pragma mark -
+#pragma mark Notifications
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
+                [notification name], NSStringFromClass([[notification object] class]));
+    id window = [notification object];
+
+    if (window == self)
+    {
+        LOG4M_DEBUG(logger_, @"Closing window: %@", [window autosaveName]);
+        [self saveDefaults];
+        //[[UserDefaults sharedInstance] save:regParams];
+    }
+}
+
 - (void) progressPanelWillClose:(NSNotification*)notification
 {
     LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
@@ -734,7 +729,8 @@ enum ComboBoxTags
 // Called in response to notifications from OsiriX
 - (void) viewerWillClose:(NSNotification*)notification
 {
-    LOG4M_TRACE(logger_, @"sender = %@", [notification name]);
+    LOG4M_DEBUG(logger_, @"ROI notification name:%@; object:%@; userinfo:%@",
+                notification.name, [notification.object className], notification.userInfo);
 
     // We are interested only in the closing of our two viewers. Should another
     // one close we will ignore it
@@ -771,296 +767,96 @@ enum ComboBoxTags
     }
 }
 
-- (void) roiSelectionChanged:(NSNotification*)notification
+- (void) handleRoiChangeNotification:(NSNotification*)notification
 {
-    self.seriesInfo.selROI = viewerController1.selectedROI;
-    self.seriesInfo.selROIs = viewerController1.selectedROIs;
+    LOG4M_DEBUG(logger_, @"ROI notification name:%@; object:%@; userinfo:%@",
+                notification.name, [notification.object className], notification.userInfo);
 
-    if ([notification.name hasPrefix:@"Osiri"])
-    {
-        LOG4M_INFO(logger_, @"ROI notification %@.", notification.name);
-        LOG4M_INFO(logger_, @"ROI selection change. %d ROIs selected.", self.seriesInfo.selROIs.count);
-    }
-//    else
-//        LOG4M_INFO(logger_, @"ROI notification %@.", notification.name);
+//    [self updateRoiInfoArray];
+//    [pcaRoiComboBox reloadData];
 }
 
-// Alert panel delegate methods
-- (void) alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
-         contextInfo:(void *)contextInfo
+- (void) updateRoiComboBox:(ROI*)roi
 {
-    LOG4M_TRACE(logger_, @"returnCode = %ld", (long)returnCode);
-    return;
-}
-
-- (IBAction)regStartButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"%@", [sender title]);
-
-    
-    if ((regParams.regSequence != Rigid) && (regParams.regSequence != RigidBSpline) &&
-        (regParams.regSequence != BSpline) && (regParams.regSequence != Demons))
+    // Now find the ROI in the array so that we can select it in the combobox.
+    if (roi == nil)
     {
-        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-
-        [alert addButtonWithTitle:@"Close"];
-        [alert setMessageText:@"DCEFit plugin."];
-        [alert setInformativeText:@"Both rigid and deformable registrations are disabled."
-             " You must enable at least one to continue."];
-        [alert setAlertStyle:NSCriticalAlertStyle];
-        [alert beginSheetModalForWindow:self.window
-                          modalDelegate:self
-                         didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
-                            contextInfo:nil];
-        LOG4M_INFO(logger_, @"Both rigid and deformable registrations are disabled."
-                   " You must enable at least one to continue.");
-
-        return;
+        // We have deleted an ROI so we select either the first one or set to -1.
+        if (seriesInfo.roiInfoArray.count == 0)
+            pcaParams.roiIndex = -1;
+        else
+            pcaParams.roiIndex = 0;
     }
-
-    [self saveDefaults];
-    [self disableControls];
-
-    progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
-    [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
-    [progressWindowController showWindow:self];
-    if (regParams.regSequence == Demons)
-        [progressWindowController.metricLabel setStringValue:@"RMS Diff."];
     else
-        [progressWindowController.metricLabel setStringValue:@"Metric"];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(progressPanelWillClose:)
-                                                 name:CloseProgressPanelNotification
-                                               object:progressWindowController];
-
-    // Copy the current dataset and viewer. We will work only with the new one.
- 	viewerController2 = [parentFilter copyCurrent4DViewerWindow];
-
-    if (viewerController2 == nil)
     {
-        LOG4M_ERROR(logger_, @"Failed to duplicate current 4D viewer.");
-        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 4D viewer.",
-                                @"Close", nil, nil);
-        return;
+        pcaParams.roiIndex = [seriesInfo findIndexOfRoi:roi];
+        pcaParams.roiIndex = seriesInfo.roiInfoArray.count - 1;
     }
 
-    [viewerController2 setPostprocessed:TRUE];
+    NSInteger idx = pcaParams.roiIndex;
 
-    // We want the flippedData flag to be the same in each viewer.
-    if ([viewerController2 imageView].flippedData !=
-        [viewerController1 imageView].flippedData)
-        [viewerController2 flipDataSeries:nil];
+    LOG4M_DEBUG(logger_, @"Index of ROI = %d", (int)idx);
+    [pcaRoiComboBox reloadData];
 
-    registrationManager = [[RegistrationManager alloc]
-                           initWithViewer:viewerController2 Params:regParams
-                           ProgressWindow:progressWindowController
-                           SeriesInfo:seriesInfo];
-
-    [registrationManager doRegistration];
-}
-
-- (IBAction)regCloseButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"%@", [sender title]);
-
-    [self saveDefaults];
-
-    parentFilter.dialogController = nil;
-    [self.window close];
-    [self autorelease];
-}
-
-- (IBAction)pcaCloseButtonPressed:(NSButton *)sender
-{
-    [self regCloseButtonPressed:sender];
-}
-
-- (IBAction)pcaAnalyseButtonPressed:(id)sender {
-}
-
-- (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
-
-    switch (regParams.rigidRegOptimizer)
+    if (idx >= 0)
     {
-        case RSGD:
-            openSheet_ = rigidRegRSGDOptimizerConfigPanel;
+        LOG4M_DEBUG(logger_, @"ComboBox object at index = %@",
+                    [self comboBox:pcaRoiComboBox objectValueForItemAtIndex:idx]);
+        LOG4M_DEBUG(logger_, @"ROIInfo at index = %@", [seriesInfo.roiInfoArray objectAtIndex:idx]);
+
+        [pcaRoiComboBox selectItemAtIndex:idx];
+        [pcaRoiComboBox setObjectValue:[self comboBox:pcaRoiComboBox objectValueForItemAtIndex:idx]];
+    }
+    else
+        [pcaRoiComboBox setObjectValue:@"No ROI found in series."];
+}
+
+- (void) handleRoiAddedNotification:(NSNotification*)notification
+{
+    LOG4M_DEBUG(logger_, @"ROI notification name:%@; object:%@; userinfo:%@",
+                notification.name, [notification.object className], notification.userInfo);
+
+    // first update the ROIInfo array.
+    [self updateRoiInfoArray];
+
+    // The userinfo seems to be a dictionary with keys @"ROI" and "sliceNumber".
+    NSDictionary* dict = (NSDictionary*)notification.userInfo;
+    ROI* roi = [dict objectForKey:@"ROI"];
+
+    [self updateRoiComboBox:roi];
+}
+
+- (void) handleRoiRemovedNotification:(NSNotification*)notification
+{
+    LOG4M_DEBUG(logger_, @"ROI notification name:%@; object:%@; userinfo:%@",
+                notification.name, [notification.object className], notification.userInfo);
+
+    // This is the ROI that has not yet been deleted so we have to het  rid of it ourselves.
+    ROI* roi = (ROI*)notification.object;
+
+    NSMutableArray* temp = [NSMutableArray arrayWithArray:seriesInfo.roiInfoArray];
+    for (NSInteger idx = 0; idx < seriesInfo.roiInfoArray.count; ++idx)
+    {
+        ROIInfo* info = [seriesInfo.roiInfoArray objectAtIndex:idx];
+        if (roi == info.roi)
+        {
+            [temp removeObjectAtIndex:idx];
             break;
-        case Versor:
-            openSheet_ = rigidVersorOptimizerConfigPanel;
-            break;
-        default:
-            break;
+        }
     }
 
-    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:self
-       didEndSelector:nil contextInfo:nil];
+    seriesInfo.roiInfoArray = temp;
+
+    [self updateRoiComboBox:nil];
 }
 
-- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton *)sender
+- (void) handleRoiSelectedNotification:(NSNotification*)notification
 {
-    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+    LOG4M_DEBUG(logger_, @"ROI notification name:%@; object:%@; userinfo:%@",
+                notification.name, [notification.object className], notification.userInfo);
 
-    switch (regParams.bsplineRegOptimizer)
-    {
-        case LBFGSB:
-            openSheet_ = bsplineRegLBFGSBOptimizerConfigPanel;
-            break;
-        case LBFGS:
-            openSheet_ = bsplineRegLBFGSOptimizerConfigPanel;
-            break;
-        case RSGD:
-            openSheet_ = bsplineRegRSGDOptimizerConfigPanel;
-            break;
-        default:
-            break;
-    }
-
-    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
-       didEndSelector:nil contextInfo:nil];
-}
-
-- (IBAction)rigidRegMetricConfigButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
-
-    switch (regParams.rigidRegMetric)
-    {
-        case MeanSquares:
-            break;
-        case MattesMutualInformation:
-            openSheet_ = rigidRegMMIMetricConfigPanel;
-            break;
-    }
-
-    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
-       didEndSelector:nil contextInfo:nil];
-}
-
-- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
-
-    switch (regParams.bsplineRegMetric)
-    {
-        case MeanSquares:
-            break;
-        case MattesMutualInformation:
-            openSheet_ = bsplineRegMMIMetricConfigPanel;
-            break;
-    }
-
-    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
-       didEndSelector:nil contextInfo:nil];
-}
-
-- (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender
-{
-    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
-
-    openSheet_ = demonsRegOptimizerConfigPanel;
-
-    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
-       didEndSelector:nil contextInfo:nil];
-}
-
-- (IBAction)currentImageAsFixed:(NSButton *)sender
-{
-    NSInteger idx = self.viewerController1.curMovieIndex;
-    [fixedImageComboBox selectItemAtIndex:idx];
-    [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
-                            objectValueForItemAtIndex:idx]];
-    [fixedImageComboBox reloadData];
-}
-
-- (IBAction)pcaSelectedRoiButtonPressed:(NSButton *)sender
-{
-}
-
-- (IBAction)pcaCurrentSliceButtonPressed:(NSButton *)sender
-{
-}
-
-- (void)closeSheet
-{
-    [NSApp endSheet:openSheet_];
-    [openSheet_ orderOut:self];
-    openSheet_ = nil;
-}
-
-- (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender
-{
-    // Do nothing but close the panel because the data have already been stored.
-    [self closeSheet];
-}
-
-- (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender
-{
-    [self closeSheet];
-}
-
-- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton *)sender
-{
-    [self closeSheet];
-}
-
-- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
-{
-    // Do nothing but close the panel because the data have already been stored.
-    [self closeSheet];
-}
-
-- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
-{
-    // Do nothing but close the panel because the data have already been stored.
-    [self closeSheet];
-}
-
-- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton *)sender
-{
-    // Do nothing but close the panel because the data have already been stored.
-    [self closeSheet];
-}
-
-- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton *)sender
-{
-    [self closeSheet];
-}
-
-- (IBAction)demonsRegOptimizerCloseButtonPressed:(NSButton *)sender
-{
-    [self closeSheet];
-}
-
-// NSWindowDelegate methods
-
-- (BOOL)windowShouldClose:(id)sender
-{
-    LOG4M_TRACE(logger_, @"sender = %@", sender);
-    
-    return YES;
-}
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-    LOG4M_TRACE(logger_, @"Notification = %@; object class = %@",
-                [notification name], NSStringFromClass([[notification object] class]));
-    id window = [notification object];
-    
-    if (window == self)
-    {
-        LOG4M_DEBUG(logger_, @"Closing window: %@", [window autosaveName]);
-        [self saveDefaults];
-        //[[UserDefaults sharedInstance] save:regParams];
-    }
-}
-
-// NSTabViewDelegate methods
-- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
-{
-    LOG4M_TRACE(logger_, @"tabViewItem = %@", [tabViewItem label]);
+//    [self updateRoiInfoArray];
+//    [pcaRoiComboBox reloadData];
 }
 
 // NSTextFieldDelegate Methods
@@ -1090,6 +886,9 @@ enum ComboBoxTags
                 aNotification.object != nil ? aNotification.object : @"nil",
                 aNotification.userInfo != nil ? aNotification.userInfo : @"nil");
 }
+
+#pragma mark -
+#pragma mark Tables
 
 // NSTableViewDelegate methods
 - (BOOL)tableView:(NSTableView *)tableView
@@ -1358,6 +1157,8 @@ enum ComboBoxTags
     [demonsRegOptimizerTableView reloadData];
 }
 
+#pragma mark -
+#pragma mark ComboBoxes
 // NSComboboxDelegate methods
 - (void)comboBoxSelectionDidChange:(NSNotification *)notification
 {
@@ -1366,6 +1167,7 @@ enum ComboBoxTags
     long tag = [cb tag];
     NSInteger idx = [cb indexOfSelectedItem];
     id value = [self comboBox:cb objectValueForItemAtIndex:idx];
+    NSInteger sliceNumber = 0;
 
     LOG4M_DEBUG(logger_, @"comboBoxSelectionDidChange tag = %ld, idx = %ld, value = %@", tag, idx, value);
 
@@ -1375,7 +1177,6 @@ enum ComboBoxTags
     {
         case RegFixedImageTag:
             regParams.fixedImageNumber = idx+1;
-            //regParams.fixedImageNumber = [value unsignedIntValue];
             break;
 
         case RigidRegLevelsTag:
@@ -1412,9 +1213,13 @@ enum ComboBoxTags
             break;
 
         case PcaRoiTag:
+            pcaParams.roiIndex = idx;
             break;
 
         case PcaSliceTag:
+            sliceNumber = [(NSNumber*)value intValue];
+            pcaParams.sliceIndex = [IndexConverter sliceNumberToIndex:sliceNumber
+                                                     viewerController:viewerController1];
             break;
 
         default:
@@ -1433,25 +1238,27 @@ enum ComboBoxTags
 
     LOG4M_DEBUG(logger_, @"comboBox:objectValueForItemAtIndex tag = %ld, index = %ld", tag, index);
 
-    id retVal;
-    unsigned idx = (unsigned)index;
-    
+    id retVal = nil;
+    ROIInfo* roiInfo = nil;
+    unsigned sliceNum = 0;
+
     switch (tag)
     {
         case RegFixedImageTag:  // fixed image number
-            retVal = [NSString stringWithFormat:@"%3u - [%@]", idx + 1, [seriesInfo acqTimeString:idx]];
+            retVal = [NSString stringWithFormat:@"%3ld - [%@]", (long)(index + 1),
+                      [seriesInfo acqTimeString:index]];
             break;
 
         case RigidRegLevelsTag:  // rigid levels
-            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            retVal = [NSNumber numberWithUnsignedInt:index + 1];
             break;
 
         case BsplineRegLevelsTag:  // B-spline deformable levels
-            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            retVal = [NSNumber numberWithUnsignedInt:index + 1];
             break;
 
         case LoggerLevelTag: // Logging level
-            switch (idx)
+            switch (index)
             {
                 case 0:
                     retVal = @"Trace";
@@ -1483,17 +1290,26 @@ enum ComboBoxTags
             break;
 
         case NumberOfThreadsTag:  // number of threads
-            retVal = [NSNumber numberWithInt:idx + 1];
+            retVal = [NSNumber numberWithInt:index + 1];
             break;
 
         case DemonsRegLevelsTag:  // demons levels
-            retVal = [NSNumber numberWithUnsignedInt:idx + 1];
+            retVal = [NSNumber numberWithUnsignedInt:index + 1];
             break;
 
         case PcaRoiTag:
+            if (seriesInfo.roiInfoArray.count == 0)
+                retVal = @"No ROI found in series.";
+            else
+            {
+                roiInfo = [seriesInfo.roiInfoArray objectAtIndex:index];
+                retVal = [roiInfo displayString];
+            }
             break;
 
         case PcaSliceTag:
+            sliceNum = [seriesInfo indexToSliceNumber:index];
+            retVal = [NSNumber numberWithUnsignedInt:sliceNum];
             break;
             
         default:
@@ -1544,10 +1360,11 @@ enum ComboBoxTags
             break;
 
         case PcaRoiTag:
-            retVal = seriesInfo.
+            retVal = (NSInteger)seriesInfo.roiInfoArray.count;
             break;
 
         case PcaSliceTag:
+            retVal = (NSInteger)seriesInfo.slicesPerImage;
             break;
 
          default:
@@ -1562,83 +1379,274 @@ enum ComboBoxTags
     return retVal;
 }
 
-// Actions
-////////////////
+#pragma mark -
+#pragma mark Actions
+
+- (IBAction)rigidRegRSGDConfigCloseButtonPressed:(NSButton *)sender
+{
+    // Do nothing but close the panel because the data have already been stored.
+    [self closeSheet];
+}
+
+- (IBAction)rigidRegMMIMetricCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
+}
+
+- (IBAction)rigidRegVersorConfigCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
+}
+
+- (IBAction)bsplineRegLBFGSBConfigCloseButtonPressed:(NSButton *)sender
+{
+    // Do nothing but close the panel because the data have already been stored.
+    [self closeSheet];
+}
+
+- (IBAction)bsplineRegLBFGSConfigCloseButtonPressed:(NSButton *)sender
+{
+    // Do nothing but close the panel because the data have already been stored.
+    [self closeSheet];
+}
+
+- (IBAction)bsplineRegRSGDConfigCloseButtonPressed:(NSButton *)sender
+{
+    // Do nothing but close the panel because the data have already been stored.
+    [self closeSheet];
+}
+
+- (IBAction)bsplineRegMMIConfigCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
+}
+
+- (IBAction)demonsRegOptimizerCloseButtonPressed:(NSButton *)sender
+{
+    [self closeSheet];
+}
+
+- (IBAction)regStartButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"%@", [sender title]);
+
+
+    if ((regParams.regSequence != Rigid) && (regParams.regSequence != RigidBSpline) &&
+        (regParams.regSequence != BSpline) && (regParams.regSequence != Demons))
+    {
+        NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+
+        [alert addButtonWithTitle:@"Close"];
+        [alert setMessageText:@"DCEFit plugin."];
+        [alert setInformativeText:@"Both rigid and deformable registrations are disabled."
+         " You must enable at least one to continue."];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        [alert beginSheetModalForWindow:self.window
+                          modalDelegate:self
+                         didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
+                            contextInfo:nil];
+        LOG4M_INFO(logger_, @"Both rigid and deformable registrations are disabled."
+                   " You must enable at least one to continue.");
+
+        return;
+    }
+
+    [self saveDefaults];
+    [self disableControls];
+
+    progressWindowController = [[ProgressWindowController alloc] initWithDialogController:self];
+    [progressWindowController setProgressMinimum:0.0 andMaximum:seriesInfo.numTimeSamples + 1];
+    [progressWindowController showWindow:self];
+    if (regParams.regSequence == Demons)
+        [progressWindowController.metricLabel setStringValue:@"RMS Diff."];
+    else
+        [progressWindowController.metricLabel setStringValue:@"Metric"];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(progressPanelWillClose:)
+                                                 name:CloseProgressPanelNotification
+                                               object:progressWindowController];
+
+    // Copy the current dataset and viewer. We will work only with the new one.
+    viewerController2 = [parentFilter copyCurrent4DViewerWindow];
+
+    if (viewerController2 == nil)
+    {
+        LOG4M_ERROR(logger_, @"Failed to duplicate current 4D viewer.");
+        NSRunCriticalAlertPanel(@"DCEFit Plugin", @"Failed to duplicate current 4D viewer.",
+                                @"Close", nil, nil);
+        return;
+    }
+
+    [viewerController2 setPostprocessed:TRUE];
+
+    // We want the flippedData flag to be the same in each viewer.
+    if ([viewerController2 imageView].flippedData !=
+        [viewerController1 imageView].flippedData)
+        [viewerController2 flipDataSeries:nil];
+
+    registrationManager = [[RegistrationManager alloc]
+                           initWithViewer:viewerController2 Params:regParams
+                           ProgressWindow:progressWindowController
+                           SeriesInfo:seriesInfo];
+
+    [registrationManager doRegistration];
+}
+
+- (IBAction)regCloseButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"%@", [sender title]);
+
+    [self saveDefaults];
+
+    parentFilter.dialogController = nil;
+    [self.window close];
+    [self autorelease];
+}
+
+- (IBAction)pcaCloseButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"%@", [sender title]);
+
+    [self regCloseButtonPressed:sender];
+}
+
+- (IBAction)pcaAnalyseButtonPressed:(id)sender
+{
+    LOG4M_TRACE(logger_, @"%@", [sender title]);
+
+    pca3TPManager = [[Pca3TPManager alloc] initWithViewer:viewerController1
+                                             roiInfoArray:seriesInfo.roiInfoArray
+                                                   params:pcaParams];
+    [pca3TPManager doAnalysis];
+}
+
+- (IBAction)roiUpdateButtonPressed:(NSButton *)sender
+{
+    [self updateRoiInfoArray];
+    [pcaRoiComboBox reloadData];
+}
+
+- (IBAction)rigidRegOptimizerConfigButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+
+    switch (regParams.rigidRegOptimizer)
+    {
+        case RSGD:
+            openSheet_ = rigidRegRSGDOptimizerConfigPanel;
+            break;
+        case Versor:
+            openSheet_ = rigidVersorOptimizerConfigPanel;
+            break;
+        default:
+            break;
+    }
+
+    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:self
+       didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)bsplineRegOptimizerConfigButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+
+    switch (regParams.bsplineRegOptimizer)
+    {
+        case LBFGSB:
+            openSheet_ = bsplineRegLBFGSBOptimizerConfigPanel;
+            break;
+        case LBFGS:
+            openSheet_ = bsplineRegLBFGSOptimizerConfigPanel;
+            break;
+        case RSGD:
+            openSheet_ = bsplineRegRSGDOptimizerConfigPanel;
+            break;
+        default:
+            break;
+    }
+
+    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
+       didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)rigidRegMetricConfigButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+
+    switch (regParams.rigidRegMetric)
+    {
+        case MeanSquares:
+            break;
+        case MattesMutualInformation:
+            openSheet_ = rigidRegMMIMetricConfigPanel;
+            break;
+    }
+
+    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
+       didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)bsplineRegMetricConfigButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+
+    switch (regParams.bsplineRegMetric)
+    {
+        case MeanSquares:
+            break;
+        case MattesMutualInformation:
+            openSheet_ = bsplineRegMMIMetricConfigPanel;
+            break;
+    }
+
+    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
+       didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)demonsRegOptimizerConfigButtonPressed:(NSButton *)sender
+{
+    LOG4M_TRACE(logger_, @"sender: %@", [sender title]);
+
+    openSheet_ = demonsRegOptimizerConfigPanel;
+
+    [NSApp beginSheet:openSheet_ modalForWindow:self.window modalDelegate:nil
+       didEndSelector:nil contextInfo:nil];
+}
+
+- (IBAction)currentImageAsFixed:(NSButton *)sender
+{
+    NSInteger idx = self.viewerController1.curMovieIndex;
+    [fixedImageComboBox selectItemAtIndex:idx];
+    [fixedImageComboBox setObjectValue:[self comboBox:fixedImageComboBox
+                            objectValueForItemAtIndex:idx]];
+    [fixedImageComboBox reloadData];
+}
+
+- (IBAction)pcaCurrentSliceButtonPressed:(NSButton *)sender
+{
+    unsigned sliceIdx = (unsigned)self.viewerController1.imageView.curImage;
+
+    [pcaSliceComboBox selectItemAtIndex:sliceIdx];
+    [pcaSliceComboBox setObjectValue:[self comboBox:pcaSliceComboBox
+                          objectValueForItemAtIndex:sliceIdx]];
+    [fixedImageComboBox reloadData];
+}
+
 - (IBAction)registrationSelectionRadioMatrixChanged:(NSMatrix *)sender
 {
     long tag = [[sender selectedCell] tag];
     LOG4M_DEBUG(logger_, @"registrationSelectionRadioMatrixChanged tag = %ld", tag);
-
-//    switch (regParams.regSequence)
-//    {
-//        case Rigid:
-//            regParams.regSequence = Rigid;
-//            break;
-//        case BSpline:
-//            regParams.regSequence = BSpline;
-//            break;
-//        case RigidBSpline:
-//            regParams.regSequence = RigidBSpline;
-//            break;
-//        case Demons:
-//            regParams.regSequence = Demons;
-//            break;
-//    }
 }
 
 - (IBAction)rigidRegMetricChanged:(NSMatrix *)sender
 {
     LOG4M_DEBUG(logger_, @"rigidMetricChanged tag = %ld", (long)[[sender selectedCell] tag]);
-    
-//    switch (regParams.rigidRegMetric)
-//    {
-//        case MattesMutualInformation:
-//            [rigidRegMetricConfigButton setEnabled:YES];
-//            break;
-//        default:
-//            [rigidRegMetricConfigButton setEnabled:NO];
-//            break;
-//    }
 }
-
-//- (IBAction)bsplineRegEnableChanged:(NSButton *)sender
-//{
-//    LOG4M_DEBUG(logger_, @"bsplineRegEnableChanged state = %ld", (long)[sender state]);
-//    
-//    [bsplineRegLevelsComboBox setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegGridSizeTableView setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegMetricRadioMatrix setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegMetricConfigButton setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegOptimizerRadioMatrix setEnabled:regParams.bsplineRegEnabled];
-//    [bsplineRegOptimizerConfigButton setEnabled:regParams.bsplineRegEnabled];
-//
-//    if (regParams.bsplineRegEnabled)
-//    {
-//        switch (regParams.bsplineRegMetric)
-//        {
-//            case MattesMutualInformation:
-//                [bsplineRegMetricConfigButton setEnabled:YES];
-//                break;
-//            default:
-//                [bsplineRegMetricConfigButton setEnabled:NO];
-//                break;
-//        }
-//    }
-//}
 
 - (IBAction)bsplineRegMetricChanged:(NSMatrix *)sender
 {
     LOG4M_DEBUG(logger_, @"deformMetricChanged tag = %ld", (long)[[sender selectedCell] tag]);
-    
-//    switch (regParams.bsplineRegMetric)
-//    {
-//        case MattesMutualInformation:
-//            [bsplineRegMetricConfigButton setEnabled:YES];
-//            break;
-//        default:
-//            [bsplineRegMetricConfigButton setEnabled:NO];
-//            break;
-//    }
 }
 
 - (void)disableControls

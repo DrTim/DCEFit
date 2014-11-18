@@ -125,22 +125,6 @@ ItkRegistrationParams::~ItkRegistrationParams()
     //[ocParams release];
 }
 
-unsigned ItkRegistrationParams::sliceNumberToIndex(unsigned number)
-{
-    if (flippedData)
-        return slicesPerImage - number;
-    else
-        return number - 1;
-}
-
-unsigned ItkRegistrationParams::indexToSliceNumber(unsigned index)
-{
-    if (flippedData)
-        return slicesPerImage - index;
-    else
-        return index + 1;
-}
-
 std::string ItkRegistrationParams::Print() const
 {
     

@@ -1,12 +1,14 @@
 /*
- * File:   Logger.h
+ * File:   LoggerUtils.h
  * Author: tim
  *
  * Created on February 27, 2013, 9:32 AM
  */
 
-#ifndef SETUP_LOGGER_H
-#define	SETUP_LOGGER_H
+#ifndef LOGGER_UTILS_H
+#define	LOGGER_UTILS_H
+
+#include <string>
 
 /**
  * Set up the logger. Return 0 if all was well, !0 otherwise.
@@ -20,5 +22,12 @@ void SetupLogger(const char* name, int level);
  */
 void ResetLoggerLevel(const char* name, int level);
 
-#endif	/* LOGGER_H */
+/**
+ * Converts the int logging level to a std::string.
+ * @param level The level. It must be a valid log4cplus level.
+ * @ @return A string describibing the level, "Unknown" if level is invalid.
+ */
+std::string LogLevelToString(int level);
+
+#endif	/* LOGGER_UTILS_H */
 

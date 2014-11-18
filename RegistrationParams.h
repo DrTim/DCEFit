@@ -160,18 +160,6 @@
  */
 - (void)setFromUserDefaults;
 
-/**
- * Convert the 1 based slice number that the user sees in osirix to a
- * 0 based slice index.
- */
-- (unsigned)sliceNumberToIndex:(unsigned)number;
-
-/**
- * Convert the 0 based slice index to a 1 based image number that
- * the user sees in osirix.
- */
-- (unsigned)indexToSliceNumber:(unsigned)index;
-
 - (BOOL)isRigidRegEnabled;
 
 - (BOOL)isBsplineRegEnabled;

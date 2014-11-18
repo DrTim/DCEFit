@@ -15,7 +15,7 @@
 
 @class Logger;
 
-@interface RegisterImageOp : NSOperation <NSAlertDelegate>
+@interface RegisterImageOperation : NSOperation <NSAlertDelegate>
 {
     BOOL finished_;
     BOOL executing_;

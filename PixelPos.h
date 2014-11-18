@@ -23,6 +23,6 @@
 
 - (id)copyWithZone:(NSZone *)zone;
 
-- (NSString*)asString;
+- (NSString *)description;
 
 @end

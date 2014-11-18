@@ -6,7 +6,7 @@
 //
 //
 
-#import "RegisterImageOp.h"
+#import "RegisterImageOperation.h"
 
 #include "RegisterOneImageRigid2D.h"
 #include "RegisterOneImageRigid3D.h"
@@ -23,7 +23,7 @@
 // used in register2dSeries
 //static Image2D::Pointer reduceTo2D(Image3D::Pointer image3d);
 
-@implementation RegisterImageOp
+@implementation RegisterImageOperation
 
 - (id)initWithManager:(RegistrationManager *)regManager
    ProgressController:(ProgressWindowController *)controller
@@ -33,7 +33,7 @@
     if (self)
     {
         NSString* loggerName = [[NSString stringWithUTF8String:LOGGER_NAME]
-                                stringByAppendingString:@".RegisterImageOp"];
+                                stringByAppendingString:@".RegisterImageOperation"];
         logger_ = [[Logger newInstance:loggerName] retain];
 
         finished_ = NO;

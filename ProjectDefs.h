@@ -44,13 +44,13 @@ enum OptimizerType
 };
 
 /**
- * Values to use to return the results of the registration.
+ * Values to use to return the results of functions which may fail.
  */
 enum ResultCode
 {
-    SUCCESS = 0,   /// All went well.
-    FAILURE = 1,   /// Registration was suboptimal but we can continue.
-    DISASTER = 2   /// Complete failure resulting in an exception being thrown by ITK.
+    SUCCESS = 0,   ///< All went well.
+    FAILURE = 1,   ///< Registration was suboptimal but we can continue.
+    DISASTER = 2   ///< Complete failure like an exception's being thrown by ITK or some similar event
 };
 
 // The size of the arrays containing registration pyramid parameters.

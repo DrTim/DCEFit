@@ -231,8 +231,6 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:data.seriesDescription
                      forKey:SeriesDescriptionKey];
 
-    //[defaultsDict setObject:[NSNumber numberWithBool:data.rigidRegEnabled]
-    //                 forKey:RigidRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.rigidRegMultiresLevels]
                      forKey:RigidRegMultiresLevelsKey];
     [defaultsDict setObject:[NSNumber numberWithInt:data.rigidRegMetric]
@@ -273,8 +271,6 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSNumber numberWithBool:data.deformShowField]
                      forKey:DeformRegShowFieldKey];
 
-    //    [defaultsDict setObject:[NSNumber numberWithBool:data.bsplineRegEnabled]
-    //                     forKey:BsplineRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.bsplineRegMultiresLevels]
                      forKey:BsplineRegMultiresLevelsKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegMaxIter]
@@ -304,8 +300,6 @@ static UserDefaults* sharedInstance;
     [defaultsDict setObject:[NSArray arrayWithArray:data.bsplineRegRSGDRelaxationFactor]
                      forKey:BsplineRegRSGDRelaxationFactorKey];
 
-//    [defaultsDict setObject:[NSNumber numberWithBool:data.demonsRegEnabled]
-//                     forKey:DemonsRegEnabledKey];
     [defaultsDict setObject:[NSNumber numberWithUnsignedInt:data.demonsRegMultiresLevels]
                      forKey:DemonsRegMultiresLevelsKey];
     [defaultsDict setObject:[NSArray arrayWithArray:data.demonsRegMaxIter]
@@ -318,7 +312,6 @@ static UserDefaults* sharedInstance;
                      forKey:DemonsRegHistogramMatchPointsKey];
     [defaultsDict setObject:[NSNumber numberWithFloat:data.demonsRegStandardDeviations]
                      forKey:DemonsRegStandardDeviationsKey];
-
 
     // Set the current values for for next time
     [defaults setPersistentDomain: defaultsDict forName: bundleId];

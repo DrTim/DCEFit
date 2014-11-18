@@ -19,7 +19,7 @@
 @class ViewerController;
 @class ProgressWindowController;
 @class ImageImporter;
-@class RegisterImageOp;
+@class RegisterImageOperation;
 @class SeriesInfo;
 
 @interface RegistrationManager : NSObject
@@ -34,7 +34,7 @@
     ImageImporter* imageImporter;
     Image2D::RegionType registrationRegion;
     NSOperationQueue* opQueue;
-    RegisterImageOp* op;
+    RegisterImageOperation* op;
     SeriesInfo* seriesInfo_;
 }
 

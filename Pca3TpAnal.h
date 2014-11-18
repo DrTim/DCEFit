@@ -9,15 +9,20 @@
 #import <Foundation/Foundation.h>
 
 #include <Eigen/Dense>
+#include <vector>
 
 @class ROI;
 @class DCMPix;
 @class Logger;
 @class ViewerController;
 
-typedef Eigen::MatrixXf MatrixType;
-typedef Eigen::VectorXf VectorType;
-typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixType;
+/* Use these typedefs to set the type of calculation done in the PCA analysis. Any
+ * module using these matrix types should import this file. The obvious MatrixType 
+ * is not used because it appears in the ITK libraries.
+ */
+typedef Eigen::MatrixXf Matrix;
+typedef Eigen::VectorXf Vector;
+typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrix;
 
 /*
  1. Select ROI (select from combobox containing time index, time, slice, name)
@@ -26,14 +31,18 @@ typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Ro
  */
 @interface Pca3TpAnal : NSObject
 {
-    Logger* mLogger;
-    ROI* mRoi;
-    ViewerController* mViewer;
-    int mSliceIndex;
-    NSArray* mCoordinates;
+    Logger* logger_;
+    ROI* roi_;
+    ViewerController* viewer_;
+    int sliceIndex_;
+    NSArray* coordinates_;
 
-    MatrixType dataMatrix;
+    Matrix dataMatrix_;
+    Matrix pcaCoeffs_;
 }
+
+@property (readonly) Matrix pcaCoeffs; ///< The matrix of PCA coefficients.
+@property (retain) NSArray* roiCoordinates;
 
 /**
  * Initialiser with parameters
@@ -43,5 +52,10 @@ typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Ro
  * @return Instance of this class.
  */
 - (id)initWithViewer:(ViewerController *)viewer Roi:(ROI *)roi andSliceIdx:(unsigned)sliceIdx;
+
+/**
+ * Calculate the PCA coefficients, storing them in pcaCoeffs;
+ */
+- (void)calculateCoeffs;
 
 @end

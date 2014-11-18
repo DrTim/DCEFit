@@ -41,7 +41,7 @@
     return pl;
 }
 
-- (NSString *)asString
+- (NSString *)description
 {
     NSString* str = [NSString stringWithFormat:@"{%d, %d}", x, y];
     return str;

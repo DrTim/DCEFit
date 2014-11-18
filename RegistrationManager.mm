@@ -9,7 +9,7 @@
 
 #import "RegistrationManager.h"
 #import "ImageImporter.h"
-#import "RegisterImageOp.h"
+#import "RegisterImageOperation.h"
 #import "ProgressWindowController.h"
 #import "SeriesInfo.h"
 
@@ -58,11 +58,14 @@
 
         [progController setManager:self];
     }
+
     return self;
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     delete itkParams;
     delete slicer;
     
@@ -87,7 +90,7 @@
 
 - (void) viewerWillClose:(NSNotification*)notification
 {
-    LOG4M_TRACE(logger_, @"sender = %@", [notification name]);
+    LOG4M_DEBUG(logger_, @"sender = %@", [notification name]);
 
     // We are interested only in the closing of our viewer. Should another
     // one close we will ignore it
@@ -128,7 +131,6 @@
 
     [viewer performSelectorOnMainThread:@selector(needsDisplayUpdate) withObject:nil
                           waitUntilDone:YES];
-    
 }
 
 - (void)insertImageIntoViewer:(Image3D::Pointer)image Index:(unsigned)imageIndex
@@ -191,7 +193,7 @@
     }
 
     // The operation.
-    op = [[RegisterImageOp alloc] initWithManager:self ProgressController:progressController_];
+    op = [[RegisterImageOperation alloc] initWithManager:self ProgressController:progressController_];
 
     [op setCompletionBlock:^{
         [progressController_ registrationEnded];

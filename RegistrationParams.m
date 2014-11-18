@@ -239,22 +239,6 @@
     self.demonsRegStandardDeviations = [def floatForKey:DemonsRegStandardDeviationsKey];
 }
 
-- (unsigned)sliceNumberToIndex:(unsigned)number
-{
-    if (flippedData)
-        return slicesPerImage - number;
-    else
-        return number - 1;
-}
-
-- (unsigned)indexToSliceNumber:(unsigned int)index
-{
-    if (flippedData)
-        return slicesPerImage - index;
-    else
-        return index + 1;
-}
-
 - (BOOL)isRigidRegEnabled
 {
     return ((regSequence == Rigid) || (regSequence == RigidBSpline));

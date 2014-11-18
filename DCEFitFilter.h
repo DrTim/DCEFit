@@ -32,8 +32,6 @@
  */
 - (id)init;
 
-- (void)dealloc;
-
 /**
 	Required method which is called by OsiriX.
 	@param menuName The text for the menu item.
