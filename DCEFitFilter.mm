@@ -59,10 +59,12 @@
 
     if (dialogController == nil)
     {
-        dialogController = [[DialogController alloc] initWithViewerController:viewerController
-                                                                       Filter:self];
+        dialogController = [[DialogController alloc]
+                            initWithViewerController:viewerController
+                            Filter:self];
+        [dialogController showWindow:self];
 
-        [dialogController.window setFrameAutosaveName:@"DCEFitMainDialog"];
+        //[dialogController.window setFrameAutosaveName:@"DCEFitMainDialog"];
     }
     
     return 0;

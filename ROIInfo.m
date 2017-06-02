@@ -8,7 +8,7 @@
 
 #import "ROIInfo.h"
 #import "IndexConverter.h"
-#import "LoggerUtils.h"
+//#import "LoggerUtils.h"
 #include "PixelPos.h"
 
 #import <OsiriXAPI/ROI.h>
@@ -39,7 +39,7 @@
         roi_ = roi;
         imageIdx_ = imageIdx;
         sliceNum_ = sliceNum;
-        coordinates_ = [self setPixelCoordinates];
+        coordinates_ = [[self setPixelCoordinates] retain];
     }
     return self;
 }
@@ -53,7 +53,7 @@
 
 - (NSArray *)setPixelCoordinates
 {
-    NSMutableArray* coordArray = [[NSMutableArray array] retain];
+    NSMutableArray* coordArray = [NSMutableArray array];
 
     /*
      * getROIValue is declared in DCMPix.h.
@@ -69,6 +69,7 @@
     {
         PixelPos* pp = [[PixelPos alloc] initWithX:coords[idx] Y:coords[idx+1]];
         [coordArray addObject:pp];
+        [pp release];
     }
 
     free(values);
@@ -80,7 +81,7 @@
 - (NSString *)displayString
 {
     NSString* retVal = [NSString stringWithFormat:
-                        @"%@: Image:%u Slice:%u", self.roi.name, self.imageIdx, self.sliceNum];
+                        @"%@: Image:%lu Slice:%lu", self.roi.name, (unsigned long)self.imageIdx, (unsigned long)self.sliceNum];
     return retVal;
 
 }

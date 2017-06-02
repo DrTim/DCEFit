@@ -84,9 +84,9 @@
     {
         // Initialise this instance from the user defaults
         [self setFromUserDefaults];
-        self.flippedData = NO;
-        self.fixedImageRegion = [Region2D regionFromString:@"{{0, 0}, {0, 0}}"];
-        self.fixedImageMask = [[[NSMutableArray alloc] init] autorelease];
+        flippedData = NO;
+        fixedImageRegion = [[Region2D regionFromString:@"{{0, 0}, {0, 0}}"] retain];
+        fixedImageMask = [[NSMutableArray array] retain];
         [self setupLogger];
 
         LOG4M_TRACE(logger_, @"init");
@@ -98,6 +98,7 @@
 - (void)dealloc
 {
     [fixedImageMask release];
+    [fixedImageRegion release];
     [rigidRegMMIHistogramBins release];
     [rigidRegMMISampleRate release];
 

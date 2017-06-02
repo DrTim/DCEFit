@@ -120,7 +120,6 @@ enum TabViewItemTags
         viewerController1 = viewerController;
         parentFilter = filter;
         seriesInfo = [[SeriesInfo alloc] initWithViewer:viewerController];
-        //roiFinder = [[ROIFinder alloc] initWithViewer:viewerController];
     }
     return self;
 }
@@ -137,6 +136,11 @@ enum TabViewItemTags
 }
 
 - (void)awakeFromNib
+{
+    NSLog(@"awakeFromNib");
+}
+
+- (void)windowDidLoad
 {
     // Set up logging ASAP
     [self setupSystemLogger];
@@ -552,10 +556,10 @@ enum TabViewItemTags
                 ymax = point.y;
         }
 
-        regParams.fixedImageRegion = [[[Region2D alloc]
-                             initWithX:(unsigned)round(xmin) Y:(unsigned)round(ymin)
-                             W:(unsigned)round(xmax - xmin) H:(unsigned)round(ymax - ymin)]
-                            autorelease];
+        regParams.fixedImageRegion.x = (unsigned)round(xmin);
+        regParams.fixedImageRegion.y = (unsigned)round(ymin);
+        regParams.fixedImageRegion.width = (unsigned)round(xmax - xmin);
+        regParams.fixedImageRegion.height = (unsigned)round(ymax - ymin);
 
         LOG4M_INFO(logger_, @"Registration region set to [x:%u y:%u w:%u h:%u]",
                    regParams.fixedImageRegion.x, regParams.fixedImageRegion.y,

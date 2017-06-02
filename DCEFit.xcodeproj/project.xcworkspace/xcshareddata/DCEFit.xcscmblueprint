@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "CDE89267C53FDB1A0364F35035830C9F044D8716",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "8390EA3129CDAB8E6711C85BCCAF568CF2D33B9B" : 0,
+    "CDE89267C53FDB1A0364F35035830C9F044D8716" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "69E2C08A-245F-44FC-908F-2919F7606214",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "8390EA3129CDAB8E6711C85BCCAF568CF2D33B9B" : "ImageMath\/",
+    "CDE89267C53FDB1A0364F35035830C9F044D8716" : "DCEFit\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "DCEFit",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "DCEFit.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/TimAllman\/ImageMath.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8390EA3129CDAB8E6711C85BCCAF568CF2D33B9B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/TimAllman\/DCEFit",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CDE89267C53FDB1A0364F35035830C9F044D8716"
+    }
+  ]
+}

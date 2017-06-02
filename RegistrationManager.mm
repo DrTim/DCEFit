@@ -13,7 +13,9 @@
 #import "ProgressWindowController.h"
 #import "SeriesInfo.h"
 
-#import "OsiriXAPI/ViewerController.h"
+#include "ItkTypedefs.h"
+
+#import <OsiriXAPI/ViewerController.h>
 
 @implementation RegistrationManager
 
